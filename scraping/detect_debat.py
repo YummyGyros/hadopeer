@@ -14,7 +14,7 @@ def parse_site(url):
                 article.append(i)
     return article
 
-def main(url):
+def detect_debat(url):
     page = requests.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
     field_senat = soup.find_all("fieldset", class_="lecture lecture-senat")
@@ -36,4 +36,4 @@ def main(url):
         result.append(parse_site("http://www.senat.fr/" + url))
     return result
 
-main("http://www.senat.fr/dossier-legislatif/pjl07-405.html")
+detect_debat("http://www.senat.fr/dossier-legislatif/pjl07-405.html")
