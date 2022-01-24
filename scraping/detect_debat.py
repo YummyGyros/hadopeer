@@ -31,7 +31,7 @@ def detect_debat(url):
         children_field = s.findChildren("a")
         for a in children_field:
             if a.string and "Rapport" in a.string:
-                result.append(a)
+                result.append(a.get("href"))
     for url in link:
         result.append(parse_site("http://www.senat.fr/" + url))
     return result

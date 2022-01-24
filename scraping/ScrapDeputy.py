@@ -4,6 +4,7 @@ import json
 from os import path
 
 JsonDeputy = "deputy.json"
+JsonSenator = "senator.json"
 listObj = []
 
 def detect_debat(url, name):
@@ -67,3 +68,49 @@ def ScrapDeputy(name):
         if name in deputy.string:
             put_deputy(name, deputy.get("href"), ScrapDeputy.first)
     return 0
+
+def ScrapSenator(name):
+    print(ScrapSenator.first)
+    name = name.replace('\xa0', ' ')
+    for ch in [';', '.', ',', ':']:
+        name = name.replace(ch, "")
+    print(name)
+    print(ScrapSenator.lst_senator)
+    start_json = []
+    if name in ScrapSenator.lst_senator:
+        return -1
+    else:
+        ScrapSenator.lst_senator.append(name)
+    page = requests.get("https://www.senat.fr/themas/infocompo_2008/infocompo_2008_mono.html")
+    soup = BeautifulSoup(page.content, 'html.parser')
+    lst_senator = soup.find_all("table")
+    lst_name = lst_senator[3].find_all("tr")
+    print("receive_name: " + name)
+    cutting = name.split(' ')
+    print("splitted name: ")
+    print(cutting)
+    name = cutting[1] + ' ' + cutting[2]
+    name = name.lower()
+    for senator in lst_name:
+        Sname = senator.find_all("p")
+        fullname = Sname[0].get_text(strip=True) + ' ' + Sname[1].get_text(strip=True)
+        fullname = fullname.lower()
+        print (fullname + " " + name)
+        if name in fullname:
+            if (ScrapSenator.first == True):
+                json_senator = {"Name": fullname, "Date_Mandat": "2008-2011", "Dep": Sname[2].get_text(strip=True), "Groupe": Sname[3].get_text(strip=True)}
+                start_json.append(json_senator)
+                json_senator = json.dumps(start_json, indent=4, separators=(',',': '))
+                print(json_senator)
+                with open(JsonSenator, 'w') as outfile:
+                    outfile.write(json_senator)
+                ScrapSenator.first = False
+            else:
+                with open(JsonSenator) as fp:
+                    listObj = json.load(fp)
+                listObj.append({"Name": fullname, "Date_Mandat": "2008-2011", "Dep": Sname[2].get_text(strip=True), "Groupe": Sname[3].get_text(strip=True)})
+                with open(JsonSenator, 'w') as json_file:
+                    json.dump(listObj, json_file, 
+                                indent=4,  
+                                separators=(',',': '))            
+            return 0

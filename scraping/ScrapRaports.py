@@ -2,6 +2,7 @@ import json
 from bs4 import BeautifulSoup
 import requests
 from unicodedata import normalize
+from ScrapDeputy import ScrapSenator
 
 tmpFileName = 'tmp.json'
 
@@ -10,6 +11,8 @@ def scrapAssembleeNationale(soup):
 
 
 def scrapSenat(urls):
+    ScrapSenator.first = True
+    ScrapSenator.lst_senator = []
     mention = "no mention"
     lecture = "lecture not mentioned"
     listInterventions = []
@@ -22,6 +25,8 @@ def scrapSenat(urls):
                 "div", {"class": "intervenant"})
             for i in intervenant:
                 if i.find("span", {"class": "orateur_nom"}) != None:
+                    print(i.find("span", {"class": "orateur_nom"}).get_text(strip=True))
+                    ScrapSenator(i.find("span", {"class": "orateur_nom"}).get_text(strip=True).replace('\n', ' '))
                     interventions.append({
                         # "class": i['class'][0],
                         "orateur_nom": i.find("span", {"class": "orateur_nom"}).text.replace('\n', ' '),
