@@ -1,6 +1,10 @@
 # hadopeer
 
 ## Server
+ 
+### FaunaDB
+
+In order to start the server, access to our database with its key is required.
 
 ### Virtual Environment (venv)
 
