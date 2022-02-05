@@ -1,23 +1,14 @@
-from flask import Flask
+
+from flask import (
+    Flask, jsonify
+)
+from faunadb import query as q
+from hadopeer.server.faunadb import client
 
 app = Flask(__name__)
 
 @app.route("/")
-def welcome():
-    return "Bienvenue sur la page d'accueil!"
-
-@app.route("/votes")
-def votes():
-    return "Visualisation de votes"
-
-@app.route("/participants")
-def participants():
-    return "Liste des participants"
-
-@app.route("/analyse")
-def analyse():
-    return "Analyse des discours avec visuels"
-
-@app.route("/chronologie")
-def chronologie():
-    return "Frise chronologique du projet de lois"
+def hello():
+    return jsonify(client.query(
+        q.get(q.ref(q.collection("myCollection"), "322765143676027468"))
+    )["data"])
