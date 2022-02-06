@@ -19,7 +19,7 @@ def scrapAssembleeNationale(urls):
 
 def scrapSenat(urls):
     mention = "no mention"
-    lecture = "lecture not mentioned"
+    articles = "articles not mentioned"
     listInterventions = []
     ret = []
     for url in urls :
@@ -46,7 +46,7 @@ def scrapSenat(urls):
                 {"mention_article": mention, "interventions": interventions})
         else:
             if listInterventions != []:
-                ret.append({"title": lecture, "lecture": listInterventions})
-            lecture = url
-    ret.append({"title": lecture, "lecture": listInterventions})
+                ret.append({"title": articles, "articles": listInterventions})
+            articles = url
+    ret.append({"title": articles, "articles": listInterventions})
     return ret

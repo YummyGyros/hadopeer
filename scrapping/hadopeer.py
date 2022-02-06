@@ -31,7 +31,7 @@ def hadopeer():
         for y in i:
             parsR(y)
     data = {
-        "senat": scrapSenat(urlSenat),
+        "lecture_senat": scrapSenat(urlSenat),
         "assemblee_Nationale": scrapAssembleeNationale(urlAssembleeNationale)
     }
     with open(tmpFileName, 'w') as json_file:
