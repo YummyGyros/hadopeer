@@ -1,7 +1,7 @@
 
 from bs4 import BeautifulSoup, Comment
 from os import path
-from ScrapDeputy import ScrapSenator
+from ScrapDeputy import ScrapSenator, other_scrap, vote_Senator
 import requests
 
 def scrapAssembleeNationale(urls):
@@ -16,8 +16,24 @@ def scrapAssembleeNationale(urls):
     #             print(i)
     return([])
 
+def find_president_name(url):
+    suite = url.split("/")
+    page = requests.get("http://www.senat.fr/senateur/" + suite[2])
+    soup = BeautifulSoup(page.content, 'html.parser')
+    soup.prettify("latin-1")
+    title = soup.find("h1", {"class": "title-01"}).get_text(strip=True)
+    splitting = title.split(" ")
+    if "M." in splitting or "Mme." in splitting:
+        title = "Mme " + splitting[1] + " " + splitting[2]
+    else:
+        title = "Mme " + splitting[1] + " " + splitting[0]
+    return title
 
 def scrapSenat(urls):
+    ScrapSenator.first = True
+    ScrapSenator.lst_senator = []
+    vote_Senator.lst_senator = []
+    vote_Senator.first = 0
     article = "no mention"
     lecture = "lecture not mentioned"
     articles = []
@@ -33,6 +49,10 @@ def scrapSenat(urls):
             for i in intervenant:
                 if i.find("span", {"class": "orateur_nom"}) != None:
                     orateur = i.find(text=lambda text:isinstance(text, Comment))
+                    if "président" in i.find("span", {"class": "orateur_nom"}).get_text(strip=True):
+                        ScrapSenator(orateur.string.split('\"')[3])
+                    else:
+                        ScrapSenator(i.find("span", {"class": "orateur_nom"}).get_text(strip=True).replace('\n', ' '))
                     # ScrapSenator(orateur.string.split('\"')[3])
                     interventions.append({
                         "qualification": orateur.string.split('\"')[5],
@@ -51,4 +71,5 @@ def scrapSenat(urls):
                 lectures_senat.append({"date": lecture.split(" - ")[1], "premier_articles": articles[0]["reference"], "articles": articles})
             lecture = url
     lectures_senat.append({"date": lecture.split(" - ")[1], "premier_articles": articles[0]["reference"], "articles": articles})
+    other_scrap()
     return lectures_senat
