@@ -2,17 +2,31 @@ import json
 from bs4 import BeautifulSoup
 import requests
 from unicodedata import normalize
-from ScrapDeputy import ScrapSenator
+from ScrapDeputy import ScrapSenator, other_scrap, vote_Senator
 
 tmpFileName = 'tmp.json'
 
 def scrapAssembleeNationale(soup):
     raise Exception("not implemented yet")
 
+def find_president_name(url):
+    suite = url.split("/")
+    page = requests.get("http://www.senat.fr/senateur/" + suite[2])
+    soup = BeautifulSoup(page.content, 'html.parser')
+    soup.prettify("latin-1")
+    title = soup.find("h1", {"class": "title-01"}).get_text(strip=True)
+    splitting = title.split(" ")
+    if "M." in splitting or "Mme." in splitting:
+        title = "Mme " + splitting[1] + " " + splitting[2]
+    else:
+        title = "Mme " + splitting[1] + " " + splitting[0]
+    return title
 
 def scrapSenat(urls):
     ScrapSenator.first = True
     ScrapSenator.lst_senator = []
+    vote_Senator.lst_senator = []
+    vote_Senator.first = 0
     mention = "no mention"
     lecture = "lecture not mentioned"
     listInterventions = []
@@ -25,10 +39,11 @@ def scrapSenat(urls):
                 "div", {"class": "intervenant"})
             for i in intervenant:
                 if i.find("span", {"class": "orateur_nom"}) != None:
-                    print(i.find("span", {"class": "orateur_nom"}).get_text(strip=True))
-                    ScrapSenator(i.find("span", {"class": "orateur_nom"}).get_text(strip=True).replace('\n', ' '))
+                    if "président" in i.find("span", {"class": "orateur_nom"}).get_text(strip=True):
+                        ScrapSenator(find_president_name(i.find("a", {"class": "lien_senfic"}).get("href")))
+                    else:
+                        ScrapSenator(i.find("span", {"class": "orateur_nom"}).get_text(strip=True).replace('\n', ' '))
                     interventions.append({
-                        # "class": i['class'][0],
                         "orateur_nom": i.find("span", {"class": "orateur_nom"}).text.replace('\n', ' '),
                         "text": i.text.split("\n\n\n\n\n")[0].replace('\n', ' ').rstrip().lstrip() # .encode('ascii', 'ignore').decode()
                     }) 
@@ -43,6 +58,7 @@ def scrapSenat(urls):
                 ret.append({"title": lecture, "lecture": listInterventions})
             lecture = url
     ret.append({"title": lecture, "lecture": listInterventions})
+    other_scrap()
     with open(tmpFileName, 'w') as json_file:
         json.dump(ret, json_file,
                   indent=4,
