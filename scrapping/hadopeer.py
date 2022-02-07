@@ -14,7 +14,7 @@ def parsR(row):
     if (type(row) == bs4.element.Tag):
         if 'lecture' in row.text or 'seances' in row.get('href'):
             if row.get('href') != None:
-                urlSenat.append("http://www.senat.fr" + row.get('href'))
+                urlSenat.append("http://www.senat.fr" + row.get('href').split("#")[0])
             else:
                 urlSenat.append(row.text)
         elif 'Rapport' in row.text:
@@ -31,8 +31,8 @@ def hadopeer():
         for y in i:
             parsR(y)
     data = {
-        "lecture_senat": scrapSenat(urlSenat),
-        "assemblee_Nationale": scrapAssembleeNationale(urlAssembleeNationale)
+        "lectures_senat": scrapSenat(urlSenat),
+        "lectures_assemblee_Nationale": scrapAssembleeNationale(urlAssembleeNationale)
     }
     with open(tmpFileName, 'w') as json_file:
         json.dump(data, json_file,
