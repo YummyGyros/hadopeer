@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 import requests
 from bs4 import BeautifulSoup
 import json
@@ -59,7 +60,7 @@ def vote_Senator(lecture, Name):
             fullname = cutting[0] + ' ' + cutting[1]
             fullname = fullname.lower()
             if Name in fullname:
-                return 1
+                return "pour"
     for name in lst_name_contre:
         sname = name.find_all("a")
         for i in range(len(sname)):
@@ -67,7 +68,7 @@ def vote_Senator(lecture, Name):
             fullname = cutting[0] + ' ' + cutting[1]
             fullname = fullname.lower()
             if Name in fullname:
-                return 0
+                return "contre"
     for name in lst_name_abstention:
         sname = name.find_all("a")
         for i in range(len(sname)):
@@ -75,8 +76,8 @@ def vote_Senator(lecture, Name):
             fullname = cutting[0] + ' ' + cutting[1]
             fullname = fullname.lower()
             if Name in fullname:
-                return -1
-    return -2
+                return "absent"
+    return NULL
 
 def detect_debat(url, name):
     page = requests.get(url)

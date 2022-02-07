@@ -47,7 +47,6 @@ def scrapSenat(urls):
             for i in intervenant:
                 if i.find("span", {"class": "orateur_nom"}) != None:
                     orateur = i.find(text=lambda text:isinstance(text, Comment))
-                    print(orateur.string.split('\"')[3])
                     if "président" in i.find("span", {"class": "orateur_nom"}).get_text(strip=True):
                         ScrapSenator(find_president_name(i.find("a", {"class": "lien_senfic"}).get("href")))
                     else:
