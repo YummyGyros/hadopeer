@@ -28,10 +28,10 @@ def detect_debat(url):
             if a.string and "Compte rendu intégral des débats" in a.string:
                 link.append(a.get("href"))
     for s in field_an:
-        children_field = s.findChildren("a")
-        for a in children_field:
-            if a.string and "Rapport" in a.string:
-                result.append(a.get("href"))
+        children_field = s.findChildren("li")
+        for li in children_field:
+            if "Rapport" in li.text:
+                result.append(li)
     for url in link:
         result.append(parse_site("http://www.senat.fr/" + url))
     return result
