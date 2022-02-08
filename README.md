@@ -1,6 +1,14 @@
 # hadopeer
 
 ## Scrapping
+run:
+```shell
+python3 .\hadopeer.py
+```
+setting:\
+&emsp;`-pb ` :&emsp;add progress bar\
+&emsp;`-noL` :&emsp;dont scrap lectures\
+&emsp;`-pbS` :&emsp;dont scrap senator
 
 ## App
 
