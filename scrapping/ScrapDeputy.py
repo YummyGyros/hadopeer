@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 import requests
 from bs4 import BeautifulSoup
 import json
@@ -77,7 +76,8 @@ def vote_Senator(lecture, Name):
             fullname = fullname.lower()
             if Name in fullname:
                 return "absent"
-    return NULL
+    
+    return "None"
 
 def detect_debat(url, name):
     page = requests.get(url)
