@@ -5,7 +5,7 @@ import bs4
 from detect_debat import detect_debat
 from ScrapRaports import scrapSenat, scrapAssembleeNationale
 
-tmpFileName = 'tmp.json'
+tmpFileName = 'lectures_senat.json'
 urlSenat = []
 urlAssembleeNationale = []
 

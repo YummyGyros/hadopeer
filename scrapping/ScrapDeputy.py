@@ -4,8 +4,8 @@ import json
 from os import path
 import unicodedata
 
-JsonDeputy = "deputy.json"
-JsonSenator = "senator.json"
+JsonDeputy = "deputes.json"
+JsonSenator = "senateurs.json"
 listObj = []
 
 def get_name_senator(soup):
@@ -77,7 +77,7 @@ def vote_Senator(lecture, Name):
             if Name in fullname:
                 return "absent"
     
-    return "None"
+    return "none"
 
 def detect_debat(url, name):
     page = requests.get(url)
@@ -107,7 +107,7 @@ def put_deputy(name, url, state):
     start_json = []
     result = detect_debat(url, name)
     if (state == True):
-        json_deputy = {"Name": result[0], "Fonction": "Député", "Date_Mandat": result[1], "Dep": result[2], "Groupe": result[3]}
+        json_deputy = {"name": result[0], "fonction": "depute", "mandat": result[1], "departement": result[2], "groupe_politique": result[3]}
         start_json.append(json_deputy)
         json_deputy = json.dumps(start_json, indent=4, separators=(',',': '))
         print(json_deputy)
@@ -117,7 +117,7 @@ def put_deputy(name, url, state):
     else:
         with open(JsonDeputy) as fp:
             listObj = json.load(fp)
-        listObj.append({"Name": result[0], "Fonction": "Député", "Date_Mandat": result[1], "Dep": result[2], "Groupe": result[3]})
+        listObj.append({"name": result[0], "fonction": "depute", "mandat": result[1], "departement": result[2], "groupe_politique": result[3]})
         with open(JsonDeputy, 'w') as json_file:
             json.dump(listObj, json_file, 
                         indent=4,  
@@ -167,10 +167,10 @@ def ScrapSenator(name):
     for senator in lst_name:
         Sname = senator.find_all("p")
         fullname = Sname[0].get_text(strip=True) + ' ' + Sname[1].get_text(strip=True)
-        fullname = fullname.lower()
+        # fullname = fullname.lower()
         if name in fullname:
             if (ScrapSenator.first == True):
-                json_senator = {"Name": fullname, "Fonction": "Senateur", "Date_Mandat": "2008-2011", "Dep": Sname[2].get_text(strip=True), "Groupe": Sname[3].get_text(strip=True), "scrutin_1": vote_Senator(1, fullname), "scrutin_2": vote_Senator(2, fullname) }
+                json_senator = {"name": fullname, "fonction": "senateur", "mandat": "2008-2011", "departement": Sname[2].get_text(strip=True), "groupe_politique": Sname[3].get_text(strip=True), "scrutin1": vote_Senator(1, fullname), "scrutin2": vote_Senator(2, fullname) }
                 start_json.append(json_senator)
                 json_senator = json.dumps(start_json, indent=4, separators=(',',': '))
                 with open(JsonSenator, 'w') as outfile:
@@ -179,7 +179,7 @@ def ScrapSenator(name):
             else:
                 with open(JsonSenator) as fp:
                     listObj = json.load(fp)
-                listObj.append({"Name": fullname, "Fonction": "Senateur", "Date_Mandat": "2008-2011", "Dep": Sname[2].get_text(strip=True), "Groupe": Sname[3].get_text(strip=True), "scrutin_1": vote_Senator(1, fullname), "scrutin_2": vote_Senator(2, fullname) })
+                listObj.append({"name": fullname, "fonction": "senateur", "mandat": "2008-2011", "departement": Sname[2].get_text(strip=True), "groupe_politique": Sname[3].get_text(strip=True), "scrutin1": vote_Senator(1, fullname), "scrutin2": vote_Senator(2, fullname) })
                 with open(JsonSenator, 'w') as json_file:
                     json.dump(listObj, json_file, 
                                 indent=4,  

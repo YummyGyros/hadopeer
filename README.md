@@ -1,5 +1,9 @@
 # hadopeer
 
+## Scrapping
+
+## App
+
 ## Server
  
 ### FaunaDB
