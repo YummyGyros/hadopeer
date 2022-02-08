@@ -20,7 +20,10 @@ def scrapSenat(urls):
     ScrapSenator.first = True
     ScrapSenator.lst_senator = []
     vote_Senator.lst_senator = []
+    vote_Senator.scrutin = dict()
     vote_Senator.first = 0
+    vote_Senator(1)
+    vote_Senator(2)
     article = "no mention"
     lecture = "lecture not mentioned"
     articles = []
@@ -36,7 +39,7 @@ def scrapSenat(urls):
             for i in intervenant:
                 if i.find("span", {"class": "orateur_nom"}) != None:
                     orateur = i.find(text=lambda text:isinstance(text, Comment))
-                    ScrapSenator(orateur.string.split('\"')[3])
+                    ScrapSenator(orateur.string.split('\"')[3], vote_Senator.scrutin)
                     interventions.append({
                         # "qualification": orateur.string.split('\"')[5],
                         # "profil": None if i.find("a", {"class": "lien_senfic"}) == None else "http://www.senat.fr" + i.find("a", {"class": "lien_senfic"}).get('href'),
@@ -54,5 +57,5 @@ def scrapSenat(urls):
                 lectures_senat.append({"date": lecture.split(" - ")[1], "premier_articles": articles[0]["reference"], "articles": articles})
             lecture = url
     lectures_senat.append({"date": lecture.split(" - ")[1], "premier_articles": articles[0]["reference"], "articles": articles})
-    other_scrap()
+    other_scrap(vote_Senator.scrutin)
     return lectures_senat
