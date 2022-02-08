@@ -22,18 +22,18 @@ def parsR(row):
 
 
 def hadopeer():
-    if sys.argv.__len__() != 2:
+    if sys.argv.__len__() != 1:
         raise Exception("wrong number of argument")
-    debat = detect_debat(sys.argv[1])
+    debat = detect_debat("http://www.senat.fr/dossier-legislatif/pjl07-405.html")
     if path.isfile(tmpFileName) is False:
-        open("tmp.json", "x")
+        open("lectures_senat.json", "x")
     for i in debat:
         for y in i:
             parsR(y)
     data = {
-        "lectures_senat": scrapSenat(urlSenat),
-        "lectures_assemblee_Nationale": scrapAssembleeNationale(urlAssembleeNationale)
+        "lectures_senat": scrapSenat(urlSenat)
     }
+    # "lectures_assemblee_Nationale": scrapAssembleeNationale(urlAssembleeNationale)
     with open(tmpFileName, 'w') as json_file:
         json.dump(data, json_file,
                   indent=4,
