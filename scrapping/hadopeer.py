@@ -60,5 +60,5 @@ if __name__ == '__main__':
             noS = False
         hadopeer()
     except Exception as err:
-        print('Unexpected error:', err)
+        sys.stderr.write('\033[91mUnexpected error: \033[0m' + err.args[0] + '\n')
         sys.exit(84)
