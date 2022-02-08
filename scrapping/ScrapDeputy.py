@@ -167,7 +167,7 @@ def ScrapSenator(name):
     for senator in lst_name:
         Sname = senator.find_all("p")
         fullname = Sname[0].get_text(strip=True) + ' ' + Sname[1].get_text(strip=True)
-        # fullname = fullname.lower()
+        fullname = fullname.lower()
         if name in fullname:
             if (ScrapSenator.first == True):
                 json_senator = {"name": fullname, "fonction": "senateur", "mandat": "2008-2011", "departement": Sname[2].get_text(strip=True), "groupe_politique": Sname[3].get_text(strip=True), "scrutin1": vote_Senator(1, fullname), "scrutin2": vote_Senator(2, fullname) }
