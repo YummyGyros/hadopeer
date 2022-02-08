@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import json
 from os import path
 import unicodedata
+from tqdm import tqdm
 
 JsonDeputy = "deputy.json"
 JsonSenator = "senator.json"
@@ -137,14 +138,21 @@ def ScrapDeputy(name):
             put_deputy(name, deputy.get("href"), ScrapDeputy.first)
     return 0
 
-def other_scrap():
+def other_scrap(SenatorNom, pb):
+    ScrapSenator.first = True
+    ScrapSenator.lst_senator = []
+    vote_Senator.lst_senator = []
+    vote_Senator.first = 0
+
+    for i in tqdm(range(len(SenatorNom)), desc="Scraping Senator info", disable=pb):
+        ScrapSenator(SenatorNom[i])
     lst_senator = vote_Senator.lst_senator
 
     for name in ScrapSenator.lst_senator:
         if name in lst_senator:
             lst_senator.remove(name)
-    for other in vote_Senator.lst_senator:
-        ScrapSenator(other)
+    for i in tqdm(range(len(vote_Senator.lst_senator)), desc="other Scraping", disable=pb):
+        ScrapSenator(vote_Senator.lst_senator[i])
 
 def ScrapSenator(name):
     name = name.replace('\xa0', ' ')

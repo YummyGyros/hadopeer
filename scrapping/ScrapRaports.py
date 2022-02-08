@@ -1,8 +1,9 @@
 
 from bs4 import BeautifulSoup, Comment
-from os import path
-from ScrapDeputy import ScrapSenator, other_scrap, vote_Senator
+from os import path 
 import requests
+from tqdm import tqdm
+
 
 def scrapAssembleeNationale(urls):
     # articles = []
@@ -10,49 +11,48 @@ def scrapAssembleeNationale(urls):
     # for url in urls :
     #     interventions = []
     #     debats = BeautifulSoup(requests.get(url).content, 'html.parser')
-    #     intervenant = debats.find_all("span", {"style": "font-family: 'Times New Roman'; font-size: 13pt"})
-    #     for i in intervenant:
+    #     intervenants = debats.find_all("span", {"style": "font-family: 'Times New Roman'; font-size: 13pt"})
+    #     for i in intervenants:
     #         if 'M' in i:
     #             print(i)
     return([])
 
-def scrapSenat(urls):
-    ScrapSenator.first = True
-    ScrapSenator.lst_senator = []
-    vote_Senator.lst_senator = []
-    vote_Senator.first = 0
-    article = "no mention"
-    lecture = "lecture not mentioned"
+def scrapSenat(urls, pb):
+    SenatorNom = []
+    article = lecture = "not mentioned"
     articles = []
     lectures_senat = []
     urls = list(dict.fromkeys(urls))
-    for url in urls :
-        if "http://www.senat.fr" in url:
+    for i in tqdm(range(len(urls)), desc="Scraping debat", disable=pb):
+        if "http://www.senat.fr" in urls[i]:
             interventions = []
-            soup = BeautifulSoup(requests.get(url).content, 'html.parser')
+            soup = BeautifulSoup(requests.get(urls[i]).content, 'html.parser')
             debats = soup.find("div", {"class": "box-inner gradient-01"})
-            intervenant = debats.find_all(
+            intervenants = debats.find_all(
                 "div", {"class": "intervenant"})
-            for i in intervenant:
-                if i.find("span", {"class": "orateur_nom"}) != None:
-                    orateur = i.find(text=lambda text:isinstance(text, Comment))
-                    ScrapSenator(orateur.string.split('\"')[3])
+            for intervenant in intervenants:
+                if intervenant.find("span", {"class": "orateur_nom"}) != None:
+                    orateur = intervenant.find(
+                        text=lambda text: isinstance(text, Comment))
+                    SenatorNom.append(orateur.string.split('\"')[3])
                     interventions.append({
                         # "qualification": orateur.string.split('\"')[5],
-                        # "profil": None if i.find("a", {"class": "lien_senfic"}) == None else "http://www.senat.fr" + i.find("a", {"class": "lien_senfic"}).get('href'),
+                        # "profil": None if intervenant.find("a", {"class": "lien_senfic"}) == None else "http://www.senat.fr" + intervenant.find("a", {"class": "lien_senfic"}).get('href'),
                         "orateur_nom": orateur.string.split('\"')[3],
-                        "texte": i.text.split("\n\n\n\n\n")[0].replace('\n', ' ').rstrip().lstrip()
-                    }) 
-                if i.find("p", {"class": "mention_article"}):
+                        "texte": intervenant.text.split("\n\n\n\n\n")[0].replace('\n', ' ').rstrip().lstrip()
+                    })
+                if intervenant.find("p", {"class": "mention_article"}):
                     articles.append(
-                        {"article": article, "reference": url, "interventions": interventions})
-                    article = i.find("p", {"class": "mention_article"}).text.replace('\n', ' ')
+                        {"article": article, "reference": urls[i], "interventions": interventions})
+                    article = intervenant.find(
+                        "p", {"class": "mention_article"}).text.replace('\n', ' ')
             articles.append(
-                {"article": article, "reference": url, "interventions": interventions})
+                {"article": article, "reference": urls[i], "interventions": interventions})
         else:
             if articles != []:
-                lectures_senat.append({"date": lecture.split(" - ")[1], "premier_articles": articles[0]["reference"], "articles": articles})
-            lecture = url
-    lectures_senat.append({"date": lecture.split(" - ")[1], "premier_articles": articles[0]["reference"], "articles": articles})
-    other_scrap()
-    return lectures_senat
+                lectures_senat.append({"date": lecture.split(
+                    " - ")[1], "premier_articles": articles[0]["reference"], "articles": articles})
+            lecture = urls[i]
+    lectures_senat.append({"date": lecture.split(
+        " - ")[1], "premier_articles": articles[0]["reference"], "articles": articles})
+    return lectures_senat, SenatorNom
