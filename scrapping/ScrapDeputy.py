@@ -185,9 +185,11 @@ def ScrapSenator(name, scrutin, senator_2008):
         name_scrutin = scrutin[name]
     start_json = []
     for senator in senator_2008:
+
         if name in senator:
+
             if (ScrapSenator.first == True):
-                json_senator = {"name": name, "fonction": "senateur", "mandat": "2008-2011", "departement": name[0], "groupe_politique": name[1], "scrutin1": name_scrutin[0], "scrutin2": name_scrutin[1] }
+                json_senator = {"name": name, "fonction": "senateur", "mandat": "2008-2011", "departement": senator_2008[name][0], "groupe_politique": senator_2008[name][1], "scrutin1": name_scrutin[0], "scrutin2": name_scrutin[1] }
                 start_json.append(json_senator)
                 json_senator = json.dumps(start_json, indent=4, separators=(',',': '))
                 with open(JsonSenator, 'w') as outfile:
@@ -196,7 +198,7 @@ def ScrapSenator(name, scrutin, senator_2008):
             else:
                 with open(JsonSenator) as fp:
                     listObj = json.load(fp)
-                listObj.append({"name": name, "fonction": "senateur", "mandat": "2008-2011", "departement": name[0], "groupe_politique": name[1], "scrutin1": name_scrutin[0], "scrutin2": name_scrutin[1] })
+                listObj.append({"name": name, "fonction": "senateur", "mandat": "2008-2011", "departement": senator_2008[name][0], "groupe_politique": senator_2008[name][1], "scrutin1": name_scrutin[0], "scrutin2": name_scrutin[1] })
                 with open(JsonSenator, 'w') as json_file:
                     json.dump(listObj, json_file, 
                                 indent=4,  
