@@ -3,23 +3,26 @@
 ## Scrapping
 run:
 ```shell
-python3 .\hadopeer.py
+python3 ./scraping/hadopeer.py
 ```
 setting:\
 &emsp;`-pb ` :&emsp;add progress bar\
-&emsp;`-noL` :&emsp;dont scrap lectures\
-&emsp;`-pbS` :&emsp;dont scrap senator
+&emsp;`-noL` :&emsp;don't scrap lectures\
+&emsp;`-pbS` :&emsp;don't scrap senators
 
 ## App
+
+insert text on app here
 
 ## Server
  
 ### FaunaDB
 
-In order to start the server, access to our database with its key is required.
+In order to start the server, access to our database with its secret key is required.
 
 ### Virtual Environment (venv)
 
+It is required to use virtual environments to use the server.\
 Activate/Deactivate the server's virtual environment:
 
 ```shell
