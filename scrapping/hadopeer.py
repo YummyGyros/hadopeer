@@ -4,7 +4,7 @@ from os import path
 import bs4
 from detect_debat import detect_debat
 from ScrapRaports import scrapSenat, scrapAssembleeNationale
-from ScrapDeputy import other_scrap
+from ScrapDeputy import other_scrap, vote_Senator
 
 tmpFileName = 'lectures_senat.json'
 urlSenat = []
@@ -44,7 +44,12 @@ def hadopeer():
                     indent=4,
                     separators=(',', ': '))
     if noS:
-        other_scrap(SenatorNom, pb)
+        vote_Senator.scrutin = dict()
+        vote_Senator.lst_senator = []
+        vote_Senator.first = 0
+        vote_Senator(1)
+        vote_Senator(2)
+        other_scrap(SenatorNom, pb, vote_Senator.scrutin)
 
 
 if __name__ == '__main__':

@@ -40,7 +40,8 @@ def get_name_senator(soup):
     vote_Senator.first += 1
     return name_page
 
-def vote_Senator(lecture, Name):
+def vote_Senator(lecture): #, Name):
+    tp = ("none", "none")
     scrutin = "http://www.senat.fr/scrutin-public/2008/scr2008-30.html" if (lecture == 1) else "http://www.senat.fr/scrutin-public/2008/scr2008-147.html"
     page = requests.get(scrutin)
 
@@ -48,10 +49,9 @@ def vote_Senator(lecture, Name):
     if vote_Senator.first < lecture:
         vote_Senator.lst_senator += list(set(get_name_senator(soup)) - set(vote_Senator.lst_senator))
     lst_senator = soup.find_all("table", attrs={'border': '0'})
-    lst_name_pour = lst_senator[4].find_all("tr")
-    lst_name_contre = lst_senator[5].find_all("tr")
-    lst_name_abstention = lst_senator[6].find_all("tr")
-
+    lst_name_pour = lst_senator[3].find_all("tr")
+    lst_name_contre = lst_senator[4].find_all("tr")
+    lst_name_abstention = lst_senator[5].find_all("tr")
 
     for name in lst_name_pour:
         sname = name.find_all("a")
@@ -59,26 +59,36 @@ def vote_Senator(lecture, Name):
             cutting = sname[i].get_text(strip=True).split('\n')
             fullname = cutting[0] + ' ' + cutting[1]
             fullname = fullname.lower()
-            if Name in fullname:
-                return "pour"
+            if not fullname in vote_Senator.scrutin:
+                vote_Senator.scrutin[fullname] = list(tp)
+            if lecture == 1:
+                vote_Senator.scrutin[fullname][0] = "pour"
+            else:
+                vote_Senator.scrutin[fullname][1] = "pour"
     for name in lst_name_contre:
         sname = name.find_all("a")
         for i in range(len(sname)):
             cutting = sname[i].get_text(strip=True).split('\n')
             fullname = cutting[0] + ' ' + cutting[1]
             fullname = fullname.lower()
-            if Name in fullname:
-                return "contre"
+            if not fullname in vote_Senator.scrutin:
+                vote_Senator.scrutin[fullname] = list(tp)
+            if lecture == 1:
+                vote_Senator.scrutin[fullname][0] = "contre"
+            else:
+                vote_Senator.scrutin[fullname][1] = "contre"
     for name in lst_name_abstention:
         sname = name.find_all("a")
         for i in range(len(sname)):
             cutting = sname[i].get_text(strip=True).split('\n')
             fullname = cutting[0] + ' ' + cutting[1]
             fullname = fullname.lower()
-            if Name in fullname:
-                return "absent"
-    
-    return "none"
+            if not fullname in vote_Senator.scrutin:
+                vote_Senator.scrutin[fullname] = list(tp)
+            if lecture == 1:
+                vote_Senator.scrutin[fullname][0] = "absent"
+            else:
+                vote_Senator.scrutin[fullname][1] = "absent"
 
 def detect_debat(url, name):
     page = requests.get(url)
@@ -138,36 +148,9 @@ def ScrapDeputy(name):
             put_deputy(name, deputy.get("href"), ScrapDeputy.first)
     return 0
 
-def other_scrap(SenatorNom, pb):
-    ScrapSenator.first = True
-    ScrapSenator.lst_senator = []
-    vote_Senator.lst_senator = []
-    vote_Senator.first = 0
+def take_senator():
+    d_senator = dict()
 
-    for i in tqdm(range(len(SenatorNom)), desc="Scraping Senator info", disable=pb):
-        ScrapSenator(SenatorNom[i])
-    lst_senator = vote_Senator.lst_senator
-
-    for name in ScrapSenator.lst_senator:
-        if name in lst_senator:
-            lst_senator.remove(name)
-    for i in tqdm(range(len(vote_Senator.lst_senator)), desc="other Scraping", disable=pb):
-        ScrapSenator(vote_Senator.lst_senator[i])
-
-def ScrapSenator(name):
-    name = name.replace('\xa0', ' ')
-    for ch in [';', '.', ',', ':']:
-        name = name.replace(ch, "")
-    cutting = name.split(' ')
-    cutting.pop(0)
-    if len(cutting) > 1:
-        name = " ".join(cutting)
-    name = name.lower()
-    if name in ScrapSenator.lst_senator:
-        return -1
-    else:
-        ScrapSenator.lst_senator.append(name)
-    start_json = []
     page = requests.get("https://www.senat.fr/themas/infocompo_2008/infocompo_2008_mono.html")
     soup = BeautifulSoup(page.content, 'html.parser')
     lst_senator = soup.find_all("table")
@@ -176,9 +159,35 @@ def ScrapSenator(name):
         Sname = senator.find_all("p")
         fullname = Sname[0].get_text(strip=True) + ' ' + Sname[1].get_text(strip=True)
         fullname = fullname.lower()
-        if name in fullname:
+        d_senator[fullname] = [Sname[2].get_text(strip=True), Sname[3].get_text(strip=True)]
+    return d_senator
+
+def other_scrap(SenatorNom, pb, scrutin):
+    ScrapSenator.first = True
+    lst_senator_2008 = take_senator()
+    SenatorNom = list(set(SenatorNom))
+
+    for i in tqdm(range(len(SenatorNom)), desc="Scraping Senator info", disable=pb):
+        ScrapSenator(SenatorNom[i].lower(), scrutin, lst_senator_2008)
+    lst_senator = vote_Senator.lst_senator
+
+    for name in SenatorNom:
+        if name.lower() in lst_senator:
+            lst_senator.remove(name.lower())
+    for i in tqdm(range(len(vote_Senator.lst_senator)), desc="other Scraping", disable=pb):
+        ScrapSenator(lst_senator[i], scrutin, lst_senator_2008)
+
+def ScrapSenator(name, scrutin, senator_2008):
+    name = name.lower()
+    if not name in scrutin:
+        name_scrutin = ("none", "none")
+    else:
+        name_scrutin = scrutin[name]
+    start_json = []
+    for senator in senator_2008:
+        if name in senator:
             if (ScrapSenator.first == True):
-                json_senator = {"name": fullname, "fonction": "senateur", "mandat": "2008-2011", "departement": Sname[2].get_text(strip=True), "groupe_politique": Sname[3].get_text(strip=True), "scrutin1": vote_Senator(1, fullname), "scrutin2": vote_Senator(2, fullname) }
+                json_senator = {"name": name, "fonction": "senateur", "mandat": "2008-2011", "departement": name[0], "groupe_politique": name[1], "scrutin1": name_scrutin[0], "scrutin2": name_scrutin[1] }
                 start_json.append(json_senator)
                 json_senator = json.dumps(start_json, indent=4, separators=(',',': '))
                 with open(JsonSenator, 'w') as outfile:
@@ -187,7 +196,7 @@ def ScrapSenator(name):
             else:
                 with open(JsonSenator) as fp:
                     listObj = json.load(fp)
-                listObj.append({"name": fullname, "fonction": "senateur", "mandat": "2008-2011", "departement": Sname[2].get_text(strip=True), "groupe_politique": Sname[3].get_text(strip=True), "scrutin1": vote_Senator(1, fullname), "scrutin2": vote_Senator(2, fullname) })
+                listObj.append({"name": name, "fonction": "senateur", "mandat": "2008-2011", "departement": name[0], "groupe_politique": name[1], "scrutin1": name_scrutin[0], "scrutin2": name_scrutin[1] })
                 with open(JsonSenator, 'w') as json_file:
                     json.dump(listObj, json_file, 
                                 indent=4,  
