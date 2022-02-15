@@ -40,7 +40,7 @@ def get_name_senator(soup):
     vote_Senator.first += 1
     return name_page
 
-def vote_Senator(lecture): #, Name):
+def vote_Senator(lecture):
     tp = ("none", "none")
     scrutin = "http://www.senat.fr/scrutin-public/2008/scr2008-30.html" if (lecture == 1) else "http://www.senat.fr/scrutin-public/2008/scr2008-147.html"
     page = requests.get(scrutin)
@@ -189,7 +189,7 @@ def ScrapSenator(name, scrutin, senator_2008):
         if name in senator:
 
             if (ScrapSenator.first == True):
-                json_senator = {"name": name, "fonction": "senateur", "mandat": "2008-2011", "departement": senator_2008[name][0], "groupe_politique": senator_2008[name][1], "scrutin1": name_scrutin[0], "scrutin2": name_scrutin[1] }
+                json_senator = {"name": name, "fonction": "senateur", "mandat": "2008-2011", "departement": senator_2008[name][0], "groupe_politique": senator_2008[name][1], "scrutin": [name_scrutin[0], name_scrutin[1]]}
                 start_json.append(json_senator)
                 json_senator = json.dumps(start_json, indent=4, separators=(',',': '))
                 with open(JsonSenator, 'w') as outfile:
@@ -198,7 +198,7 @@ def ScrapSenator(name, scrutin, senator_2008):
             else:
                 with open(JsonSenator) as fp:
                     listObj = json.load(fp)
-                listObj.append({"name": name, "fonction": "senateur", "mandat": "2008-2011", "departement": senator_2008[name][0], "groupe_politique": senator_2008[name][1], "scrutin1": name_scrutin[0], "scrutin2": name_scrutin[1] })
+                listObj.append({"name": name, "fonction": "senateur", "mandat": "2008-2011", "departement": senator_2008[name][0], "groupe_politique": senator_2008[name][1], "scrutin": [name_scrutin[0], name_scrutin[1]]})
                 with open(JsonSenator, 'w') as json_file:
                     json.dump(listObj, json_file, 
                                 indent=4,  
