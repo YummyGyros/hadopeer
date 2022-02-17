@@ -46,12 +46,14 @@ def scrapSenat(urls, pb):
                         {"article": article, "reference": urls[i], "interventions": interventions})
                     article = intervenant.find(
                         "p", {"class": "mention_article"}).text.replace('\n', ' ')
+                    interventions = []
             articles.append(
                 {"article": article, "reference": urls[i], "interventions": interventions})
         else:
             if articles != []:
                 lectures_senat.append({"date": lecture.split(
                     " - ")[1], "premier_articles": articles[0]["reference"], "articles": articles})
+                articles = []
             lecture = urls[i]
     lectures_senat.append({"date": lecture.split(
         " - ")[1], "premier_articles": articles[0]["reference"], "articles": articles})
