@@ -1,14 +1,49 @@
-
-from flask import (
-    Flask, jsonify
-)
+import os
+import sys
+from urllib.parse import urlparse
 from faunadb import query as q
-from hadopeer.server.faunadb import client
+from faunadb.client import FaunaClient
+from flask import (
+  Flask, jsonify, request
+)
+
+secret = os.getenv("FAUNADB_SECRET")
+endpoint = os.getenv("FAUNADB_ENDPOINT")
+if not secret:
+  print("The FAUNADB_SECRET environment variable is not set, exiting.")
+  sys.exit(1)
+endpoint = endpoint or "https://db.fauna.com/"
+o = urlparse(endpoint)
+client = FaunaClient(
+  secret=secret,
+  domain=o.hostname,
+  port=o.port,
+  scheme=o.scheme
+)
 
 app = Flask(__name__)
 
 @app.route("/")
 def hello():
-    return jsonify(client.query(
-        q.get(q.ref(q.collection("myCollection"), "322765143676027468")) # collection id
-    )["data"])
+    return "hello"
+
+@app.route("/participants")
+def participants():
+  # function = request.args.get('fonction')
+  department = request.args.get('departement')
+  politicalgroup = request.args.get('groupe_politique')
+
+  # to refacto
+  if department:
+    if politicalgroup:
+      toPaginate = q.union(
+        q.match(q.index("senateurs_names_by_department_sorted_by_names"), department),
+        q.match(q.index("senateurs_names_by_politicalgroup_sorted_by_names"), politicalgroup))
+    else:
+      toPaginate = q.union(q.match(q.index("senateurs_names_by_department_sorted_by_names"), department))
+  elif politicalgroup:
+    toPaginate = q.union(q.match(q.index("senateurs_names_by_politicalgroup_sorted_by_names"), politicalgroup))
+  else:
+    toPaginate = q.match(q.index("all_senateurs_values_sorted_by_names"))
+
+  return jsonify(client.query(q.paginate(toPaginate)))
