@@ -52,5 +52,10 @@ def participants():
 def participant():
   name = request.args.get('name')
   if name:
-    return jsonify(client.query(q.paginate(q.match(q.index("senateur_values_by_name_sorted_by_names"), name)))['data'])
+    senateur_votes = client.query(q.paginate(q.match(q.index("senateur_values_by_name_sorted_by_names"), name)))['data']
+    final = senateur_votes[0]
+    final[-1] = [final[-1]]
+    for i in range(1, len(senateur_votes)):
+      final[-1].append(senateur_votes[i][-1])
+    return jsonify(final)
   return "name not found", 400
