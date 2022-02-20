@@ -46,4 +46,11 @@ def participants():
   else:
     toPaginate = q.match(q.index("all_senateurs_values_sorted_by_names"))
 
-  return jsonify(client.query(q.paginate(toPaginate)))
+  return jsonify(client.query(q.paginate(toPaginate))['data'])
+
+@app.route("/participant")
+def participant():
+  name = request.args.get('name')
+  if name:
+    return jsonify(client.query(q.paginate(q.match(q.index("senateur_values_by_name_sorted_by_names"), name)))['data'])
+  return "name not found", 400

@@ -3,7 +3,7 @@
 ## Scrapping
 run:
 ```shell
-python3 ./scraping/hadopeer.py
+python3 ./scrapping/hadopeer.py
 ```
 setting:\
 &emsp;`-pb ` :&emsp;add progress bar\
