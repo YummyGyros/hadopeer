@@ -64,5 +64,20 @@ def participant():
 @app.route("/dates")
 def dates():
   return jsonify(client.query(q.paginate(q.match(
-    q.index("seances_dates")
+    q.index("seances_with_date_link")
   )))['data'])
+
+@app.route("/votes/context")
+def votes_context():
+  array = client.query(q.paginate(q.match(
+    q.index("seances_senat_with_date_link")
+  )))['data']
+  for elem in array:
+    elem[1] = "Sénat"
+  # implem deputes
+  # array = client.query(q.paginate(q.match(
+  #   q.index("seances_AN_with_date_link")
+  # )))['data']
+  # for elem in array:
+  #   elem[1] = "Assemblée Nationale"
+  return jsonify(array)
