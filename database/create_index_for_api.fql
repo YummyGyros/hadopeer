@@ -1,0 +1,84 @@
+// /participants?departement=oui&groupe_politique=non
+CreateIndex(
+  {
+    name: "all_senateurs_values_sorted_by_names",
+    source: Collection("senateurs"),
+    values: [
+      { field: ['data', 'name'] },
+      { field: ['data', 'fonction'] },
+      { field: ['data', 'groupe_politique'] },
+      { field: ['data', 'departement'] },
+      { field: ['data', 'scrutins'] }
+    ]
+  }
+)
+CreateIndex(
+  {
+    name: 'senateurs_names_by_function_sorted_by_names',
+    source: Collection('senateurs'),
+    values: [
+      { field: ['data', 'name'] },
+    ],
+    terms: [
+      { field: ['data', 'fonction'] },
+    ]
+  },
+)
+CreateIndex(
+  {
+    name: 'senateurs_names_by_department_sorted_by_names',
+    source: Collection('senateurs'),
+    values: [
+      { field: ['data', 'name'] },
+    ],
+    terms: [
+      { field: ['data', 'departement'] },
+    ]
+  },
+)
+CreateIndex(
+  {
+    name: 'senateurs_names_by_politicalgroup_sorted_by_names',
+    source: Collection('senateurs'),
+    values: [
+      { field: ['data', 'name'] },
+    ],
+    terms: [
+      { field: ['data', 'groupe_politique'] },
+    ]
+  },
+)
+///////////
+
+
+// /participant?name=Paul Martin
+CreateIndex(
+  {
+    name: 'senateur_values_by_name_sorted_by_names',
+    source: Collection('senateurs'),
+    values: [
+      { field: ['data', 'name'] },
+      { field: ['data', 'fonction'] },
+      { field: ['data', 'groupe_politique'] },
+      { field: ['data', 'departement'] },
+      { field: ['data', 'scrutins'] }
+    ],
+    terms: [
+      { field: ['data', 'name'] },
+    ]
+  },
+)
+///////////
+
+// /dates
+CreateIndex(
+  {
+    name: 'seances_dates',
+    source: Collection('lectures_senat'),
+    values: [
+      { field: ['data', 'date'] },
+      { field: ['data', 'lien'] }
+    ]
+  }
+)
+///////////

@@ -1,4 +1,5 @@
 import os
+import json
 import sys
 from urllib.parse import urlparse
 from faunadb import query as q
@@ -25,7 +26,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello():
-    return "hello"
+  return "hello"
 
 @app.route("/participants")
 def participants():
@@ -59,3 +60,9 @@ def participant():
       final[-1].append(senateur_votes[i][-1])
     return jsonify(final)
   return "name not found", 400
+
+@app.route("/dates")
+def dates():
+  return jsonify(client.query(q.paginate(q.match(
+    q.index("seances_dates")
+  )))['data'])
