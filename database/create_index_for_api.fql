@@ -82,3 +82,29 @@ CreateIndex(
   }
 )
 ///////////
+
+// /votes
+CreateIndex(
+  {
+    name: 'senateurs_scrutins',
+    source: Collection('senateurs'),
+    values: [
+      { field: ['data', 'scrutins'] }
+    ]
+  }
+)
+
+CreateIndex(
+  {
+    name: 'senateurs_scrutins_by_politicalgroup',
+    source: Collection('senateurs'),
+    values: [
+      { field: ['data', 'scrutins'] }
+    ],
+    terms: [
+      {field: ['data': 'groupe_politique']}
+    ]
+  }
+)
+
+///////////
