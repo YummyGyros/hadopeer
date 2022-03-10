@@ -82,25 +82,42 @@ def votes_context():
   #   elem[1] = "Assemblée Nationale"
   return jsonify(array)
 
-
-#problem:
-# index only retrieves list of pour/contre/none
-# how do we know the total of scrutins so we could take the 'number' scruting every 'total_scrutins'?
 @app.route("/votes")
 def votes():
   assemblee = request.args.get("assemblee")
   number = request.args.get("number")
   politicalgroup = request.args.get("groupe_politique")
-  if assemblee and number:
-    if assemblee == "Sénat":
-      if politicalgroup:
-        match = q.match(q.index("senateurs_scrutins_by_politicalgroup"), politicalgroup)
-      else:
-        match = q.match(q.index("senateurs_scrutins"))
-      return jsonify(client.query(q.paginate(match))['data'])
-      # elif assemblee == "Assemblée nationale":
-      #   if politicalgroup:
-      #     match = q.match(q.index("deputes_scrutins_by_politicalgroup"), politicalgroup)
-        # else:
-        #   match = q.match(q.index("deputes_scrutins"), politicalgroup)
-  return "bad request: assemblee and number required", 500
+  if not (assemblee and number):
+    return "bad request: assemblee and number are required", 500
+
+  voteNumber = int(number)
+  if voteNumber < 1:
+    return "bad request: invalid vote number, below one", 500
+
+  if assemblee == "Sénat":
+    seancesSenat = client.query(q.paginate(q.match(
+      q.index("seances_senat_with_date_link")
+    )))['data']
+    totalVotesSenat = len(seancesSenat)
+    if voteNumber > totalVotesSenat:
+      return "bad request: invalid vote number, too big", 500
+    voteNumber -= 1
+
+    if politicalgroup:
+      match = q.match(q.index("senateurs_scrutins_by_politicalgroup"), politicalgroup)
+    else:
+      match = q.match(q.index("senateurs_scrutins"))
+    allScrutins = client.query(q.paginate(match))['data']
+
+    selectedScrutins = []
+    while (voteNumber < len(allScrutins)):
+      selectedScrutins.append(allScrutins[voteNumber])
+      voteNumber += totalVotesSenat
+    return { "pour": selectedScrutins.count("pour"),
+              "contre": selectedScrutins.count("contre"),
+              "none": selectedScrutins.count("none") + selectedScrutins.count("absent")}
+    # elif assemblee == "Assemblée nationale":
+    #   if politicalgroup:
+    #     match = q.match(q.index("deputes_scrutins_by_politicalgroup"), politicalgroup)
+      # else:
+      #   match = q.match(q.index("deputes_scrutins"), politicalgroup)
