@@ -52,22 +52,30 @@ CreateIndex(
 
 
 // /participant?name=Paul Martin
-CreateIndex(
-  {
-    name: 'senateur_values_by_name_sorted_by_names',
-    source: Collection('senateurs'),
-    values: [
-      { field: ['data', 'name'] },
-      { field: ['data', 'fonction'] },
-      { field: ['data', 'groupe_politique'] },
-      { field: ['data', 'departement'] },
-      { field: ['data', 'scrutins'] }
-    ],
-    terms: [
-      { field: ['data', 'name'] },
-    ]
-  },
-)
+// CreateIndex(
+//   {
+//     name: 'senateur_values_by_name_sorted_by_names',
+//     source: Collection('senateurs'),
+//     values: [
+//       { field: ['data', 'name'] },
+//       { field: ['data', 'fonction'] },
+//       { field: ['data', 'groupe_politique'] },
+//       { field: ['data', 'departement'] },
+//       { field: ['data', 'scrutins'] },
+//     ],
+//     terms: [
+//       { field: ['data', 'name'] },
+//     ]
+//   },
+// )
+CreateIndex({
+  name: "senateur_ref_by_name",
+  source: Collection("senateurs"),
+  values: [
+    { field: ["ref"] }
+  ],
+  terms: [{ field: ["data", "name"] }]
+})
 ///////////
 
 // /dates
@@ -102,9 +110,34 @@ CreateIndex(
       { field: ['data', 'scrutins'] }
     ],
     terms: [
-      {field: ['data': 'groupe_politique']}
+      { field: ['data', 'groupe_politique']}
     ]
   }
 )
 
+///////////
+
+// /visualisation: retrieve text depending on assembly and political group to then analyze in the server
+CreateIndex(
+  {
+    name: 'all_senateurs_paroles',
+    source: Collection('senateurs'),
+    values: [
+      { field: ['data', 'interventions', 'paroles'] }
+    ]
+  }
+)
+
+CreateIndex(
+  {
+    name: 'senateurs_paroles_by_political_group',
+    source: Collection('senateurs'),
+    values: [
+      { field: ['data', 'interventions', 'paroles'] }
+    ],
+    terms: [
+      { field: ['data', 'groupe_politique']}
+    ]
+  }
+)
 ///////////

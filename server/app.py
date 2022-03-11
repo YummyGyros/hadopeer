@@ -1,6 +1,7 @@
 import os
 import json
 import sys
+import re
 from urllib.parse import urlparse
 from faunadb import query as q
 from faunadb.client import FaunaClient
@@ -28,13 +29,13 @@ app = Flask(__name__)
 def hello():
   return "hello"
 
+# refacto AN
 @app.route("/participants")
 def participants():
   # function = request.args.get('fonction')
   department = request.args.get('departement')
   politicalgroup = request.args.get('groupe_politique')
 
-  # to refacto
   if department:
     if politicalgroup:
       toPaginate = q.union(
@@ -46,6 +47,10 @@ def participants():
     toPaginate = q.union(q.match(q.index("senateurs_names_by_politicalgroup_sorted_by_names"), politicalgroup))
   else:
     toPaginate = q.match(q.index("all_senateurs_values_sorted_by_names"))
+  # add deputies:
+  #   duplicate all indexes
+  #   duplicate all these conditions
+  #   add global case including deputies + senators
 
   return jsonify(client.query(q.paginate(toPaginate))['data'])
 
@@ -53,12 +58,8 @@ def participants():
 def participant():
   name = request.args.get('name')
   if name:
-    senateur_votes = client.query(q.paginate(q.match(q.index("senateur_values_by_name_sorted_by_names"), name)))['data']
-    final = senateur_votes[0]
-    final[-1] = [final[-1]]
-    for i in range(1, len(senateur_votes)):
-      final[-1].append(senateur_votes[i][-1])
-    return jsonify(final)
+    senateurValues = client.query(q.get(q.match(q.index("senateur_ref_by_name"), name)))['data']
+    return jsonify(senateurValues)
   return "name not found", 400
 
 @app.route("/dates")
@@ -67,32 +68,29 @@ def dates():
     q.index("seances_with_date_link")
   )))['data'])
 
+# refacto AN
+# add index getting "date" & "assemblee" field
 @app.route("/votes/context")
 def votes_context():
   array = client.query(q.paginate(q.match(
-    q.index("seances_senat_with_date_link")
+    q.index("seances_with_date_link")
   )))['data']
   for elem in array:
     elem[1] = "Sénat"
-  # implem deputes
-  # array = client.query(q.paginate(q.match(
-  #   q.index("seances_AN_with_date_link")
-  # )))['data']
-  # for elem in array:
-  #   elem[1] = "Assemblée Nationale"
   return jsonify(array)
 
+# refacto AN
 @app.route("/votes")
 def votes():
   assemblee = request.args.get("assemblee")
   number = request.args.get("number")
   politicalgroup = request.args.get("groupe_politique")
   if not (assemblee and number):
-    return "bad request: assemblee and number are required", 500
+    return "bad request: assemblee and number are required", 400
 
   voteNumber = int(number)
   if voteNumber < 1:
-    return "bad request: invalid vote number, below one", 500
+    return "bad request: invalid vote number, below one", 400
 
   if assemblee == "Sénat":
     seancesSenat = client.query(q.paginate(q.match(
@@ -100,9 +98,9 @@ def votes():
     )))['data']
     totalVotesSenat = len(seancesSenat)
     if voteNumber > totalVotesSenat:
-      return "bad request: invalid vote number, too big", 500
+      return "bad request: invalid vote number, too big", 400
     voteNumber -= 1
-
+  
     if politicalgroup:
       match = q.match(q.index("senateurs_scrutins_by_politicalgroup"), politicalgroup)
     else:
@@ -116,8 +114,23 @@ def votes():
     return { "pour": selectedScrutins.count("pour"),
               "contre": selectedScrutins.count("contre"),
               "none": selectedScrutins.count("none") + selectedScrutins.count("absent")}
-    # elif assemblee == "Assemblée nationale":
-    #   if politicalgroup:
-    #     match = q.match(q.index("deputes_scrutins_by_politicalgroup"), politicalgroup)
-      # else:
-      #   match = q.match(q.index("deputes_scrutins"), politicalgroup)
+    # duplicate all for AN
+    # duplicate indexes too
+
+# refacto AN
+@app.route("/visualisation")
+def visualisation():
+  politicalgroup = request.args.get('groupe_politique')
+  assembly = request.args.get('assemblee')
+  senateurValues = "none"
+  if assembly:
+    if politicalgroup:
+      senateurValues = client.query(q.paginate(q.match(q.index("senateurs_paroles_by_politicalgroup"), politicalgroup)))['data']
+    else:
+      senateurValues = client.query(q.paginate(q.match(q.index("all_senateurs_paroles"))))['data']
+  # deputies
+  # else:
+    # senateur + deputies
+  if senateurValues == "none":
+    return "name not found", 400
+  return jsonify(senateurValues)

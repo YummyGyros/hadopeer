@@ -22,20 +22,21 @@ client = FaunaClient(
   scheme=o.scheme
 )
 
+# one or two collections?
 # Publish a document for each person in the "senateurs_only" collection
 senateursFile = open('../senateurs.json', 'r')
 db = json.load(senateursFile)
-client.query(q.create_collection({"name":"senateurs_test1"}))
+client.query(q.create_collection({"name":"senateurs"}))
 for elu in db:
     client.query(q.create(
-        q.collection("senateurs_test1"), {"data": elu}
+        q.collection("senateurs"), {"data": elu}
     ))
 
-# Publish a document for each lecture in the "seances" collection
+# Publish a document for each lecture in the "seances" collection (from both senate and AN files)
 lecturesSenatFile = open('../db_testlectures.json', 'r')
 lecturesSenat = json.load(lecturesSenatFile)
-client.query(q.create_collection({"name":"lectures_senat_test1"}))
+client.query(q.create_collection({"name":"seances"}))
 for lecture in lecturesSenat['lectures_senat']:
     client.query(q.create(
-        q.collection("lectures_senat_test1"), {"data": lecture}
+        q.collection("seances"), {"data": lecture}
     ))
