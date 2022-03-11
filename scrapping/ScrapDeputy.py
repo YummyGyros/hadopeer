@@ -124,7 +124,7 @@ def put_deputy(name, url, state):
         print(json_deputy)
         with open(JsonDeputy, 'w') as outfile:
             outfile.write(json_deputy)
-        put_deputy.first = False
+        ScrapDeputy.first = False
     else:
         with open(JsonDeputy) as fp:
             listObj = json.load(fp)
@@ -134,18 +134,23 @@ def put_deputy(name, url, state):
                         indent=4,  
                         separators=(',',': '))
 
-def ScrapDeputy(name):
-    if ScrapDeputy.lst_deputy in name:
-        return -1
-    else:
-        ScrapDeputy.lst_deputy.append(name)
-    page = requests.get("https://www2.assemblee-nationale.fr/sycomore/resultats")
+def ScrapDeputy(suffix, lst_deputy):
+    page = requests.get("https://www2.assemblee-nationale.fr/sycomore/resultats" + suffix)
     soup = BeautifulSoup(page.content, 'html.parser')
-    lst_deputy = soup.find_all("a")
-
-    for deputy in lst_deputy:
-        if name in deputy.string:
-            put_deputy(name, deputy.get("href"), ScrapDeputy.first)
+    body = soup.find("table", )
+    list_deputy = body.find_all("a", href=True)
+    for deputy in list_deputy:
+        for name in lst_deputy:
+            dep = re.sub(r"(\w)([A-Z])", r"\1 \2", deputy.get_text(strip=True))
+            if name in dep:
+                lst_deputy.remove(name)
+                put_deputy(name, "https://www2.assemblee-nationale.fr" + deputy.get("href"), ScrapDeputy.first)
+    if lst_deputy != []:
+        lis = soup.find_all("div", class_="bottommargin pagination-bootstrap pagination-right pagination-small")
+        suffix = lis[0].find_all("a", href=True)
+        s = suffix[len(suffix) - 1].get("data-uri-suffix")
+        ScrapDeputy.page += 1
+        ScrapDeputy(s, lst_deputy)
     return 0
 
 def take_senator():
