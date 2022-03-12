@@ -22,21 +22,28 @@ client = FaunaClient(
   scheme=o.scheme
 )
 
-# one or two collections?
-# Publish a document for each person in the "senateurs_only" collection
-senateursFile = open('../senateurs.json', 'r')
-db = json.load(senateursFile)
-client.query(q.create_collection({"name":"senateurs"}))
-for elu in db:
+def loadJsonArrayFileToFaunaCollection(filepath, collection):
+  rawFileData = open(filepath, 'r')
+  jsonFileData = json.load(rawFileData)
+  for elem in jsonFileData:
     client.query(q.create(
-        q.collection("senateurs"), {"data": elu}
+        q.collection(collection), {"data": elem}
     ))
 
-# Publish a document for each lecture in the "seances" collection (from both senate and AN files)
-lecturesSenatFile = open('../db_testlectures.json', 'r')
-lecturesSenat = json.load(lecturesSenatFile)
-client.query(q.create_collection({"name":"seances"}))
-for lecture in lecturesSenat['lectures_senat']:
-    client.query(q.create(
-        q.collection("seances"), {"data": lecture}
-    ))
+def addFieldToJsonArrayFile(filepath, field, value):
+  dataString = open(filepath, 'r')
+  objects = json.load(dataString)
+  for object in objects:
+    object[field] = value
+  with open(filepath, "w") as file:
+    json.dump(objects, file, ensure_ascii=True, indent=4, separators=(',', ': '))
+
+client.query(q.create_collection({"name":"politicians"}))
+loadJsonArrayFileToFaunaCollection("../senators.json", "politicians")
+loadJsonArrayFileToFaunaCollection("../deputies.json", "politicians")
+
+client.query(q.create_collection({"name":"sessions"}))
+addFieldToJsonArrayFile("../senate_sessions.json", "assembly", "senate")
+addFieldToJsonArrayFile("../national_assembly_sessions.json", "assembly", "national_assembly")
+loadJsonArrayFileToFaunaCollection("../senate_sessions.json", "sessions")
+loadJsonArrayFileToFaunaCollection("../national_assembly_sessions.json", "sessions")

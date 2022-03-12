@@ -38,21 +38,21 @@ def participants():
 
   if department:
     if politicalgroup:
-      toPaginate = q.union(
+      match = q.union(
         q.match(q.index("senateurs_names_by_department_sorted_by_names"), department),
         q.match(q.index("senateurs_names_by_politicalgroup_sorted_by_names"), politicalgroup))
     else:
-      toPaginate = q.union(q.match(q.index("senateurs_names_by_department_sorted_by_names"), department))
+      match = q.union(q.match(q.index("senateurs_names_by_department_sorted_by_names"), department))
   elif politicalgroup:
-    toPaginate = q.union(q.match(q.index("senateurs_names_by_politicalgroup_sorted_by_names"), politicalgroup))
+    match = q.union(q.match(q.index("senateurs_names_by_politicalgroup_sorted_by_names"), politicalgroup))
   else:
-    toPaginate = q.match(q.index("all_senateurs_values_sorted_by_names"))
+    match = q.match(q.index("all_senateurs_values_sorted_by_names"))
   # add deputies:
   #   duplicate all indexes
   #   duplicate all these conditions
   #   add global case including deputies + senators
 
-  return jsonify(client.query(q.paginate(toPaginate))['data'])
+  return jsonify(client.query(q.paginate(match))['data'])
 
 @app.route("/participant")
 def participant():
