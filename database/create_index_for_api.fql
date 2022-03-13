@@ -1,52 +1,15 @@
-// /participants?departement=oui&groupe_politique=non
+// /participants?fonction=sénateur&département=oui&groupe=non
 CreateIndex(
   {
-    name: "all_senateurs_values_sorted_by_names",
-    source: Collection("senateurs"),
+    name: "all_elected_members_name_function_group_department",
+    source: Collection("elected_members"),
     values: [
-      { field: ['data', 'name'] },
+      { field: ['data', 'nom'] },
       { field: ['data', 'fonction'] },
-      { field: ['data', 'groupe_politique'] },
-      { field: ['data', 'departement'] },
-      { field: ['data', 'scrutins'] }
+      { field: ['data', 'groupe'] },
+      { field: ['data', 'département'] },
     ]
   }
-)
-CreateIndex(
-  {
-    name: 'senateurs_names_by_function_sorted_by_names',
-    source: Collection('senateurs'),
-    values: [
-      { field: ['data', 'name'] },
-    ],
-    terms: [
-      { field: ['data', 'fonction'] },
-    ]
-  },
-)
-CreateIndex(
-  {
-    name: 'senateurs_names_by_department_sorted_by_names',
-    source: Collection('senateurs'),
-    values: [
-      { field: ['data', 'name'] },
-    ],
-    terms: [
-      { field: ['data', 'departement'] },
-    ]
-  },
-)
-CreateIndex(
-  {
-    name: 'senateurs_names_by_politicalgroup_sorted_by_names',
-    source: Collection('senateurs'),
-    values: [
-      { field: ['data', 'name'] },
-    ],
-    terms: [
-      { field: ['data', 'groupe_politique'] },
-    ]
-  },
 )
 ///////////
 

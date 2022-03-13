@@ -38,9 +38,9 @@ def addFieldToJsonArrayFile(filepath, field, value):
   with open(filepath, "w") as file:
     json.dump(objects, file, ensure_ascii=True, indent=4, separators=(',', ': '))
 
-client.query(q.create_collection({"name":"politicians"}))
-loadJsonArrayFileToFaunaCollection("../senators.json", "politicians")
-loadJsonArrayFileToFaunaCollection("../deputies.json", "politicians")
+client.query(q.create_collection({"name":"elected_members"}))
+loadJsonArrayFileToFaunaCollection("../senators.json", "elected_members")
+loadJsonArrayFileToFaunaCollection("../deputies.json", "elected_members")
 
 client.query(q.create_collection({"name":"sessions"}))
 addFieldToJsonArrayFile("../senate_sessions.json", "assembly", "senate")

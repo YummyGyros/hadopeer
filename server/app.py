@@ -29,30 +29,21 @@ app = Flask(__name__)
 def hello():
   return "hello"
 
-# refacto AN
 @app.route("/participants")
 def participants():
-  # function = request.args.get('fonction')
-  department = request.args.get('departement')
-  politicalgroup = request.args.get('groupe_politique')
-
+  function = request.args.get('fonction')
+  group = request.args.get('groupe')
+  department = request.args.get('département')
+  result = client.query(q.paginate(q.match(
+    q.index("all_elected_members_name_function_group_department")
+  )))['data']
+  if function:
+    result = [values for values in result if values[1] == function]
+  if group:
+    result = [values for values in result if values[2] == group]
   if department:
-    if politicalgroup:
-      match = q.union(
-        q.match(q.index("senateurs_names_by_department_sorted_by_names"), department),
-        q.match(q.index("senateurs_names_by_politicalgroup_sorted_by_names"), politicalgroup))
-    else:
-      match = q.union(q.match(q.index("senateurs_names_by_department_sorted_by_names"), department))
-  elif politicalgroup:
-    match = q.union(q.match(q.index("senateurs_names_by_politicalgroup_sorted_by_names"), politicalgroup))
-  else:
-    match = q.match(q.index("all_senateurs_values_sorted_by_names"))
-  # add deputies:
-  #   duplicate all indexes
-  #   duplicate all these conditions
-  #   add global case including deputies + senators
-
-  return jsonify(client.query(q.paginate(match))['data'])
+    result = [values for values in result if values[3] == department]
+  return jsonify(result)
 
 @app.route("/participant")
 def participant():
@@ -84,10 +75,9 @@ def votes_context():
 def votes():
   assemblee = request.args.get("assemblee")
   number = request.args.get("number")
-  politicalgroup = request.args.get("groupe_politique")
+  group = request.args.get("groupe_politique")
   if not (assemblee and number):
     return "bad request: assemblee and number are required", 400
-
   voteNumber = int(number)
   if voteNumber < 1:
     return "bad request: invalid vote number, below one", 400
@@ -100,9 +90,8 @@ def votes():
     if voteNumber > totalVotesSenat:
       return "bad request: invalid vote number, too big", 400
     voteNumber -= 1
-  
-    if politicalgroup:
-      match = q.match(q.index("senateurs_scrutins_by_politicalgroup"), politicalgroup)
+    if group:
+      match = q.match(q.index("senateurs_scrutins_by_group"), group)
     else:
       match = q.match(q.index("senateurs_scrutins"))
     allScrutins = client.query(q.paginate(match))['data']
@@ -120,12 +109,12 @@ def votes():
 # refacto AN
 @app.route("/visualisation")
 def visualisation():
-  politicalgroup = request.args.get('groupe_politique')
+  group = request.args.get('groupe_politique')
   assembly = request.args.get('assemblee')
   senateurValues = "none"
   if assembly:
-    if politicalgroup:
-      senateurValues = client.query(q.paginate(q.match(q.index("senateurs_paroles_by_politicalgroup"), politicalgroup)))['data']
+    if group:
+      senateurValues = client.query(q.paginate(q.match(q.index("senateurs_paroles_by_group"), group)))['data']
     else:
       senateurValues = client.query(q.paginate(q.match(q.index("all_senateurs_paroles"))))['data']
   # deputies
