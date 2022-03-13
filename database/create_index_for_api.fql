@@ -1,8 +1,8 @@
 // /participants?fonction=sénateur&département=oui&groupe=non
 CreateIndex(
   {
-    name: "all_elected_members_name_function_group_department",
-    source: Collection("elected_members"),
+    name: 'all_elected_members_name_function_group_department',
+    source: Collection('elected_members'),
     values: [
       { field: ['data', 'nom'] },
       { field: ['data', 'fonction'] },
@@ -13,42 +13,36 @@ CreateIndex(
 )
 ///////////
 
-
 // /participant?name=Paul Martin
-// CreateIndex(
-//   {
-//     name: 'senateur_values_by_name_sorted_by_names',
-//     source: Collection('senateurs'),
-//     values: [
-//       { field: ['data', 'name'] },
-//       { field: ['data', 'fonction'] },
-//       { field: ['data', 'groupe_politique'] },
-//       { field: ['data', 'departement'] },
-//       { field: ['data', 'scrutins'] },
-//     ],
-//     terms: [
-//       { field: ['data', 'name'] },
-//     ]
-//   },
-// )
 CreateIndex({
-  name: "senateur_ref_by_name",
-  source: Collection("senateurs"),
+  name: 'elected_member_ref_by_name',
+  source: Collection('elected_members'),
   values: [
-    { field: ["ref"] }
+    { field: ['ref'] }
   ],
-  terms: [{ field: ["data", "name"] }]
+  terms: [{ field: ['data', 'nom'] }]
 })
 ///////////
 
 // /dates
 CreateIndex(
   {
-    name: 'seances_dates',
-    source: Collection('lectures_senat'),
+    name: 'sessions_date_link',
+    source: Collection('sessions'),
     values: [
       { field: ['data', 'date'] },
-      { field: ['data', 'lien'] }
+      { field: ['data', 'lien'] },
+    ]
+  }
+)
+
+CreateIndex(
+  {
+    name: 'sessions_date_assembly',
+    source: Collection('sessions'),
+    values: [
+      { field: ['data', 'date'] },
+      { field: ['data', 'assemblée'] }
     ]
   }
 )
@@ -80,11 +74,11 @@ CreateIndex(
 
 ///////////
 
-// /visualisation: retrieve text depending on assembly and political group to then analyze in the server
+// /visualization: retrieve text depending on assembly and political group to then analyze in the server
 CreateIndex(
   {
-    name: 'all_senateurs_paroles',
-    source: Collection('senateurs'),
+    name: 'all_elected_members_paroles',
+    source: Collection('elected_members'),
     values: [
       { field: ['data', 'interventions', 'paroles'] }
     ]
@@ -93,8 +87,8 @@ CreateIndex(
 
 CreateIndex(
   {
-    name: 'senateurs_paroles_by_political_group',
-    source: Collection('senateurs'),
+    name: 'elected_members_paroles_by_political_group',
+    source: Collection('elected_members'),
     values: [
       { field: ['data', 'interventions', 'paroles'] }
     ],

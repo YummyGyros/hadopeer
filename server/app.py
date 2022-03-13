@@ -29,11 +29,17 @@ app = Flask(__name__)
 def hello():
   return "hello"
 
-@app.route("/participants")
-def participants():
-  function = request.args.get('fonction')
-  group = request.args.get('groupe')
-  department = request.args.get('département')
+# To reduce calls to Fauna we filter the array in python directly.
+# It is possible because our filters corresponds to the values displayed.
+# otherwise with Fauna:
+#   res = paginate
+#   res = filter_(lambda x: q.equals(x, "hello"), res)
+#   client.query(res)['data]
+@app.route("/elected_members")
+def elected_members():
+  function = request.args.get('function')
+  group = request.args.get('group')
+  department = request.args.get('department')
   result = client.query(q.paginate(q.match(
     q.index("all_elected_members_name_function_group_department")
   )))['data']
@@ -45,30 +51,25 @@ def participants():
     result = [values for values in result if values[3] == department]
   return jsonify(result)
 
-@app.route("/participant")
-def participant():
+@app.route("/elected_member")
+def elected_member():
   name = request.args.get('name')
   if name:
-    senateurValues = client.query(q.get(q.match(q.index("senateur_ref_by_name"), name)))['data']
+    senateurValues = client.query(q.get(q.match(q.index("elected_member_ref_by_name"), name)))['data']
     return jsonify(senateurValues)
   return "name not found", 400
 
 @app.route("/dates")
 def dates():
   return jsonify(client.query(q.paginate(q.match(
-    q.index("seances_with_date_link")
+    q.index("sessions_date_link")
   )))['data'])
 
-# refacto AN
-# add index getting "date" & "assemblee" field
 @app.route("/votes/context")
 def votes_context():
-  array = client.query(q.paginate(q.match(
-    q.index("seances_with_date_link")
-  )))['data']
-  for elem in array:
-    elem[1] = "Sénat"
-  return jsonify(array)
+  return jsonify(client.query(q.paginate(q.match(
+    q.index("sessions_date_assembly")
+  )))['data'])
 
 # refacto AN
 @app.route("/votes")
@@ -107,19 +108,17 @@ def votes():
     # duplicate indexes too
 
 # refacto AN
-@app.route("/visualisation")
+@app.route("/visualization")
 def visualisation():
-  group = request.args.get('groupe_politique')
-  assembly = request.args.get('assemblee')
-  senateurValues = "none"
-  if assembly:
-    if group:
-      senateurValues = client.query(q.paginate(q.match(q.index("senateurs_paroles_by_group"), group)))['data']
-    else:
-      senateurValues = client.query(q.paginate(q.match(q.index("all_senateurs_paroles"))))['data']
-  # deputies
-  # else:
-    # senateur + deputies
-  if senateurValues == "none":
+  group = request.args.get('group')
+  assembly = request.args.get('assembly')
+  result = "none"
+
+  if group:
+    result = client.query(q.paginate(q.match(q.index("elected_members_paroles_by_group"), group)))['data']
+  else:
+    result = client.query(q.paginate(q.match(q.index("all_elected_members_paroles"))))['data']
+  # filter depending on assembly
+  if result == "none":
     return "name not found", 400
-  return jsonify(senateurValues)
+  return jsonify(result)
