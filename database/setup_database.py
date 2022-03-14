@@ -48,19 +48,22 @@ def addValueToArrayInObjectOfJsonArrayFile(filepath, fieldObj, valueObj, field, 
   with open(filepath, "w") as file:
     json.dump(objects, file, ensure_ascii=True, indent=4, separators=(',', ': '))
 
+def addInterventionsFromSessionsToElectedMembers(sessionsPath, membersPath):
+  addFieldToJsonArrayFile(membersPath, "contributions", [])
+  rawFileData = open(sessionsPath, 'r')
+  sessions = json.load(rawFileData)
+  for session in sessions:
+    for article in session['articles']:
+      for intervention in article['interventions']:
+        addValueToArrayInObjectOfJsonArrayFile(
+          membersPath,
+          "nom", intervention['orateur_nom'],
+          "contributions", intervention['texte']
+        )
+
 ##### add interventions from sessions files to elected_members files #####
-addFieldToJsonArrayFile("../senators.json", "contributions", [])
-addFieldToJsonArrayFile("../deputies.json", "contributions", [])
-rawFileData = open("../senate_sessions.json", 'r')
-senateSessions = json.load(rawFileData)
-for senateSession in senateSessions:
-  for article in senateSession['articles']:
-    for intervention in article['interventions']:
-      addValueToArrayInObjectOfJsonArrayFile(
-        "../senators.json",
-        "nom", intervention['orateur_nom'],
-        "contributions", intervention['texte']
-      )
+addInterventionsFromSessionsToElectedMembers("../senate_sessions.json", "senators.json")
+addInterventionsFromSessionsToElectedMembers("../national_assembly_sessions.json", "deputiess.json") 
 
 ##### collection elected_members #####
 client.query(q.create_collection({"name":"elected_members"}))

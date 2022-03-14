@@ -25,8 +25,20 @@ client = FaunaClient(
 
 app = Flask(__name__)
 
+
+def loadJsonArrayFileToFaunaCollection(filepath, collection):
+  rawFileData = open(filepath, 'r')
+  jsonFileData = json.load(rawFileData)
+  for elem in jsonFileData:
+    client.query(q.create(
+        q.collection(collection), {"data": elem}
+    ))
+
 @app.route("/")
 def hello():
+  client.query(q.create_collection({"name":"elected_members"}))
+  loadJsonArrayFileToFaunaCollection("../senators.json", "elected_members")
+  loadJsonArrayFileToFaunaCollection("../deputies.json", "elected_members")
   return "hello"
 
 
@@ -130,19 +142,27 @@ def votes():
             "none": selectedScrutins.count("none") + selectedScrutins.count("absent")}
 
 
-# refacto AN
 @app.route("/visualization")
 def visualization():
-  group = request.args.get('group')
   assembly = request.args.get('assembly')
-  result = "none"
+  group = request.args.get('group')
+  type = request.args.get('type')
+  function = ""
+  if not type:
+    return "bad request: type is required", 400
+  if assembly == "sénat":
+    function = "sénateur"
+  elif assembly == "assemblée nationale":
+    function = "député"
 
-  if group:
-    result = client.query(q.paginate(q.match(q.index("elected_members_paroles_by_group"), group)))['data']
+  if assembly:
+    if group:
+      match = q.match(q.index("elected_members_contributions_by_function_group"), function, group,)
+    else:
+      match = q.match(q.index("elected_members_contributions_by_function"), function)
+  elif group:
+    match = q.match(q.index("elected_members_contributions_by_group"), group)
   else:
-    result = client.query(q.paginate(q.match(q.index("all_elected_members_paroles"))))['data']
-  # need interventions with elected member data
-  # filter depending on assembly
-  if result == "none":
-    return "name not found", 400
-  return jsonify(result)
+    print('else')
+    match = q.match(q.index("all_elected_members_contributions"))
+  return jsonify(client.query(q.paginate(match))['data'])

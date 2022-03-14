@@ -91,23 +91,54 @@ CreateIndex(
 // /visualization: retrieve text depending on assembly and political group to then analyze in the server
 CreateIndex(
   {
-    name: 'all_elected_members_paroles',
+    name: 'all_elected_members_contributions',
     source: Collection('elected_members'),
     values: [
-      { field: ['data', 'interventions', 'paroles'] }
+      { field: ['data', 'contributions']}
+      // { field: ['data', 'interventions', 'paroles'] }
     ]
   }
 )
 
 CreateIndex(
   {
-    name: 'elected_members_paroles_by_political_group',
+    name: 'elected_members_contributions_by_group',
     source: Collection('elected_members'),
     values: [
-      { field: ['data', 'interventions', 'paroles'] }
+      { field: ['data', 'contributions']}
+      // { field: ['data', 'interventions', 'paroles'] }
     ],
     terms: [
-      { field: ['data', 'groupe_politique']}
+      { field: ['data', 'groupe']}
+    ]
+  }
+)
+
+CreateIndex(
+  {
+    name: 'elected_members_contributions_by_function',
+    source: Collection('elected_members'),
+    values: [
+      { field: ['data', 'contributions']}
+      // { field: ['data', 'interventions', 'paroles'] }
+    ],
+    terms: [
+      { field: ['data', 'fonction']}
+    ]
+  }
+)
+
+CreateIndex(
+  {
+    name: 'elected_members_contributions_by_function_group',
+    source: Collection('elected_members'),
+    values: [
+      { field: ['data', 'contributions']}
+      // { field: ['data', 'interventions', 'paroles'] }
+    ],
+    terms: [
+      { field: ['data', 'fonction']},
+      { field: ['data', 'groupe']}
     ]
   }
 )
