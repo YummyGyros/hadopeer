@@ -54,14 +54,14 @@ def addInterventionsFromSessionsToElectedMembers(sessionsPath, membersPath):
   sessions = json.load(rawFileData)
   for session in sessions:
     for article in session['articles']:
-      for intervention in article['interventions']:
+      for contribution in article['contributions']:
         addValueToArrayInObjectOfJsonArrayFile(
           membersPath,
-          "name", intervention['orateur_nom'],
-          "contributions", intervention['texte']
+          "name", contribution['elected_member'],
+          "contributions", contribution['text']
         )
 
-##### add interventions from sessions files to elected_members files #####
+##### add contributions from sessions files to elected_members files #####
 addInterventionsFromSessionsToElectedMembers("../senate_sessions.json", "senators.json")
 addInterventionsFromSessionsToElectedMembers("../national_assembly_sessions.json", "deputiess.json") 
 
@@ -72,7 +72,7 @@ loadJsonArrayFileToFaunaCollection("../deputies.json", "elected_members")
 
 ##### collection sessions #####
 client.query(q.create_collection({"name":"sessions"}))
-addFieldToJsonArrayFile("../senate_sessions.json", "assemblée", "sénat")
-addFieldToJsonArrayFile("../national_assembly_sessions.json", "assemblée", "assemblée nationale")
+addFieldToJsonArrayFile("../senate_sessions.json", "assembly", "sénat")
+addFieldToJsonArrayFile("../national_assembly_sessions.json", "assembly", "assemblée nationale")
 loadJsonArrayFileToFaunaCollection("../senate_sessions.json", "sessions")
 loadJsonArrayFileToFaunaCollection("../national_assembly_sessions.json", "sessions")

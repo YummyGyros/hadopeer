@@ -1,4 +1,0 @@
-Paginate(Match(Index("all_senateurs")))
-Paginate(Match(Index("senateurs_names_by_function"), "senateur"))
-Paginate(Match(Index("senateurs_names_by_department"), "Haute-Garonne"))
-Paginate(Match(Index("senateurs_names_by_politicalgroup"), "RDSE"))
