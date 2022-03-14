@@ -51,9 +51,10 @@ CreateIndex(
 // /votes
 CreateIndex(
   {
-    name: 'senateurs_scrutins',
-    source: Collection('senateurs'),
+    name: 'all_elected_members_name_scrutins',
+    source: Collection('elected_members'),
     values: [
+      { field: ['data', 'nom'] },
       { field: ['data', 'scrutins'] }
     ]
   }
@@ -61,13 +62,26 @@ CreateIndex(
 
 CreateIndex(
   {
-    name: 'senateurs_scrutins_by_politicalgroup',
-    source: Collection('senateurs'),
+    name: 'elected_members_scrutins_by_function',
+    source: Collection('elected_members'),
     values: [
       { field: ['data', 'scrutins'] }
     ],
     terms: [
-      { field: ['data', 'groupe_politique']}
+      { field: ['data', 'fonction'] }
+    ]
+  }
+)
+
+CreateIndex(
+  {
+    name: 'elected_members_scrutins_by_group',
+    source: Collection('elected_members'),
+    values: [
+      { field: ['data', 'scrutins'] }
+    ],
+    terms: [
+      { field: ['data', 'groupe'] }
     ]
   }
 )

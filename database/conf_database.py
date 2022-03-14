@@ -38,10 +38,36 @@ def addFieldToJsonArrayFile(filepath, field, value):
   with open(filepath, "w") as file:
     json.dump(objects, file, ensure_ascii=True, indent=4, separators=(',', ': '))
 
+def addValueToArrayInObjectOfJsonArrayFile(filepath, fieldObj, valueObj, field, value):
+  file = open(filepath, 'r')
+  objects = json.load(file)
+  for object in objects:
+    if object[fieldObj] == valueObj.lower():
+      object[field].append(value)
+      break
+  with open(filepath, "w") as file:
+    json.dump(objects, file, ensure_ascii=True, indent=4, separators=(',', ': '))
+
+##### add interventions from sessions files to elected_members files #####
+addFieldToJsonArrayFile("../senators.json", "contributions", [])
+addFieldToJsonArrayFile("../deputies.json", "contributions", [])
+rawFileData = open("../senate_sessions.json", 'r')
+senateSessions = json.load(rawFileData)
+for senateSession in senateSessions:
+  for article in senateSession['articles']:
+    for intervention in article['interventions']:
+      addValueToArrayInObjectOfJsonArrayFile(
+        "../senators.json",
+        "nom", intervention['orateur_nom'],
+        "contributions", intervention['texte']
+      )
+
+##### collection elected_members #####
 client.query(q.create_collection({"name":"elected_members"}))
 loadJsonArrayFileToFaunaCollection("../senators.json", "elected_members")
 loadJsonArrayFileToFaunaCollection("../deputies.json", "elected_members")
 
+##### collection sessions #####
 client.query(q.create_collection({"name":"sessions"}))
 addFieldToJsonArrayFile("../senate_sessions.json", "assemblée", "sénat")
 addFieldToJsonArrayFile("../national_assembly_sessions.json", "assemblée", "assemblée nationale")
