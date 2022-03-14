@@ -88,8 +88,9 @@ def votes_context():
   )))['data'])
 
 
-# issue ongoing:
-#   indexes count for one when values are identical in array 'scrutins'
+# fixes:
+#   - get total and create all necessary indexes at init
+#   - error handling voteNumber
 @app.route("/votes")
 def votes():
   assembly = request.args.get("assembly")
@@ -99,47 +100,23 @@ def votes():
 
   if not (assembly and voteNumber):
     return "bad request: assembly and vote_number are required", 400
+  if not (voteNumber == 1 and voteNumber == 2):
+    return "bad request: vote_number is invalid: must be an int between 1 and maximum amount of votes"
   if assembly == "sénat":
     function = "sénateur"
   elif assembly == "assemblée nationale":
     function = "député"
 
-  try:
-    voteNumber = int(voteNumber)
-  except:
-    return "bad request: invalid vote_number, is not an integer"
-  if voteNumber < 1:
-    return "bad request: invalid vote_number, below one", 400
-  sessions = client.query(q.paginate(q.match(
-    q.index("sessions_date_assembly")
-  )))['data']
-  totalVotes = 0
-  for session in sessions:
-    if session[1] == assembly:
-      totalVotes += 1
-  if voteNumber > totalVotes:
-    return "bad request: invalid vote number, too big", 400
-  voteNumber -= 1
-  print("number:", voteNumber)
-
+  indexName = "elected_members_vote_" + voteNumber
   if group:
-    match = q.union(
-      q.match(q.index("elected_members_scrutins_by_function"), function),
-      q.match(q.index("elected_members_scrutins_by_group"), group)
-    )
+    match = q.match(q.index(indexName + "_by_function_group"), function, group)
   else:
-    match = q.match(q.index("elected_members_scrutins_by_function"), function)
-  allScrutins = client.query(q.paginate(match))['data']
-  print("allScrutins: ", allScrutins)
-
-  selectedScrutins = []
-  while (voteNumber < len(allScrutins)):
-    selectedScrutins.append(allScrutins[voteNumber])
-    voteNumber += totalVotes
-  print("selectedScrutins: ", selectedScrutins)
-  return { "pour": selectedScrutins.count("pour"),
-            "contre": selectedScrutins.count("contre"),
-            "none": selectedScrutins.count("none") + selectedScrutins.count("absent")}
+    match = q.match(q.index(indexName + "_by_function"), function)
+  votes = client.query(q.paginate(match))['data']
+  print("votes: ", votes)
+  return { "pour": votes.count("pour"),
+            "contre": votes.count("contre"),
+            "none": votes.count("none") + votes.count("absent")}
 
 
 @app.route("/visualization")

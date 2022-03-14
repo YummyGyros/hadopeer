@@ -48,24 +48,13 @@ CreateIndex(
 )
 ///////////
 
-// /votes
+// /votes: need to create loop to find total and create appropriate number for each vote
 CreateIndex(
   {
-    name: 'all_elected_members_name_scrutins',
+    name: 'elected_members_vote_1_by_function',
     source: Collection('elected_members'),
     values: [
-      { field: ['data', 'nom'] },
-      { field: ['data', 'scrutins'] }
-    ]
-  }
-)
-
-CreateIndex(
-  {
-    name: 'elected_members_scrutins_by_function',
-    source: Collection('elected_members'),
-    values: [
-      { field: ['data', 'scrutins'] }
+      { field: ['data', 'vote_1'] }
     ],
     terms: [
       { field: ['data', 'fonction'] }
@@ -75,17 +64,44 @@ CreateIndex(
 
 CreateIndex(
   {
-    name: 'elected_members_scrutins_by_group',
+    name: 'elected_members_vote_2_by_function',
     source: Collection('elected_members'),
     values: [
-      { field: ['data', 'scrutins'] }
+      { field: ['data', 'vote_2'] }
     ],
     terms: [
+      { field: ['data', 'fonction'] }
+    ]
+  }
+)
+
+CreateIndex(
+  {
+    name: 'elected_members_vote_1_by_function_group',
+    source: Collection('elected_members'),
+    values: [
+      { field: ['data', 'vote_1'] }
+    ],
+    terms: [
+      { field: ['data', 'fonction'] },
       { field: ['data', 'groupe'] }
     ]
   }
 )
 
+CreateIndex(
+  {
+    name: 'elected_members_vote_2_by_function_group',
+    source: Collection('elected_members'),
+    values: [
+      { field: ['data', 'vote_2'] }
+    ],
+    terms: [
+      { field: ['data', 'fonction'] },
+      { field: ['data', 'groupe'] }
+    ]
+  }
+)
 ///////////
 
 // /visualization: retrieve text depending on assembly and political group to then analyze in the server
