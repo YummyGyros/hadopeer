@@ -25,22 +25,9 @@ client = FaunaClient(
 
 app = Flask(__name__)
 
-
-def loadJsonArrayFileToFaunaCollection(filepath, collection):
-  rawFileData = open(filepath, 'r')
-  jsonFileData = json.load(rawFileData)
-  for elem in jsonFileData:
-    client.query(q.create(
-        q.collection(collection), {"data": elem}
-    ))
-
 @app.route("/")
 def hello():
-  client.query(q.create_collection({"name":"elected_members"}))
-  loadJsonArrayFileToFaunaCollection("../senators.json", "elected_members")
-  loadJsonArrayFileToFaunaCollection("../deputies.json", "elected_members")
   return "hello"
-
 
 # To reduce calls to Fauna we filter the array in python directly.
 # It is possible because our filters corresponds to the values displayed.
@@ -50,14 +37,14 @@ def hello():
 #   client.query(res)['data]
 @app.route("/elected_members")
 def elected_members():
-  function = request.args.get('function')
+  job = request.args.get('job')
   group = request.args.get('group')
   department = request.args.get('department')
   result = client.query(q.paginate(q.match(
-    q.index("all_elected_members_name_function_group_department")
+    q.index("all_elected_members_name_job_group_department")
   )))['data']
-  if function:
-    result = [values for values in result if values[1] == function]
+  if job:
+    result = [values for values in result if values[1] == job]
   if group:
     result = [values for values in result if values[2] == group]
   if department:
@@ -96,22 +83,22 @@ def votes():
   assembly = request.args.get("assembly")
   voteNumber = request.args.get("vote_number")
   group = request.args.get("group")
-  function = "none"
+  job = "none"
 
   if not (assembly and voteNumber):
     return "bad request: assembly and vote_number are required", 400
   if not (voteNumber == 1 and voteNumber == 2):
     return "bad request: vote_number is invalid: must be an int between 1 and maximum amount of votes"
   if assembly == "sénat":
-    function = "sénateur"
+    job = "sénateur"
   elif assembly == "assemblée nationale":
-    function = "député"
+    job = "député"
 
   indexName = "elected_members_vote_" + voteNumber
   if group:
-    match = q.match(q.index(indexName + "_by_function_group"), function, group)
+    match = q.match(q.index(indexName + "_by_job_group"), job, group)
   else:
-    match = q.match(q.index(indexName + "_by_function"), function)
+    match = q.match(q.index(indexName + "_by_job"), job)
   votes = client.query(q.paginate(match))['data']
   print("votes: ", votes)
   return { "pour": votes.count("pour"),
@@ -124,19 +111,19 @@ def visualization():
   assembly = request.args.get('assembly')
   group = request.args.get('group')
   type = request.args.get('type')
-  function = ""
+  job = ""
   if not type:
     return "bad request: type is required", 400
   if assembly == "sénat":
-    function = "sénateur"
+    job = "sénateur"
   elif assembly == "assemblée nationale":
-    function = "député"
+    job = "député"
 
   if assembly:
     if group:
-      match = q.match(q.index("elected_members_contributions_by_function_group"), function, group,)
+      match = q.match(q.index("elected_members_contributions_by_job_group"), job, group,)
     else:
-      match = q.match(q.index("elected_members_contributions_by_function"), function)
+      match = q.match(q.index("elected_members_contributions_by_job"), job)
   elif group:
     match = q.match(q.index("elected_members_contributions_by_group"), group)
   else:

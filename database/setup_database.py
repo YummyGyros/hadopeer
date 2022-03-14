@@ -57,7 +57,7 @@ def addInterventionsFromSessionsToElectedMembers(sessionsPath, membersPath):
       for intervention in article['interventions']:
         addValueToArrayInObjectOfJsonArrayFile(
           membersPath,
-          "nom", intervention['orateur_nom'],
+          "name", intervention['orateur_nom'],
           "contributions", intervention['texte']
         )
 

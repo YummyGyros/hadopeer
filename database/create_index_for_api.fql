@@ -1,13 +1,13 @@
-// /participants?fonction=sénateur&département=oui&groupe=non
+// /participants?job=sénateur&département=oui&groupe=non
 CreateIndex(
   {
-    name: 'all_elected_members_name_function_group_department',
+    name: 'all_elected_members_name_job_group_department',
     source: Collection('elected_members'),
     values: [
-      { field: ['data', 'nom'] },
-      { field: ['data', 'fonction'] },
-      { field: ['data', 'groupe'] },
-      { field: ['data', 'département'] },
+      { field: ['data', 'name'] },
+      { field: ['data', 'job'] },
+      { field: ['data', 'group'] },
+      { field: ['data', 'department'] },
     ]
   }
 )
@@ -20,7 +20,7 @@ CreateIndex({
   values: [
     { field: ['ref'] }
   ],
-  terms: [{ field: ['data', 'nom'] }]
+  terms: [{ field: ['data', 'name'] }]
 })
 ///////////
 
@@ -31,7 +31,7 @@ CreateIndex(
     source: Collection('sessions'),
     values: [
       { field: ['data', 'date'] },
-      { field: ['data', 'lien'] },
+      { field: ['data', 'link'] },
     ]
   }
 )
@@ -42,7 +42,7 @@ CreateIndex(
     source: Collection('sessions'),
     values: [
       { field: ['data', 'date'] },
-      { field: ['data', 'assemblée'] }
+      { field: ['data', 'assembly'] }
     ]
   }
 )
@@ -51,54 +51,54 @@ CreateIndex(
 // /votes: need to create loop to find total and create appropriate number for each vote
 CreateIndex(
   {
-    name: 'elected_members_vote_1_by_function',
+    name: 'elected_members_vote_1_by_job',
     source: Collection('elected_members'),
     values: [
       { field: ['data', 'vote_1'] }
     ],
     terms: [
-      { field: ['data', 'fonction'] }
+      { field: ['data', 'job'] }
     ]
   }
 )
 
 CreateIndex(
   {
-    name: 'elected_members_vote_2_by_function',
+    name: 'elected_members_vote_2_by_job',
     source: Collection('elected_members'),
     values: [
       { field: ['data', 'vote_2'] }
     ],
     terms: [
-      { field: ['data', 'fonction'] }
+      { field: ['data', 'job'] }
     ]
   }
 )
 
 CreateIndex(
   {
-    name: 'elected_members_vote_1_by_function_group',
+    name: 'elected_members_vote_1_by_job_group',
     source: Collection('elected_members'),
     values: [
       { field: ['data', 'vote_1'] }
     ],
     terms: [
-      { field: ['data', 'fonction'] },
-      { field: ['data', 'groupe'] }
+      { field: ['data', 'job'] },
+      { field: ['data', 'group'] }
     ]
   }
 )
 
 CreateIndex(
   {
-    name: 'elected_members_vote_2_by_function_group',
+    name: 'elected_members_vote_2_by_job_group',
     source: Collection('elected_members'),
     values: [
       { field: ['data', 'vote_2'] }
     ],
     terms: [
-      { field: ['data', 'fonction'] },
-      { field: ['data', 'groupe'] }
+      { field: ['data', 'job'] },
+      { field: ['data', 'group'] }
     ]
   }
 )
@@ -125,36 +125,36 @@ CreateIndex(
       // { field: ['data', 'interventions', 'paroles'] }
     ],
     terms: [
-      { field: ['data', 'groupe']}
+      { field: ['data', 'group']}
     ]
   }
 )
 
 CreateIndex(
   {
-    name: 'elected_members_contributions_by_function',
+    name: 'elected_members_contributions_by_job',
     source: Collection('elected_members'),
     values: [
       { field: ['data', 'contributions']}
       // { field: ['data', 'interventions', 'paroles'] }
     ],
     terms: [
-      { field: ['data', 'fonction']}
+      { field: ['data', 'job']}
     ]
   }
 )
 
 CreateIndex(
   {
-    name: 'elected_members_contributions_by_function_group',
+    name: 'elected_members_contributions_by_job_group',
     source: Collection('elected_members'),
     values: [
       { field: ['data', 'contributions']}
       // { field: ['data', 'interventions', 'paroles'] }
     ],
     terms: [
-      { field: ['data', 'fonction']},
-      { field: ['data', 'groupe']}
+      { field: ['data', 'job']},
+      { field: ['data', 'group']}
     ]
   }
 )
