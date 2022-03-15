@@ -87,7 +87,7 @@ def votes():
 
   if not (assembly and voteNumber):
     return "bad request: assembly and vote_number are required", 400
-  if not (voteNumber == 1 and voteNumber == 2):
+  if not (voteNumber == "1" or voteNumber == "2"):
     return "bad request: vote_number is invalid: must be an int between 1 and maximum amount of votes"
   if assembly == "sénat":
     job = "sénateur"

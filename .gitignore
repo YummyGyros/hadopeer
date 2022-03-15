@@ -1,2 +1,5 @@
 *.json
 .fauna
+archived
+*__pycache__
+*serv.md
