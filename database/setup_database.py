@@ -59,11 +59,13 @@ def createFaunaFieldsArray(values):
     array.append({ 'field': ['data', value] })
   return array
 
-## add contributions from sessions files to elected_members files ###
+# extract contributions from sessions files to elected_members files ###
 addInterventionsFromSessionsToElectedMembers("../senate_sessions.json", "../senators.json")
+jsonTools.deleteFieldFromJsonArrayFile("../senate_sessions.json", "articles")
 addInterventionsFromSessionsToElectedMembers("../national_assembly_sessions.json", "../deputies.json")
+jsonTools.deleteFieldFromJsonArrayFile("../national_assembly_sessions.json", "articles")
 
-# collection elected_members ###
+###  collection elected_members ###
 client.query(q.create_collection({"name":"elected_members"}))
 loadJsonArrayFileToFaunaCollection("../senators.json", "elected_members")
 loadJsonArrayFileToFaunaCollection("../deputies.json", "elected_members")

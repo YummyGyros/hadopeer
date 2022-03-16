@@ -8,6 +8,14 @@ def addFieldToJsonArrayFile(filepath, field, value):
   with open(filepath, "w") as file:
     json.dump(objects, file, ensure_ascii=True, indent=4, separators=(',', ': '))
 
+def deleteFieldFromJsonArrayFile(filepath, field):
+  dataString = open(filepath, 'r')
+  objects = json.load(dataString)
+  for object in objects:
+    object.pop(field)
+  with open(filepath, "w") as file:
+    json.dump(objects, file, ensure_ascii=True, indent=4, separators=(',', ': '))
+
 def addValueToArrayInObjectOfJsonArrayFile(filepath, fieldObj, valueObj, field, value):
   file = open(filepath, 'r')
   objects = json.load(file)
