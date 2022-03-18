@@ -1,2 +1,6 @@
 *.json
 .fauna
+archived
+*__pycache__
+*serv.md
+save_valid_json
