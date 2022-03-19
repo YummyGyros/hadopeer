@@ -1,7 +1,5 @@
 import os
-import json
 import sys
-import re
 from urllib.parse import urlparse
 from faunadb import query as q
 from faunadb.client import FaunaClient
@@ -129,4 +127,6 @@ def visualization():
   else:
     print('else')
     match = q.match(q.index("all_elected_members_contributions"))
+  arrayText = client.query(q.paginate(match))['data']
+  # launch nlp function
   return jsonify(client.query(q.paginate(match))['data'])

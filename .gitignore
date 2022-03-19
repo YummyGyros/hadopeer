@@ -4,3 +4,7 @@ archived
 *__pycache__
 *serv.md
 save_valid_json
+node_modules
+*.png
+save_dl_nlp
+*.vercel

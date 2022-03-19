@@ -90,4 +90,5 @@ for word in searched_word:
     dff = []
 
 fig = px.line(df, x="date", y="count", color='word')
+print("JSON HERE: ", fig.to_json())
 fig.write_image("fig1.png")
