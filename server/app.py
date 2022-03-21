@@ -1,5 +1,6 @@
 import os
 import sys
+from tkinter.font import names
 from urllib.parse import urlparse
 from faunadb import query as q
 from faunadb.client import FaunaClient
@@ -53,28 +54,32 @@ def elected_members():
 @app.route("/elected_member")
 def elected_member():
   name = request.args.get('name')
-  if name:
-    senateurValues = client.query(q.get(q.match(q.index("elected_member_ref_by_name"), name)))['data']
-    return jsonify(senateurValues)
-  return "name not found", 400
+  if not name:
+    return "name not found", 400
+  object = client.query(q.get(
+    q.match(q.index("elected_member_ref_by_name"),name)
+  ))['data']
+  object['contributions'] = client.query(q.get(
+    q.match(q.index("contributions_ref_by_elected_member"), name)
+  ))['data']
+  return object
 
 
 @app.route("/dates")
 def dates():
   return jsonify(client.query(q.paginate(q.match(
-    q.index("sessions_date_link")
+    q.index("contributions_date_link")
   )))['data'])
 
 
 @app.route("/votes/context")
 def votes_context():
   return jsonify(client.query(q.paginate(q.match(
-    q.index("sessions_date_assembly")
+    q.index("votes_date_assembly_number")
   )))['data'])
 
 
 # fixes:
-#   - get total and create all necessary indexes at init
 #   - error handling voteNumber
 @app.route("/votes")
 def votes():
@@ -109,24 +114,31 @@ def visualization():
   assembly = request.args.get('assembly')
   group = request.args.get('group')
   type = request.args.get('type')
-  job = ""
-  if not type:
-    return "bad request: type is required", 400
-  if assembly == "sénat":
-    job = "sénateur"
-  elif assembly == "assemblée nationale":
-    job = "député"
 
-  if assembly:
-    if group:
-      match = q.match(q.index("elected_members_contributions_by_job_group"), job, group,)
+  if group:
+    contribs = []
+    names = client.query(q.paginate(
+      q.match(q.index("elected_members_name_by_group"), group)
+    ))['data']
+    if assembly:
+      for name in names:
+        tmpObjects = client.query(q.paginate(
+          q.match(q.index("contributions_text_by_elected_member_and_assembly"), name, assembly)
+        ))['data']
+        for tmpObject in tmpObjects:
+          contribs.append(tmpObject)
     else:
-      match = q.match(q.index("elected_members_contributions_by_job"), job)
-  elif group:
-    match = q.match(q.index("elected_members_contributions_by_group"), group)
+      for name in names:
+        tmpObjects = client.query(q.paginate(
+          q.match(q.index("contributions_text_by_elected_member"), name)
+        ))['data']
+        for tmpObject in tmpObjects:
+          contribs.append(tmpObject)
+    return jsonify(contribs)
+  
+  if assembly:
+    match = q.match(q.index("contributions_text_by_assembly"), assembly)
   else:
-    print('else')
-    match = q.match(q.index("all_elected_members_contributions"))
-  arrayText = client.query(q.paginate(match))['data']
-  # launch nlp function
+    match = q.match(q.index("all_contributions_text"))
+  # launch nlp function depending on type
   return jsonify(client.query(q.paginate(match))['data'])
