@@ -24,24 +24,32 @@ client = FaunaClient(
 
 app = Flask(__name__)
 
+def getDataFaunaIndex(indexName, arg):
+  match = q.match(q.index(indexName), arg)
+  return client.query(q.get(match))['data']
+
+def paginateFaunaIndex(indexName, *args):
+  if len(args) == 0:
+    match = q.match(q.index(indexName))
+  if len(args) == 1:
+    match = q.match(q.index(indexName), args[0])
+  if len(args) == 2:
+    match = q.match(q.index(indexName), args[0], args[1])
+  return client.query(q.paginate(match))['data']
+
+
 @app.route("/")
 def hello():
   return "hello"
 
-# To reduce calls to Fauna we filter the array in python directly.
-# It is possible because our filters corresponds to the values displayed.
-# otherwise with Fauna:
-#   res = paginate
-#   res = filter_(lambda x: q.equals(x, "hello"), res)
-#   client.query(res)['data]
+
 @app.route("/elected_members")
 def elected_members():
   job = request.args.get('job')
   group = request.args.get('group')
   department = request.args.get('department')
-  result = client.query(q.paginate(q.match(
-    q.index("all_elected_members_name_job_group_department")
-  )))['data']
+
+  result = paginateFaunaIndex("all_elected_members_name_job_group_department")
   if job:
     result = [values for values in result if values[1] == job]
   if group:
@@ -56,31 +64,21 @@ def elected_member():
   name = request.args.get('name')
   if not name:
     return "name not found", 400
-  object = client.query(q.get(
-    q.match(q.index("elected_member_ref_by_name"),name)
-  ))['data']
-  object['contributions'] = client.query(q.get(
-    q.match(q.index("contributions_ref_by_elected_member"), name)
-  ))['data']
+  object = getDataFaunaIndex("elected_member_ref_by_name", name)
+  object['contributions'] = getDataFaunaIndex("contributions_ref_by_elected_member", name)
   return object
 
 
 @app.route("/dates")
 def dates():
-  return jsonify(client.query(q.paginate(q.match(
-    q.index("contributions_date_link")
-  )))['data'])
+  return jsonify(paginateFaunaIndex("contributions_date_link"))
 
 
 @app.route("/votes/context")
 def votes_context():
-  return jsonify(client.query(q.paginate(q.match(
-    q.index("votes_date_assembly_number")
-  )))['data'])
+  return jsonify(paginateFaunaIndex("votes_date_assembly_number"))
 
 
-# fixes:
-#   - error handling voteNumber
 @app.route("/votes")
 def votes():
   assembly = request.args.get("assembly")
@@ -99,11 +97,9 @@ def votes():
 
   indexName = "elected_members_vote_" + voteNumber
   if group:
-    match = q.match(q.index(indexName + "_by_job_group"), job, group)
+    votes = paginateFaunaIndex(indexName + "_by_job_group", job, group)
   else:
-    match = q.match(q.index(indexName + "_by_job"), job)
-  votes = client.query(q.paginate(match))['data']
-  print("votes: ", votes)
+    votes = paginateFaunaIndex(indexName + "_by_job", job)
   return { "pour": votes.count("pour"),
             "contre": votes.count("contre"),
             "none": votes.count("none") + votes.count("absent")}
@@ -117,28 +113,21 @@ def visualization():
 
   if group:
     contribs = []
-    names = client.query(q.paginate(
-      q.match(q.index("elected_members_name_by_group"), group)
-    ))['data']
+    names = paginateFaunaIndex("elected_members_name_by_group", group)
     if assembly:
       for name in names:
-        tmpObjects = client.query(q.paginate(
-          q.match(q.index("contributions_text_by_elected_member_and_assembly"), name, assembly)
-        ))['data']
+        tmpObjects = paginateFaunaIndex("contributions_text_by_elected_member_and_assembly", name, assembly)
         for tmpObject in tmpObjects:
           contribs.append(tmpObject)
     else:
       for name in names:
-        tmpObjects = client.query(q.paginate(
-          q.match(q.index("contributions_text_by_elected_member"), name)
-        ))['data']
+        tmpObjects = paginateFaunaIndex("contributions_text_by_elected_member", name)
         for tmpObject in tmpObjects:
           contribs.append(tmpObject)
     return jsonify(contribs)
   
   if assembly:
-    match = q.match(q.index("contributions_text_by_assembly"), assembly)
+    return jsonify(paginateFaunaIndex("contributions_text_by_assembly", assembly))
   else:
-    match = q.match(q.index("all_contributions_text"))
-  # launch nlp function depending on type
-  return jsonify(client.query(q.paginate(match))['data'])
+    return jsonify(paginateFaunaIndex("all_contributions_text"))
+  # launch nlp function depending on type var
