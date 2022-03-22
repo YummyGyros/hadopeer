@@ -51,7 +51,8 @@ def scrapAN(urls, pb):
                                 "elected_member": name,
                                 "text": txt
                             })
-        lectures_AN.append({"date": soup.find("h1", {"class": "seance"}).text.split("du ")[1], "link": url, "contributions": contributions})
+        if contributions != []:
+            lectures_AN.append({"date": soup.find("h1", {"class": "seance"}).text.split("du ")[1], "link": url, "contributions": contributions})
     return lectures_AN, DeputyNom
 
 
@@ -108,5 +109,5 @@ def scrapSenat(urls, pb):
                 url.split('/')[6], '') + soup.find("a", {"class": "link-next"})['href']
         if interventions_senat != []:
             lectures_senat.append({"date": soup.find("h1", {"class": "title-11"}).text.split(
-                " (")[0].split("du ")[1], "link": 'articles_senat[0]["reference"]', "contributions": interventions_senat})
+                " (")[0].split("du ")[1], "link": urls[i], "contributions": interventions_senat})
     return lectures_senat, SenatorNom
