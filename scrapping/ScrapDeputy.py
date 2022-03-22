@@ -4,10 +4,121 @@ import json
 from os import path
 import unicodedata
 from tqdm import tqdm
+import re
 
 JsonDeputy = "deputes.json"
 JsonSenator = "senateurs.json"
 listObj = []
+
+#def vote_choice(deputy, choice):
+#
+#    if (choice.split()[0] == "Pour"):
+#        return (deputy, "Pour")
+#    if (choice.split()[0] == "Contre"):
+#        return (deputy, "Contre")
+#    if (choice.split()[0] == "Abstention"):
+#        return (deputy, "Absent")
+#    if (choice.split()[0] == "Non-votant"):
+#        return (deputy, "Non-votant")
+#
+#
+#def get_vote_deputy(lst_deputy):
+#    page = requests.get("https://www.assemblee-nationale.fr/13/scrutins/jo0386.asp")
+#    soup = BeautifulSoup(page.content, 'html.parser')
+#    lst_name = []
+#
+#    type_vote = soup.find_all("p", class_="typevote")
+#    people = soup.find_all("p", class_="noms")
+#    i = 0
+#    lst_deputyV = []
+#
+#    for vote in type_vote:
+#        if "pour" in vote.get_text():
+#            lst_deputyV = people[i].split()
+#            for deputy in lst_deputyV:   
+#                if not deputy in lst_deputy:
+#                    lst_deputy.append(deputy)   
+#                return()
+#        i += 1
+
+    
+
+def detect_debat(url, name):
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    field_mandat = soup.find_all("dl", class_="deputes-liste-attributs sycomore")
+    result = []
+    j = []
+    i = 0
+
+    result.append(name)
+    for s in field_mandat:
+        children_field = s.find_all("a")
+        for a in children_field:
+            if a.string and "XIIIe législature" in a.string:
+                mandat = s
+                j = mandat.findChildren("b")
+                result.append(j[0].get_text(strip=True))
+                j = mandat.findChildren("dd")
+                result.append(j[3].get_text(strip=True))
+                result.append(j[4].get_text(strip=True))
+                return result
+            i += 1
+    print(result)
+
+def put_deputy(name, url, state):
+    result = []
+    start_json = []
+    acronym = {"La République en Marche" : "RM",
+               "Les Républicains" : "R",
+               "Mouvement Démocrate (MoDem) et Démocrates apparentés" : "MDD",
+               "Socialistes et apparentés" : "SA",
+               "Agir ensemble" : "AE",
+               "UDI et Indépendants" : "UDII",
+               "Libertés et Territoires" : "LT",
+               "La France insoumise" : "FI",
+               "Gauche démocrate et républicaine" : "GDR",
+               "Non inscrit" : "NA"
+            }
+    result = detect_debat(url, name)
+    if (state == True):
+        json_deputy = {"name": result[0], "fonction": "depute", "mandat": result[1], "departement": result[2], "groupe_politique": acronym[result[3]]}
+        start_json.append(json_deputy)
+        json_deputy = json.dumps(start_json, indent=4, separators=(',',': '))
+        print(json_deputy)
+        with open(JsonDeputy, 'w') as outfile:
+            outfile.write(json_deputy)
+        ScrapDeputy.first = False
+    else:
+        with open(JsonDeputy) as fp:
+            listObj = json.load(fp)
+        listObj.append({"name": result[0], "fonction": "depute", "mandat": result[1], "departement": result[2], "groupe_politique": acronym[result[3]]})
+        with open(JsonDeputy, 'w') as json_file:
+            json.dump(listObj, json_file, 
+                        indent=4,  
+                        separators=(',',': '))
+
+def ScrapDeputy(suffix, lst_deputy):
+#    lst_vote = get_vote_deputy(lst_deputy)
+    page = requests.get("https://www2.assemblee-nationale.fr/sycomore/resultats" + suffix)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    body = soup.find("table", )
+    list_deputy = body.find_all("a", href=True)
+    for deputy in list_deputy:
+        for name in lst_deputy:
+            dep = re.sub(r"(\w)([A-Z])", r"\1 \2", deputy.get_text(strip=True))
+            if name in dep:
+                lst_deputy.remove(name)
+                put_deputy(name, "https://www2.assemblee-nationale.fr" + deputy.get("href"), ScrapDeputy.first)
+    if lst_deputy != []:
+        lis = soup.find_all("div", class_="bottommargin pagination-bootstrap pagination-right pagination-small")
+        suffix = lis[0].find_all("a", href=True)
+        if not suffix[len(suffix) - 1].get_text() == "Suivant":
+            return 0
+        s = suffix[len(suffix) - 1].get("data-uri-suffix")
+        ScrapDeputy.page += 1
+        ScrapDeputy(s, lst_deputy)
+    return 0
 
 def get_name_senator(soup):
     lst_senator = soup.find_all("table", attrs={'border': '0'})
@@ -90,69 +201,6 @@ def vote_Senator(lecture):
             else:
                 vote_Senator.scrutin[fullname][1] = "absent"
 
-def detect_debat(url, name):
-    page = requests.get(url)
-    soup = BeautifulSoup(page.content, 'html.parser')
-    field_mandat = soup.find_all("dl", class_="deputes-liste-attributs sycomore")
-    result = []
-    j = []
-    i = 0
-
-    result.append(name)
-    for s in field_mandat:
-        children_field = s.find_all("a")
-        for a in children_field:
-            if a.string and "XIIIe législature" in a.string:
-                mandat = s
-                j = mandat.findChildren("b")
-                result.append(j[0].get_text(strip=True))
-                j = mandat.findChildren("dd")
-                result.append(j[3].get_text(strip=True))
-                result.append(j[4].get_text(strip=True))
-                return result
-            i += 1
-    print(result)
-
-def put_deputy(name, url, state):
-    result = []
-    start_json = []
-    result = detect_debat(url, name)
-    if (state == True):
-        json_deputy = {"name": result[0], "fonction": "depute", "mandat": result[1], "departement": result[2], "groupe_politique": result[3]}
-        start_json.append(json_deputy)
-        json_deputy = json.dumps(start_json, indent=4, separators=(',',': '))
-        print(json_deputy)
-        with open(JsonDeputy, 'w') as outfile:
-            outfile.write(json_deputy)
-        ScrapDeputy.first = False
-    else:
-        with open(JsonDeputy) as fp:
-            listObj = json.load(fp)
-        listObj.append({"name": result[0], "fonction": "depute", "mandat": result[1], "departement": result[2], "groupe_politique": result[3]})
-        with open(JsonDeputy, 'w') as json_file:
-            json.dump(listObj, json_file, 
-                        indent=4,  
-                        separators=(',',': '))
-
-def ScrapDeputy(suffix, lst_deputy):
-    page = requests.get("https://www2.assemblee-nationale.fr/sycomore/resultats" + suffix)
-    soup = BeautifulSoup(page.content, 'html.parser')
-    body = soup.find("table", )
-    list_deputy = body.find_all("a", href=True)
-    for deputy in list_deputy:
-        for name in lst_deputy:
-            dep = re.sub(r"(\w)([A-Z])", r"\1 \2", deputy.get_text(strip=True))
-            if name in dep:
-                lst_deputy.remove(name)
-                put_deputy(name, "https://www2.assemblee-nationale.fr" + deputy.get("href"), ScrapDeputy.first)
-    if lst_deputy != []:
-        lis = soup.find_all("div", class_="bottommargin pagination-bootstrap pagination-right pagination-small")
-        suffix = lis[0].find_all("a", href=True)
-        s = suffix[len(suffix) - 1].get("data-uri-suffix")
-        ScrapDeputy.page += 1
-        ScrapDeputy(s, lst_deputy)
-    return 0
-
 def take_senator():
     d_senator = dict()
 
@@ -166,6 +214,31 @@ def take_senator():
         fullname = fullname.lower()
         d_senator[fullname] = [Sname[2].get_text(strip=True), Sname[3].get_text(strip=True)]
     return d_senator
+
+def create_vote_json(lecture):
+    scrutin = "http://www.senat.fr/scrutin-public/2008/scr2008-30.html" if (lecture == 1) else "http://www.senat.fr/scrutin-public/2008/scr2008-147.html"
+    soup = BeautifulSoup(scrutin.content, 'html.parser')
+
+    title = soup.find("h1", {"class": "title-11"})
+    start_json = []
+    name = title.get_text().split('-')[1]
+    name = name[:1]
+
+    if (ScrapSenator.first == True):
+        json_senator = {"name": name.get_text(), "senat" : "senat", "number" : lecture}
+        start_json.append(json_senator)
+        json_senator = json.dumps(start_json, indent=4, separators=(',',': '))
+        with open(JsonSenator, 'w') as outfile:
+            outfile.write(json_senator)
+        ScrapSenator.first = False
+    else:
+        with open(JsonSenator) as fp:
+            listObj = json.load(fp)
+        listObj.append({"name": name.get_text(), "senat" : "senat", "number" : lecture})
+        with open(JsonSenator, 'w') as json_file:
+            json.dump(listObj, json_file, 
+                        indent=4,  
+                        separators=(',',': '))
 
 def other_scrap(SenatorNom, pb, scrutin):
     ScrapSenator.first = True
