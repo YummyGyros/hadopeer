@@ -9,11 +9,32 @@ import re
 
 JsonDeputy = "deputes.json"
 JsonSenator = "senateurs.json"
+JsonDate = "Date_vote.json"
 listObj = []
+
+
 
 def strip_accents(s):
    return ''.join(c for c in unicodedata.normalize('NFD', s)
                   if unicodedata.category(c) != 'Mn')
+
+def create_vote_json_Assembly():
+    scrutin = "https://www.assemblee-nationale.fr/13/scrutins/jo0386.asp"
+    page = requests.get(scrutin)
+    soup = BeautifulSoup(page.content, 'html.parser')
+
+    title = soup.find("p", {"class": "entetegeneraliste"})
+    name = title.get_text().split('-')[1]
+    name = name[11:]
+
+
+    with open(JsonDate) as fp:
+        listObj = json.load(fp)
+    listObj.append({"date": name, "assembly" : "Assemblé National", "number" : 1})
+    with open(JsonDate, 'w') as json_file:
+        json.dump(listObj, json_file, 
+                    indent=4,  
+                    separators=(',',': '))
 
 def vote_choice(deputy, choice):
     if (choice.split()[0] == "Pour"):
@@ -167,6 +188,7 @@ def put_deputy(name, url, state, lst_vote):
 def ScrapDeputy(suffix, lst_deputy, lst_vote):
     if ScrapDeputy.page == 1:
         lst_vote = get_vote_deputy(lst_deputy)
+        create_vote_json_Assembly()
     print(lst_deputy)
     print(ScrapDeputy.page)
     page = requests.get("https://www2.assemblee-nationale.fr/sycomore/resultats" + suffix)
@@ -188,6 +210,32 @@ def ScrapDeputy(suffix, lst_deputy, lst_vote):
         ScrapDeputy.page += 1
         ScrapDeputy(s, lst_deputy, lst_vote)
     return 0
+
+def create_vote_json_Senat(lecture):
+    scrutin = "http://www.senat.fr/scrutin-public/2008/scr2008-30.html" if (lecture == 1) else "http://www.senat.fr/scrutin-public/2008/scr2008-147.html"
+    page = requests.get(scrutin)
+    soup = BeautifulSoup(page.content, 'html.parser')
+
+    title = soup.find("h1", {"class": "title-11"})
+    start_json = []
+    name = title.get_text().split('-')[1]
+    name = name[11:]
+
+    if (lecture == 1):
+        json_senator = {"date": name, "assembly" : "Sénat", "number" : lecture}
+        start_json.append(json_senator)
+        json_senator = json.dumps(start_json, indent=4, separators=(',',': '))
+        with open(JsonDate, 'w') as outfile:
+            outfile.write(json_senator)
+    else:
+        with open(JsonDate) as fp:
+            listObj = json.load(fp)
+        listObj.append({"date": name, "assembly" : "Sénat", "number" : lecture})
+        with open(JsonDate, 'w') as json_file:
+            json.dump(listObj, json_file, 
+                        indent=4,  
+                        separators=(',',': '))
+
 
 def get_name_senator(soup):
     lst_senator = soup.find_all("table", attrs={'border': '0'})
@@ -221,6 +269,7 @@ def get_name_senator(soup):
     return name_page
 
 def vote_Senator(lecture):
+    create_vote_json_Senat(lecture)
     tp = ("none", "none")
     scrutin = "http://www.senat.fr/scrutin-public/2008/scr2008-30.html" if (lecture == 1) else "http://www.senat.fr/scrutin-public/2008/scr2008-147.html"
     page = requests.get(scrutin)
