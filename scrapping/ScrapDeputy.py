@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import json
 from os import path
 import unicodedata
+import re
 from tqdm import tqdm
 import re
 
@@ -58,7 +59,10 @@ def detect_debat(url, name):
                 result.append(j[0].get_text(strip=True))
                 j = mandat.findChildren("dd")
                 result.append(j[3].get_text(strip=True))
-                result.append(j[4].get_text(strip=True))
+                if len(j) < 5 :
+                    result.append("non inscrit")
+                else:
+                    result.append(j[4].get_text(strip=True))
                 return result
             i += 1
     print(result)

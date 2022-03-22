@@ -1,5 +1,6 @@
 import os
 import sys
+from tkinter.font import names
 from urllib.parse import urlparse
 from faunadb import query as q
 from faunadb.client import FaunaClient
@@ -23,24 +24,32 @@ client = FaunaClient(
 
 app = Flask(__name__)
 
+def getDataFaunaIndex(indexName, arg):
+  match = q.match(q.index(indexName), arg)
+  return client.query(q.get(match))['data']
+
+def paginateFaunaIndex(indexName, *args):
+  if len(args) == 0:
+    match = q.match(q.index(indexName))
+  if len(args) == 1:
+    match = q.match(q.index(indexName), args[0])
+  if len(args) == 2:
+    match = q.match(q.index(indexName), args[0], args[1])
+  return client.query(q.paginate(match))['data']
+
+
 @app.route("/")
 def hello():
   return "hello"
 
-# To reduce calls to Fauna we filter the array in python directly.
-# It is possible because our filters corresponds to the values displayed.
-# otherwise with Fauna:
-#   res = paginate
-#   res = filter_(lambda x: q.equals(x, "hello"), res)
-#   client.query(res)['data]
+### Elected Members ###
 @app.route("/elected_members")
 def elected_members():
   job = request.args.get('job')
   group = request.args.get('group')
   department = request.args.get('department')
-  result = client.query(q.paginate(q.match(
-    q.index("all_elected_members_name_job_group_department")
-  )))['data']
+
+  result = paginateFaunaIndex("all_elected_members_name_job_group_department")
   if job:
     result = [values for values in result if values[1] == job]
   if group:
@@ -49,33 +58,27 @@ def elected_members():
     result = [values for values in result if values[3] == department]
   return jsonify(result)
 
-
+### Elected Member ###
 @app.route("/elected_member")
 def elected_member():
   name = request.args.get('name')
-  if name:
-    senateurValues = client.query(q.get(q.match(q.index("elected_member_ref_by_name"), name)))['data']
-    return jsonify(senateurValues)
-  return "name not found", 400
+  if not name:
+    return "name not found", 400
+  object = getDataFaunaIndex("elected_member_ref_by_name", name)
+  object['contributions'] = getDataFaunaIndex("contributions_ref_by_elected_member", name)
+  return object
 
-
+### Dates ###
 @app.route("/dates")
 def dates():
-  return jsonify(client.query(q.paginate(q.match(
-    q.index("sessions_date_link")
-  )))['data'])
+  return jsonify(paginateFaunaIndex("contributions_date_link"))
 
-
+### Votes Context ###
 @app.route("/votes/context")
 def votes_context():
-  return jsonify(client.query(q.paginate(q.match(
-    q.index("sessions_date_assembly")
-  )))['data'])
+  return jsonify(paginateFaunaIndex("votes_date_assembly_number"))
 
-
-# fixes:
-#   - get total and create all necessary indexes at init
-#   - error handling voteNumber
+### Votes ###
 @app.route("/votes")
 def votes():
   assembly = request.args.get("assembly")
@@ -94,39 +97,39 @@ def votes():
 
   indexName = "elected_members_vote_" + voteNumber
   if group:
-    match = q.match(q.index(indexName + "_by_job_group"), job, group)
+    votes = paginateFaunaIndex(indexName + "_by_job_group", job, group)
   else:
-    match = q.match(q.index(indexName + "_by_job"), job)
-  votes = client.query(q.paginate(match))['data']
-  print("votes: ", votes)
+    votes = paginateFaunaIndex(indexName + "_by_job", job)
   return { "pour": votes.count("pour"),
             "contre": votes.count("contre"),
             "none": votes.count("none") + votes.count("absent")}
 
+### Visualization ###
+def extractDataFromNamesToArray(objects, names, index, *args):
+  for name in names:
+    if len(args) == 1:
+      tmpObjects = paginateFaunaIndex(index, name, args[0])
+    else:
+      tmpObjects = paginateFaunaIndex(index, name)
+    for tmpObject in tmpObjects:
+      objects.append(tmpObject)
 
 @app.route("/visualization")
 def visualization():
   assembly = request.args.get('assembly')
   group = request.args.get('group')
   type = request.args.get('type')
-  job = ""
-  if not type:
-    return "bad request: type is required", 400
-  if assembly == "sénat":
-    job = "sénateur"
-  elif assembly == "assemblée nationale":
-    job = "député"
 
-  if assembly:
-    if group:
-      match = q.match(q.index("elected_members_contributions_by_job_group"), job, group,)
+  if group:
+    contribs = []
+    names = paginateFaunaIndex("elected_members_name_by_group", group)
+    if assembly:
+      extractDataFromNamesToArray(contribs, names, "contributions_text_by_elected_member_and_assembly", assembly)
     else:
-      match = q.match(q.index("elected_members_contributions_by_job"), job)
-  elif group:
-    match = q.match(q.index("elected_members_contributions_by_group"), group)
+      extractDataFromNamesToArray(contribs, names, "contributions_text_by_elected_member")
+  elif assembly:
+    contribs = paginateFaunaIndex("contributions_text_by_assembly", assembly)
   else:
-    print('else')
-    match = q.match(q.index("all_elected_members_contributions"))
-  arrayText = client.query(q.paginate(match))['data']
-  # launch nlp function
-  return jsonify(client.query(q.paginate(match))['data'])
+    contribs = paginateFaunaIndex("all_contributions_text")
+  # NLP: use contribs and type
+  return jsonify(contribs)

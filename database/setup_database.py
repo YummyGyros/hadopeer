@@ -24,18 +24,33 @@ client = FaunaClient(
   scheme=o.scheme
 )
 
-def addInterventionsFromSessionsToElectedMembers(sessionsPath, membersPath):
-  jsonTools.addFieldToJsonArrayFile(membersPath, "contributions", [])
-  rawFileData = open(sessionsPath, 'r')
-  sessions = json.load(rawFileData)
-  for session in sessions:
-    for article in session['articles']:
-      for contribution in article['contributions']:
-        jsonTools.addValueToArrayInObjectOfJsonArrayFile(
-          membersPath,
-          "name", contribution['elected_member'],
-          "contributions", contribution['text']
-        )
+def tryAddTextToExistingElem(date, member, text, objects):
+  for object in objects:
+    if object['date'] == date:
+      if object['elected_member'] == member:
+        object['text'].append(text)
+        return True
+  return False
+
+def loadContributionsCollectionFromSessions(collection, filepath):
+  rawFileData = open(filepath, 'r')
+  jsonFileData = json.load(rawFileData)
+  objects = []
+  for elem in jsonFileData:
+    for contrib in elem['contributions']:
+      if not tryAddTextToExistingElem(elem['date'], contrib['elected_member'], contrib['text'], objects):
+        object = {
+          'elected_member': contrib['elected_member'],
+          'date': elem['date'],
+          'link': elem['link'],
+          'text': [contrib['text']],
+          'assembly': elem['assembly']
+        }
+        objects.append(object)
+  for object in objects:
+    client.query(q.create(
+        q.collection(collection), {"data": object}
+    ))
 
 def loadJsonArrayFileToFaunaCollection(filepath, collection):
   rawFileData = open(filepath, 'r')
@@ -59,23 +74,23 @@ def createFaunaFieldsArray(values):
     array.append({ 'field': ['data', value] })
   return array
 
-# extract contributions from sessions files to elected_members files ###
-addInterventionsFromSessionsToElectedMembers("../senate_sessions.json", "../senators.json")
-jsonTools.deleteFieldFromJsonArrayFile("../senate_sessions.json", "articles")
-addInterventionsFromSessionsToElectedMembers("../national_assembly_sessions.json", "../deputies.json")
-jsonTools.deleteFieldFromJsonArrayFile("../national_assembly_sessions.json", "articles")
+### collection contributions ###
+client.query(q.create_collection({'name': 'contributions'}))
+filepath = '../senate_sessions.json'
+jsonTools.addFieldToJsonArrayFile(filepath, "assembly", "sénat")
+loadContributionsCollectionFromSessions('contributions', filepath)
+filepath = '../national_assembly_sessions.json'
+jsonTools.addFieldToJsonArrayFile(filepath, "assembly", "assemblée nationale")
+loadContributionsCollectionFromSessions('contributions', filepath)
+
+### collection votes ###
+client.query(q.create_collection({"name": "votes"}))
+loadJsonArrayFileToFaunaCollection("../votes.json", "votes")
 
 ###  collection elected_members ###
 client.query(q.create_collection({"name":"elected_members"}))
 loadJsonArrayFileToFaunaCollection("../senators.json", "elected_members")
 loadJsonArrayFileToFaunaCollection("../deputies.json", "elected_members")
-
-### collection sessions ###
-client.query(q.create_collection({"name":"sessions"}))
-jsonTools.addFieldToJsonArrayFile("../senate_sessions.json", "assembly", "sénat")
-jsonTools.addFieldToJsonArrayFile("../national_assembly_sessions.json", "assembly", "assemblée nationale")
-loadJsonArrayFileToFaunaCollection("../senate_sessions.json", "sessions")
-loadJsonArrayFileToFaunaCollection("../national_assembly_sessions.json", "sessions")
 
 terms = []
 values = []
@@ -84,17 +99,22 @@ values = []
 values = createFaunaFieldsArray(['name', 'job', 'group', 'department'])
 createFaunaIndex('all_elected_members_name_job_group_department', 'elected_members', values)
 
+# TO TEST WITHOUT IN SERVER
 ### index for /elected_member ###
 values = [{'field': ['ref']}]
 terms = createFaunaFieldsArray(['name'])
 createFaunaIndex('elected_member_ref_by_name', 'elected_members', values, terms)
+terms = createFaunaFieldsArray(['elected_member'])
+createFaunaIndex('contributions_ref_by_elected_member', 'contributions', values, terms)
 
+# PROBLEM OF DUPLICATION
 ### indexes for /dates ###
 values = createFaunaFieldsArray(['date', 'link'])
-createFaunaIndex('sessions_date_link', 'sessions', values)
+createFaunaIndex('contributions_date_link', 'contributions', values)
 
-values = createFaunaFieldsArray(['date', 'assembly'])
-createFaunaIndex('sessions_date_assembly', 'sessions', values)
+### indexes for /votes/context ###
+values = createFaunaFieldsArray(['date', 'assembly', 'number'])
+createFaunaIndex('votes_date_assembly_number', 'votes', values)
 
 ### indexes for /votes ###
 values = createFaunaFieldsArray(['vote_1'])
@@ -114,17 +134,21 @@ terms = createFaunaFieldsArray(['job', 'group'])
 createFaunaIndex('elected_members_vote_2_by_job_group', 'elected_members', values, terms)
 
 ### indexes for /visualization ####
-values = createFaunaFieldsArray(['contributions'])
-createFaunaIndex('all_elected_members_contributions', 'elected_members', values)
+values = createFaunaFieldsArray(['text'])
+createFaunaIndex('all_contributions_text', 'contributions', values)
 
-values = createFaunaFieldsArray(['contributions'])
+values = createFaunaFieldsArray(['name'])
 terms = createFaunaFieldsArray(['group'])
-createFaunaIndex('elected_members_contributions_by_group', 'elected_members', values, terms)
+createFaunaIndex('elected_members_name_by_group', 'elected_members', values, terms)
 
-values = createFaunaFieldsArray(['contributions'])
-terms = createFaunaFieldsArray(['job'])
-createFaunaIndex('elected_members_contributions_by_job', 'elected_members', values, terms)
+values = createFaunaFieldsArray(['text'])
+terms = createFaunaFieldsArray(['assembly'])
+createFaunaIndex('contributions_text_by_assembly', 'contributions', values, terms)
 
-values = createFaunaFieldsArray(['contributions'])
-terms = createFaunaFieldsArray(['job', 'group'])
-createFaunaIndex('elected_members_contributions_by_job_group', 'elected_members', values, terms)
+values = createFaunaFieldsArray(['text'])
+terms = createFaunaFieldsArray(['elected_member'])
+createFaunaIndex('contributions_text_by_elected_member', 'contributions', values, terms)
+
+values = createFaunaFieldsArray(['text'])
+terms = createFaunaFieldsArray(['elected_member', 'assembly'])
+createFaunaIndex('contributions_text_by_elected_member_and_assembly', 'contributions', values, terms)
