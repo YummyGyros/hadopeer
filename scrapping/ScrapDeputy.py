@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import json
 from os import path
 import unicodedata
+import re
 from tqdm import tqdm
 
 JsonDeputy = "deputes.json"
@@ -104,11 +105,16 @@ def detect_debat(url, name):
         for a in children_field:
             if a.string and "XIIIe législature" in a.string:
                 mandat = s
+
                 j = mandat.findChildren("b")
                 result.append(j[0].get_text(strip=True))
                 j = mandat.findChildren("dd")
+                # print("-----------------------------------------", j, sep='\n')
                 result.append(j[3].get_text(strip=True))
-                result.append(j[4].get_text(strip=True))
+                if len(j) < 5 :
+                    result.append("non inscrit")
+                else:
+                    result.append(j[4].get_text(strip=True))
                 return result
             i += 1
     print(result)
@@ -121,7 +127,7 @@ def put_deputy(name, url, state):
         json_deputy = {"name": result[0], "fonction": "depute", "mandat": result[1], "departement": result[2], "groupe_politique": result[3]}
         start_json.append(json_deputy)
         json_deputy = json.dumps(start_json, indent=4, separators=(',',': '))
-        print(json_deputy)
+        # print(json_deputy)
         with open(JsonDeputy, 'w') as outfile:
             outfile.write(json_deputy)
         ScrapDeputy.first = False
@@ -140,6 +146,8 @@ def ScrapDeputy(suffix, lst_deputy):
     body = soup.find("table", )
     list_deputy = body.find_all("a", href=True)
     for deputy in list_deputy:
+        if len(lst_deputy) == 5:
+            print(lst_deputy)
         for name in lst_deputy:
             dep = re.sub(r"(\w)([A-Z])", r"\1 \2", deputy.get_text(strip=True))
             if name in dep:
