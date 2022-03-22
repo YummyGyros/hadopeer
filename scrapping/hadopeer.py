@@ -43,7 +43,7 @@ def hadopeer():
         ScrapDeputy.page = 1
         DeputyName = list(dict.fromkeys(DeputyName))
         print(DeputyName)
-        ScrapDeputy("", DeputyName)
+        ScrapDeputy("", DeputyName, [])
 
 
 
