@@ -10,37 +10,34 @@ JsonDeputy = "deputes.json"
 JsonSenator = "senateurs.json"
 listObj = []
 
-#def vote_choice(deputy, choice):
-#
-#    if (choice.split()[0] == "Pour"):
-#        return (deputy, "Pour")
-#    if (choice.split()[0] == "Contre"):
-#        return (deputy, "Contre")
-#    if (choice.split()[0] == "Abstention"):
-#        return (deputy, "Absent")
-#    if (choice.split()[0] == "Non-votant"):
-#        return (deputy, "Non-votant")
-#
-#
-#def get_vote_deputy(lst_deputy):
-#    page = requests.get("https://www.assemblee-nationale.fr/13/scrutins/jo0386.asp")
-#    soup = BeautifulSoup(page.content, 'html.parser')
-#    lst_name = []
-#
-#    type_vote = soup.find_all("p", class_="typevote")
-#    people = soup.find_all("p", class_="noms")
-#    i = 0
-#    lst_deputyV = []
-#
-#    for vote in type_vote:
-#        if "pour" in vote.get_text():
-#            lst_deputyV = people[i].split()
-#            for deputy in lst_deputyV:   
-#                if not deputy in lst_deputy:
-#                    lst_deputy.append(deputy)   
-#                return()
-#        i += 1
+def vote_choice(deputy, choice):
+    if (choice.split()[0] == "Pour"):
+        return (deputy, "pour")
+    if (choice.split()[0] == "Contre"):
+        return (deputy, "contre")
+    if (choice.split()[0] == "Abstention"):
+        return (deputy, "absent")
+    return (deputy, "none")
 
+
+def get_vote_deputy(lst_deputy):
+    page = requests.get("https://www.assemblee-nationale.fr/13/scrutins/jo0386.asp")
+    soup = BeautifulSoup(page.content, 'html.parser')
+    lst_vote = []
+
+    type_vote = soup.find_all("p", class_="typevote")
+    people = soup.find_all("p", class_="noms")
+    i = 0
+    lst_deputyV = []
+
+    for vote in type_vote:
+        lst_deputyV = people[i].split()
+        for deputy in lst_deputyV:   
+            if not deputy in lst_deputy:
+                lst_deputy.append(deputy)   
+            lst_vote.append(vote_choice(deputy, type_vote[i]))
+        i += 1
+    return lst_vote
     
 
 def detect_debat(url, name):
@@ -99,7 +96,7 @@ def put_deputy(name, url, state):
                         separators=(',',': '))
 
 def ScrapDeputy(suffix, lst_deputy):
-#    lst_vote = get_vote_deputy(lst_deputy)
+    lst_vote = get_vote_deputy(lst_deputy)
     page = requests.get("https://www2.assemblee-nationale.fr/sycomore/resultats" + suffix)
     soup = BeautifulSoup(page.content, 'html.parser')
     body = soup.find("table", )
