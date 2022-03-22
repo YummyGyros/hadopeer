@@ -42,7 +42,7 @@ def paginateFaunaIndex(indexName, *args):
 def hello():
   return "hello"
 
-
+### Elected Members ###
 @app.route("/elected_members")
 def elected_members():
   job = request.args.get('job')
@@ -58,7 +58,7 @@ def elected_members():
     result = [values for values in result if values[3] == department]
   return jsonify(result)
 
-
+### Elected Member ###
 @app.route("/elected_member")
 def elected_member():
   name = request.args.get('name')
@@ -68,17 +68,17 @@ def elected_member():
   object['contributions'] = getDataFaunaIndex("contributions_ref_by_elected_member", name)
   return object
 
-
+### Dates ###
 @app.route("/dates")
 def dates():
   return jsonify(paginateFaunaIndex("contributions_date_link"))
 
-
+### Votes Context ###
 @app.route("/votes/context")
 def votes_context():
   return jsonify(paginateFaunaIndex("votes_date_assembly_number"))
 
-
+### Votes ###
 @app.route("/votes")
 def votes():
   assembly = request.args.get("assembly")
@@ -104,6 +104,15 @@ def votes():
             "contre": votes.count("contre"),
             "none": votes.count("none") + votes.count("absent")}
 
+### Visualization ###
+def extractDataFromNamesToArray(objects, names, index, *args):
+  for name in names:
+    if len(args) == 1:
+      tmpObjects = paginateFaunaIndex(index, name, args[0])
+    else:
+      tmpObjects = paginateFaunaIndex(index, name)
+    for tmpObject in tmpObjects:
+      objects.append(tmpObject)
 
 @app.route("/visualization")
 def visualization():
@@ -115,17 +124,11 @@ def visualization():
     contribs = []
     names = paginateFaunaIndex("elected_members_name_by_group", group)
     if assembly:
-      for name in names:
-        tmpObjects = paginateFaunaIndex("contributions_text_by_elected_member_and_assembly", name, assembly)
-        for tmpObject in tmpObjects:
-          contribs.append(tmpObject)
+      extractDataFromNamesToArray(contribs, names, "contributions_text_by_elected_member_and_assembly", assembly)
     else:
-      for name in names:
-        tmpObjects = paginateFaunaIndex("contributions_text_by_elected_member", name)
-        for tmpObject in tmpObjects:
-          contribs.append(tmpObject)
+      extractDataFromNamesToArray(contribs, names, "contributions_text_by_elected_member")
     return jsonify(contribs)
-  
+
   if assembly:
     return jsonify(paginateFaunaIndex("contributions_text_by_assembly", assembly))
   else:
