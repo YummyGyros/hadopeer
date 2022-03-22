@@ -145,16 +145,20 @@ def put_deputy(name, url, state, lst_vote):
     result = []
     start_json = []
     choice = 0
-    acronym = {"La République en Marche" : "RM",
-               "Les Républicains" : "R",
-               "Mouvement Démocrate (MoDem) et Démocrates apparentés" : "MDD",
-               "Socialistes et apparentés" : "SA",
-               "Agir ensemble" : "AE",
-               "UDI et Indépendants" : "UDII",
-               "Libertés et Territoires" : "LT",
-               "La France insoumise" : "FI",
-               "Gauche démocrate et républicaine" : "GDR",
-               "Non inscrit" : "NA"
+    acronym = {"union pour un mouvement populaire" : "UMP",
+               "socialiste, radical et citoyen" : "SRC",
+               "socialiste" : "SRC",
+               "nouveau centre" : "NC",
+               "socialiste, radical et citoyen et divers gauche" : "SRC-G",
+               "apparent\u00e9 \u00e0 l'union pour un mouvement populaire" : "UMP-A",
+               "apparenté union pour un mouvement populaire" : "UMP-A",
+               "union pour un mouvement populaire\rgauche d\u00e9mocrate et r\u00e9publicaine\rgauche d\u00e9mocrate et r\u00e9publicaine" : "UMP",
+               "apparent\u00e9 socialiste, radical et citoyen et divers gauche" : "SRC-A",
+               "apparent\u00e9 nouveau centre" : "NC-A",
+               "gauche d\u00e9mocrate et r\u00e9publicaine" : "GDR",
+               "d\u00e9put\u00e9s n'appartenant \u00e0 aucun groupe" : "NA",
+               "union pour la majorit\u00e9 pr\u00e9sidentielle" : "UMP",
+               "non-inscrit" : "NA"
             }
     result = detect_debat(url, name)
     print("list")
@@ -164,7 +168,7 @@ def put_deputy(name, url, state, lst_vote):
         choice += 1
 
     if (state == True):
-        json_deputy = {"name": result[0], "fonction": "depute", "mandat": result[1], "departement": result[2], "groupe_politique": result[3], "scrutin" : [lst_vote[choice][1]]}
+        json_deputy = {"name": result[0], "job": "depute", "mandate": result[1], "department": result[2], "group": acronym[result[3].lower()], "votes" : [lst_vote[choice][1]]}
         start_json.append(json_deputy)
         json_deputy = json.dumps(start_json, indent=4, separators=(',',': '))
         print(json_deputy)
@@ -178,7 +182,7 @@ def put_deputy(name, url, state, lst_vote):
         if result != None:
             with open(JsonDeputy) as fp:
                 listObj = json.load(fp)
-            listObj.append({"name": result[0], "fonction": "depute", "mandat": result[1], "departement": result[2], "groupe_politique": result[3], "scrutin" : ["none" if choice >= len(lst_vote) else lst_vote[choice][1]]})
+            listObj.append({"name": result[0], "job": "depute", "mandate": result[1], "department": result[2], "group": acronym[result[3].lower()], "votes" : ["none" if choice >= len(lst_vote) else lst_vote[choice][1]]})
             with open(JsonDeputy, 'w') as json_file:
                 json.dump(listObj, json_file, 
                             indent=4,  
@@ -385,7 +389,7 @@ def ScrapSenator(name, scrutin, senator_2008):
         if name in senator:
 
             if (ScrapSenator.first == True):
-                json_senator = {"name": name, "fonction": "senateur", "mandat": "2008-2011", "departement": senator_2008[name][0], "groupe_politique": senator_2008[name][1], "scrutins": [name_scrutin[0], name_scrutin[1]]}
+                json_senator = {"name": name.title(), "job": "senateur", "mandate": "2008-2011", "department": senator_2008[name][0], "group": senator_2008[name][1], "vote": [name_scrutin[0], name_scrutin[1]]}
                 start_json.append(json_senator)
                 json_senator = json.dumps(start_json, indent=4, separators=(',',': '))
                 with open(JsonSenator, 'w') as outfile:
@@ -394,7 +398,7 @@ def ScrapSenator(name, scrutin, senator_2008):
             else:
                 with open(JsonSenator) as fp:
                     listObj = json.load(fp)
-                listObj.append({"name": name, "fonction": "senateur", "mandat": "2008-2011", "departement": senator_2008[name][0], "groupe_politique": senator_2008[name][1], "scrutins": [name_scrutin[0], name_scrutin[1]]})
+                listObj.append({"name": name.title(), "job": "senateur", "mandate": "2008-2011", "department": senator_2008[name][0], "group": senator_2008[name][1], "vote": [name_scrutin[0], name_scrutin[1]]})
                 with open(JsonSenator, 'w') as json_file:
                     json.dump(listObj, json_file, 
                                 indent=4,  
