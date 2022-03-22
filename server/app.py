@@ -127,10 +127,9 @@ def visualization():
       extractDataFromNamesToArray(contribs, names, "contributions_text_by_elected_member_and_assembly", assembly)
     else:
       extractDataFromNamesToArray(contribs, names, "contributions_text_by_elected_member")
-    return jsonify(contribs)
-
-  if assembly:
-    return jsonify(paginateFaunaIndex("contributions_text_by_assembly", assembly))
+  elif assembly:
+    contribs = paginateFaunaIndex("contributions_text_by_assembly", assembly)
   else:
-    return jsonify(paginateFaunaIndex("all_contributions_text"))
-  # launch nlp function depending on type var
+    contribs = paginateFaunaIndex("all_contributions_text")
+  # NLP: use contribs and type
+  return jsonify(contribs)
