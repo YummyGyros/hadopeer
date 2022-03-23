@@ -1,11 +1,16 @@
 import os
 import json
 import sys
+import dateparser
 from urllib.parse import urlparse
 from faunadb import query as q
 from faunadb.client import FaunaClient
-
 import jsonTools
+import warnings
+warnings.filterwarnings(
+    "ignore",
+    message="The localize method is no longer necessary, as this time zone supports the fold attribute",
+)
 
 secret = os.getenv("FAUNADB_SECRET")
 endpoint = os.getenv("FAUNADB_ENDPOINT")
@@ -41,7 +46,7 @@ def loadContributionsCollectionFromSessions(collection, filepath):
       if not tryAddTextToExistingElem(elem['date'], contrib['elected_member'], contrib['text'], objects):
         object = {
           'elected_member': contrib['elected_member'],
-          'date': q.date(elem['date']),
+          'date': q.date(dateparser.parse(elem['date']).date()),
           'link': elem['link'],
           'text': [contrib['text']],
           'assembly': elem['assembly']

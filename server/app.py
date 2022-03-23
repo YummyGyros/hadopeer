@@ -1,6 +1,5 @@
 import os
 import sys
-from tkinter.font import names
 from urllib.parse import urlparse
 from faunadb import query as q
 from faunadb.client import FaunaClient
@@ -71,7 +70,10 @@ def elected_member():
 ### Dates ###
 @app.route("/dates")
 def dates():
-  return jsonify(paginateFaunaIndex("contributions_date_link"))
+  dates_links = paginateFaunaIndex("contributions_date_link")
+  for date_link in dates_links:
+    date_link[0] = date_link[0].strftime("%d/%m/%Y")
+  return jsonify(dates_links)
 
 ### Votes Context ###
 @app.route("/votes/context")
