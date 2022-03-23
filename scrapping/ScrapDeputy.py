@@ -346,14 +346,14 @@ def other_scrap(SenatorNom, pb, scrutin):
     lst_senator_2008 = take_senator()
     SenatorNom = list(set(SenatorNom))
 
-    for i in tqdm(range(len(SenatorNom)), desc="Scraping Senator info", disable=pb):
+    for i in tqdm(range(len(SenatorNom)), desc="Scrapping Senator info", disable=pb):
         ScrapSenator(SenatorNom[i].lower(), scrutin, lst_senator_2008)
     lst_senator = vote_Senator.lst_senator
 
     for name in SenatorNom:
         if name.lower() in lst_senator:
             lst_senator.remove(name.lower())
-    for i in tqdm(range(len(vote_Senator.lst_senator)), desc="other Scraping", disable=pb):
+    for i in tqdm(range(len(vote_Senator.lst_senator)), desc="Other Scrapping", disable=pb):
         ScrapSenator(lst_senator[i], scrutin, lst_senator_2008)
 
 def ScrapSenator(name, scrutin, senator_2008):
