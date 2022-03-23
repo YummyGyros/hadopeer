@@ -1,6 +1,5 @@
 import os
 import sys
-from tkinter.font import names
 from urllib.parse import urlparse
 from faunadb import query as q
 from faunadb.client import FaunaClient
