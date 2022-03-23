@@ -42,7 +42,6 @@ def hadopeer():
         ScrapDeputy.first = True
         ScrapDeputy.page = 1
         DeputyName = list(dict.fromkeys(DeputyName))
-        print(DeputyName)
         ScrapDeputy("", DeputyName, [])
 
 

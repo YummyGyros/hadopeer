@@ -7,9 +7,9 @@ import re
 from tqdm import tqdm
 import re
 
-JsonDeputy = "deputes.json"
-JsonSenator = "senateurs.json"
-JsonDate = "Date_vote.json"
+JsonDeputy = "deputies.json"
+JsonSenator = "senators.json"
+JsonDate = "votes.json"
 listObj = []
 
 
@@ -52,8 +52,6 @@ def normalize_list(lst):
         
         text = strip_accents(text)
         lst_nomalized.append(unicodedata.normalize("NFKD", text))
-#        print(text)
-#    print(lst_nomalized)
     return lst_nomalized
 
 def get_vote_deputy(lst_deputy):
@@ -68,16 +66,9 @@ def get_vote_deputy(lst_deputy):
 
     type_vote = soup.find_all("p", class_="typevote")
     people = soup.find_all("p", class_="noms")
-#    print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")
-#    print(people[0].get_text())
-#    print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")
     for vote in type_vote:
         lst_deputyV = people[i].get_text().replace(u'\xa0', u' ').split(",")
-#        print(lst_deputyV)
         lst_tmp = normalize_list(lst_deputyV)
-#        print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")
-#        print(lst_tmp)
-#        print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")
         for deputy in lst_tmp:
             if "Mmes" in deputy:
                 deputy = deputy[5:]
@@ -87,7 +78,6 @@ def get_vote_deputy(lst_deputy):
                 lst_deputyV[lst_i] = lst_deputyV[lst_i][4:]
             elif "MM." in deputy:
                 deputy = deputy[4:]
-#                print(deputy)
                 lst_deputyV[lst_i] = lst_deputyV[lst_i][4:]
             elif "M." in deputy:
                 deputy = deputy[3:]
@@ -97,8 +87,6 @@ def get_vote_deputy(lst_deputy):
                 lst_deputyV[lst_i] = lst_deputyV[lst_i][1:]
             if not deputy in lst_Normalized:
                 lst_deputy.append(lst_deputyV[lst_i])
-#            print(vote)
-#            print(deputy)
             lst_vote.append(vote_choice(lst_deputyV[lst_i], vote.get_text(strip=True)))
             lst_i += 1
         lst_i = 0
@@ -132,14 +120,12 @@ def detect_debat(url, name):
                 result.append(j[0].get_text(strip=True))
                 j = mandat.findChildren("dd")
                 result.append(j[3].get_text(strip=True))
-#                print(len(j))
                 if len(j) < 5:
                     result.append("non-inscrit")
                 else:
                     result.append(j[4].get_text(strip=True))
                 return result
             i += 1
-#    print(result)
 
 def put_deputy(name, url, state, lst_vote):
     result = []
@@ -161,28 +147,23 @@ def put_deputy(name, url, state, lst_vote):
                "non-inscrit" : "NA"
             }
     result = detect_debat(url, name)
-    print("list")
     for namee, vote in lst_vote:
         if namee in name:
             break
         choice += 1
 
     if (state == True):
-        json_deputy = {"name": result[0], "job": "depute", "mandate": result[1], "department": result[2], "group": acronym[result[3].lower()], "votes" : [lst_vote[choice][1]]}
+        json_deputy = {"name": result[0], "job": "depute", "mandate": result[1], "department": result[2], "group": acronym[result[3].lower()], "votes" : {"vote_1": lst_vote[choice][1]}}
         start_json.append(json_deputy)
         json_deputy = json.dumps(start_json, indent=4, separators=(',',': '))
-        print(json_deputy)
         with open(JsonDeputy, 'w') as outfile:
             outfile.write(json_deputy)
         ScrapDeputy.first = False
     else:
-        print(result)
-        print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=")
-        print(result[0])
         if result != None:
             with open(JsonDeputy) as fp:
                 listObj = json.load(fp)
-            listObj.append({"name": result[0], "job": "depute", "mandate": result[1], "department": result[2], "group": acronym[result[3].lower()], "votes" : ["none" if choice >= len(lst_vote) else lst_vote[choice][1]]})
+            listObj.append({"name": result[0], "job": "depute", "mandate": result[1], "department": result[2], "group": acronym[result[3].lower()], "votes" : {"vote_1": "none" if choice >= len(lst_vote) else lst_vote[choice][1]}})
             with open(JsonDeputy, 'w') as json_file:
                 json.dump(listObj, json_file, 
                             indent=4,  
@@ -193,8 +174,6 @@ def ScrapDeputy(suffix, lst_deputy, lst_vote):
     if ScrapDeputy.page == 1:
         lst_vote = get_vote_deputy(lst_deputy)
         create_vote_json_Assembly()
-    print(lst_deputy)
-    print(ScrapDeputy.page)
     page = requests.get("https://www2.assemblee-nationale.fr/sycomore/resultats" + suffix)
     soup = BeautifulSoup(page.content, 'html.parser')
     body = soup.find("table", )
@@ -389,7 +368,7 @@ def ScrapSenator(name, scrutin, senator_2008):
         if name in senator:
 
             if (ScrapSenator.first == True):
-                json_senator = {"name": name.title(), "job": "senateur", "mandate": "2008-2011", "department": senator_2008[name][0], "group": senator_2008[name][1], "vote": [name_scrutin[0], name_scrutin[1]]}
+                json_senator = {"name": name.title(), "job": "senateur", "mandate": "2008-2011", "department": senator_2008[name][0], "group": senator_2008[name][1], "vote": {"vote_1": name_scrutin[0], "vote_2" : name_scrutin[1]}} 
                 start_json.append(json_senator)
                 json_senator = json.dumps(start_json, indent=4, separators=(',',': '))
                 with open(JsonSenator, 'w') as outfile:
@@ -398,7 +377,7 @@ def ScrapSenator(name, scrutin, senator_2008):
             else:
                 with open(JsonSenator) as fp:
                     listObj = json.load(fp)
-                listObj.append({"name": name.title(), "job": "senateur", "mandate": "2008-2011", "department": senator_2008[name][0], "group": senator_2008[name][1], "vote": [name_scrutin[0], name_scrutin[1]]})
+                listObj.append({"name": name.title(), "job": "senateur", "mandate": "2008-2011", "department": senator_2008[name][0], "group": senator_2008[name][1], "vote": {"vote_1" : name_scrutin[0], "vote_2" : name_scrutin[1]}})
                 with open(JsonSenator, 'w') as json_file:
                     json.dump(listObj, json_file, 
                                 indent=4,  
