@@ -6,12 +6,19 @@ import unicodedata
 import re
 from tqdm import tqdm
 import re
+import dateparser
+import warnings
+
 
 JsonDeputy = "deputies.json"
 JsonSenator = "senators.json"
 JsonDate = "votes.json"
 listObj = []
 
+warnings.filterwarnings(
+    "ignore",
+    message="The localize method is no longer necessary, as this time zone supports the fold attribute",
+)
 
 
 def strip_accents(s):
@@ -22,7 +29,6 @@ def create_vote_json_Assembly():
     scrutin = "https://www.assemblee-nationale.fr/13/scrutins/jo0386.asp"
     page = requests.get(scrutin)
     soup = BeautifulSoup(page.content, 'html.parser')
-
     title = soup.find("p", {"class": "entetegeneraliste"})
     name = title.get_text().split('-')[1]
     name = name[11:]
@@ -30,7 +36,7 @@ def create_vote_json_Assembly():
 
     with open(JsonDate) as fp:
         listObj = json.load(fp)
-    listObj.append({"date": name, "assembly" : "Assemblé National", "number" : 1})
+    listObj.append({"date": name, "assembly" : "assemblée nationale", "number" : 1})
     with open(JsonDate, 'w') as json_file:
         json.dump(listObj, json_file, 
                     indent=4,  
@@ -49,7 +55,6 @@ def normalize_list(lst):
     lst_nomalized = []
 
     for text in lst:
-        
         text = strip_accents(text)
         lst_nomalized.append(unicodedata.normalize("NFKD", text))
     return lst_nomalized
@@ -153,7 +158,7 @@ def put_deputy(name, url, state, lst_vote):
         choice += 1
 
     if (state == True):
-        json_deputy = {"name": result[0], "job": "depute", "mandate": result[1], "department": result[2], "group": acronym[result[3].lower()], "votes" : {"vote_1": lst_vote[choice][1]}}
+        json_deputy = {"name": result[0], "job": "depute", "mandate": result[1], "department": result[2], "group": acronym[result[3].lower()], "vote_1": lst_vote[choice][1]}
         start_json.append(json_deputy)
         json_deputy = json.dumps(start_json, indent=4, separators=(',',': '))
         with open(JsonDeputy, 'w') as outfile:
@@ -163,7 +168,7 @@ def put_deputy(name, url, state, lst_vote):
         if result != None:
             with open(JsonDeputy) as fp:
                 listObj = json.load(fp)
-            listObj.append({"name": result[0], "job": "depute", "mandate": result[1], "department": result[2], "group": acronym[result[3].lower()], "votes" : {"vote_1": "none" if choice >= len(lst_vote) else lst_vote[choice][1]}})
+            listObj.append({"name": result[0], "job": "depute", "mandate": result[1], "department": result[2], "group": acronym[result[3].lower()], "vote_1": "none" if choice >= len(lst_vote) else lst_vote[choice][1]})
             with open(JsonDeputy, 'w') as json_file:
                 json.dump(listObj, json_file, 
                             indent=4,  
@@ -203,9 +208,11 @@ def create_vote_json_Senat(lecture):
     start_json = []
     name = title.get_text().split('-')[1]
     name = name[11:]
+    date = dateparser.parse(name).date()
+    date = date.strftime("%d/%m/%Y")
 
     if (lecture == 1):
-        json_senator = {"date": name, "assembly" : "Sénat", "number" : lecture}
+        json_senator = {"date": date, "assembly" : "sénat", "number" : lecture}
         start_json.append(json_senator)
         json_senator = json.dumps(start_json, indent=4, separators=(',',': '))
         with open(JsonDate, 'w') as outfile:
@@ -213,7 +220,7 @@ def create_vote_json_Senat(lecture):
     else:
         with open(JsonDate) as fp:
             listObj = json.load(fp)
-        listObj.append({"date": name, "assembly" : "Sénat", "number" : lecture})
+        listObj.append({"date": date, "assembly" : "sénat", "number" : lecture})
         with open(JsonDate, 'w') as json_file:
             json.dump(listObj, json_file, 
                         indent=4,  
@@ -368,7 +375,7 @@ def ScrapSenator(name, scrutin, senator_2008):
         if name in senator:
 
             if (ScrapSenator.first == True):
-                json_senator = {"name": name.title(), "job": "senateur", "mandate": "2008-2011", "department": senator_2008[name][0], "group": senator_2008[name][1], "vote": {"vote_1": name_scrutin[0], "vote_2" : name_scrutin[1]}} 
+                json_senator = {"name": name.title(), "job": "senateur", "mandate": "2008-2011", "department": senator_2008[name][0], "group": senator_2008[name][1], "vote_1": name_scrutin[0], "vote_2" : name_scrutin[1]} 
                 start_json.append(json_senator)
                 json_senator = json.dumps(start_json, indent=4, separators=(',',': '))
                 with open(JsonSenator, 'w') as outfile:
@@ -377,7 +384,7 @@ def ScrapSenator(name, scrutin, senator_2008):
             else:
                 with open(JsonSenator) as fp:
                     listObj = json.load(fp)
-                listObj.append({"name": name.title(), "job": "senateur", "mandate": "2008-2011", "department": senator_2008[name][0], "group": senator_2008[name][1], "vote": {"vote_1" : name_scrutin[0], "vote_2" : name_scrutin[1]}})
+                listObj.append({"name": name.title(), "job": "senateur", "mandate": "2008-2011", "department": senator_2008[name][0], "group": senator_2008[name][1], "vote_1" : name_scrutin[0], "vote_2" : name_scrutin[1]})
                 with open(JsonSenator, 'w') as json_file:
                     json.dump(listObj, json_file, 
                                 indent=4,  
