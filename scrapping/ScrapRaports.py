@@ -95,7 +95,7 @@ def scrapSenat(urls, pb):
     lectures_senat = []
     premier_interventions_senat = ""
 
-    for i in tqdm(range(len(urls)), desc="Scraping senat", disable=pb):
+    for i in tqdm(range(len(urls)), desc="Scrapping Sénat", disable=pb):
         url = urls[i]
         interventions_senat = []
         articles_senat = []
