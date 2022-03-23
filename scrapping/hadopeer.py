@@ -6,8 +6,8 @@ from find_debate import find_debate
 from ScrapRaports import scrapSenat, scrapAN
 from ScrapDeputy import other_scrap, vote_Senator, ScrapDeputy
 
-tmpFileName_senat = 'lectures_senat.json'
-tmpFileName_AN = 'lectures_AN.json'
+tmpFileName_senat = 'senate_sessions.json'
+tmpFileName_AN = 'national_assembly_sessions.json'
 pb = noL = noS = True
 opt = 0
 

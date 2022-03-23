@@ -7,9 +7,9 @@ import re
 from tqdm import tqdm
 import re
 
-JsonDeputy = "deputes.json"
-JsonSenator = "senateurs.json"
-JsonDate = "Date_vote.json"
+JsonDeputy = "deputies.json"
+JsonSenator = "senators.json"
+JsonDate = "votes.json"
 listObj = []
 
 
