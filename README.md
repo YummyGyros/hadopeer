@@ -42,9 +42,9 @@ run:
 python3 ./scrapping/hadopeer.py
 ```
 setting:\
-&emsp;`-pb ` :&emsp;add progress bar\
-&emsp;`-noL` :&emsp;don't scrap lectures\
-&emsp;`-pbS` :&emsp;don't scrap senators
+&emsp;`-pb` :&emsp; progress bar\
+&emsp;`-noL` :&emsp; not scrapping sessions\
+&emsp;`-noS` :&emsp; not scrapping elected members
 
 ## Database
 

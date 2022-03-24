@@ -1,5 +1,10 @@
 import json
 
+def getObjectFromJsonArrayFile(path):
+  dataString = open(path, 'r')
+  objects = json.load(dataString)
+  return objects
+
 def addFieldToJsonArrayFile(filepath, field, value):
   dataString = open(filepath, 'r')
   objects = json.load(dataString)

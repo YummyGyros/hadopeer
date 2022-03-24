@@ -60,19 +60,34 @@ def elected_members():
 ### Elected Member ###
 @app.route("/elected_member")
 def elected_member():
-  name = request.args.get('name')
-  if not name:
-    return "name not found", 400
-  object = getDataFaunaIndex("elected_member_ref_by_name", name)
-  object['contributions'] = getDataFaunaIndex("contributions_ref_by_elected_member", name)
-  return object
+  return "Error 500: Internal error. Endpoint to be implemented soon.", 500
+  # name = request.args.get('name')
+  # if not name:
+  #   return "name not found", 400
+  # object = getDataFaunaIndex("elected_member_ref_by_name", name)
+  # object['contributions'] = getDataFaunaIndex("contributions_ref_by_elected_member", name)
+  # return object
 
 ### Dates ###
+def isContainedInArray(object, array):
+  for elem in array:
+    save = True
+    if len(object) != len(elem):
+      continue
+    for i in range(len(object)):
+      if object[i] != elem[i]:
+        save = False
+      if not save:
+        continue
+    if save:
+      return True
+  return False
+
 @app.route("/dates")
 def dates():
-  dates_links = paginateFaunaIndex("contributions_date_link")
-  for date_link in dates_links:
-    date_link[0] = date_link[0].strftime("%d/%m/%Y")
+  dates_links = paginateFaunaIndex("all_dates_links")
+  for elem in dates_links:
+    elem[0] = elem[0].strftime("%d/%m/%Y")
   return jsonify(dates_links)
 
 ### Votes Context ###
@@ -135,3 +150,8 @@ def visualization():
     contribs = paginateFaunaIndex("all_contributions_text")
   # NLP: use contribs and type
   return jsonify(contribs)
+
+### Others ###
+@app.route("/political_groups")
+def political_groups():
+  return jsonify(paginateFaunaIndex("elected_members_group"))

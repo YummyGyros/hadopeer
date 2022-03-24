@@ -82,7 +82,7 @@ def pagesSenat(url, hadopy):
                     SenatorNom.append(orateur.string.split('\"')[3])
                 if intervenant.text != "":
                     interventions_senat.append({
-                        "elected_member": orateur.string.split('\"')[3] if orateur.string.split(' ')[0] == 'cri:intervenant' else '',
+                        "elected_member": orateur.string.split('\"')[3].title() if orateur.string.split(' ')[0] == 'cri:intervenant' else '',
                         "text": intervenant.text.split("\n\n\n\n\n")[0].replace('\n', ' ').replace('\u00a0', ' ').rstrip().lstrip()
                     })
     return hadopy
@@ -95,7 +95,7 @@ def scrapSenat(urls, pb):
     lectures_senat = []
     premier_interventions_senat = ""
 
-    for i in tqdm(range(len(urls)), desc="Scraping senat", disable=pb):
+    for i in tqdm(range(len(urls)), desc="Scrapping Sénat", disable=pb):
         url = urls[i]
         interventions_senat = []
         articles_senat = []
