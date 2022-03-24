@@ -1,4 +1,6 @@
 import jsonTools
+import dateparser
+from faunadb import query as q
 
 def getAllContributions(filepaths):
     for path in filepaths:
@@ -39,22 +41,37 @@ def getContribsFromMatchingMembers(contribsPaths, membersPaths, field, value):
                 if (name == obj['elected_member'] for name in names):
                     contribs.append(contrib['text'])
 
+def getDatesLinksFromSessions(filepaths):
+    datesLinks = []
+    for path in filepaths:
+        objects = jsonTools.getObjectFromJsonArrayFile(path)
+        for obj in objects:
+            if (obj['date'] != dateLink[0] or obj['link'] != dateLink[1] for dateLink in datesLinks):
+                date = dateparser.parse(obj['date']).date().strftime("%Y-%m-%d")
+                datesLinks.append({ 'date': q.date(date), 'link': obj['link']})
+    return datesLinks
+
 if __name__ == "__main__":
     contribsPaths = ['national_assembly_sessions.json']
     for i in range(len(contribsPaths)):
         contribsPaths[i] = '../save_valid_json/' + contribsPaths[i]
+    # membersPaths = ['deputies.json']
+    # for i in range(len(membersPaths)):
+    #     membersPaths[i] = '../save_valid_json/' + membersPaths[i]
+    # allContribs = getAllContributions(contribsPaths)
+    # allDateContribs = getAllDateContributions(contribsPaths)
+    # deputiesContribs = getContribsFromMatchingMembers(contribsPaths, membersPaths, "job", "député")
+    print(getDatesLinksFromSessions(contribsPaths))
 
-    membersPaths = ['deputies.json']
-    for i in range(len(membersPaths)):
-        membersPaths[i] = '../save_valid_json/' + membersPaths[i]
-    # allContribs = getAllContributions(files)
-    # allDateContribs = getAllDateContributions(files)
-    deputiesContribs = getContribsFromMatchingMembers(contribsPaths, membersPaths, "job", "député")
-    # ISSUES:
-    #   - fonction très proche des autres: meilleure archi?
-    #   - peu opti: pour les sessions du sénat, compare avec sénateurs et députés actuellement
-    #   - recup DateContribs?
-    #   - filtre soit Sénat soit UMP mais comment filtrer Sénat ET UMP (car groupe existe a l'AN aussi)
+
+
+
+
+# ISSUES:
+#   - fonction très proche des autres: meilleure archi?
+#   - peu opti: pour les sessions du sénat, compare avec sénateurs et députés actuellement
+#   - recup DateContribs?
+#   - filtre soit Sénat soit UMP mais comment filtrer Sénat ET UMP (car groupe existe a l'AN aussi)
 
 # main preprocess
 # 1) getDataFromJsonScrapped

@@ -85,14 +85,10 @@ def isContainedInArray(object, array):
 
 @app.route("/dates")
 def dates():
-  dates_links = paginateFaunaIndex("contributions_date_link")
-  cleanArray = []
-  for date_link in dates_links:
-    if not isContainedInArray(date_link, cleanArray):
-      cleanArray.append(date_link)
-  for elem in cleanArray:
+  dates_links = paginateFaunaIndex("all_dates_links")
+  for elem in dates_links:
     elem[0] = elem[0].strftime("%d/%m/%Y")
-  return jsonify(cleanArray)
+  return jsonify(dates_links)
 
 ### Votes Context ###
 @app.route("/votes/context")

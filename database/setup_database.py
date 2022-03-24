@@ -2,11 +2,13 @@ import os
 import json
 import sys
 import dateparser
+import warnings
 from urllib.parse import urlparse
 from faunadb import query as q
 from faunadb.client import FaunaClient
+
 import jsonTools
-import warnings
+
 warnings.filterwarnings(
     "ignore",
     message="The localize method is no longer necessary, as this time zone supports the fold attribute",
@@ -28,6 +30,16 @@ client = FaunaClient(
   port=o.port,
   scheme=o.scheme
 )
+
+def getDatesLinksFromSessions(filepaths):
+    datesLinks = []
+    for path in filepaths:
+        objects = jsonTools.getObjectFromJsonArrayFile(path)
+        for obj in objects:
+            if (obj['date'] != dateLink[0] or obj['link'] != dateLink[1] for dateLink in datesLinks):
+                date = dateparser.parse(obj['date']).date().strftime("%Y-%m-%d")
+                datesLinks.append({ 'date': q.date(date), 'link': obj['link']})
+    return datesLinks
 
 def tryAddTextToExistingElem(date, member, text, objects):
   for object in objects:
@@ -80,14 +92,25 @@ def createFaunaFieldsArray(values):
     array.append({ 'field': ['data', value] })
   return array
 
-### collection contributions ###
-client.query(q.create_collection({'name': 'contributions'}))
-filepath = '../senate_sessions.json'
-jsonTools.addFieldToJsonArrayFile(filepath, "assembly", "sénat")
-loadContributionsCollectionFromSessions('contributions', filepath)
-filepath = '../national_assembly_sessions.json'
-jsonTools.addFieldToJsonArrayFile(filepath, "assembly", "assemblée nationale")
-loadContributionsCollectionFromSessions('contributions', filepath)
+# ### collection contributions ###
+# client.query(q.create_collection({'name': 'contributions'}))
+# filepath = '../senate_sessions.json'
+# jsonTools.addFieldToJsonArrayFile(filepath, "assembly", "sénat")
+# loadContributionsCollectionFromSessions('contributions', filepath)
+# filepath = '../national_assembly_sessions.json'
+# jsonTools.addFieldToJsonArrayFile(filepath, "assembly", "assemblée nationale")
+# loadContributionsCollectionFromSessions('contributions', filepath)
+
+### collection dates ###
+contribsPaths = ['national_assembly_sessions.json', 'senate_sessions.json']
+for i in range(len(contribsPaths)):
+    contribsPaths[i] = '../save_test_db_json/' + contribsPaths[i]
+dates = getDatesLinksFromSessions(contribsPaths)
+client.query(q.create_collection({"name": "dates"}))
+for elem in dates:
+    client.query(q.create(
+        q.collection('dates'), {"data": elem}
+    ))
 
 ### collection votes ###
 client.query(q.create_collection({"name": "votes"}))
@@ -116,9 +139,9 @@ createFaunaIndex('elected_member_ref_by_name', 'elected_members', values, terms)
 # terms = createFaunaFieldsArray(['elected_member'])
 # createFaunaIndex('contributions_ref_by_elected_member', 'contributions', values, terms)
 
-# ### indexes for /dates ###
-# values = createFaunaFieldsArray(['date', 'link'])
-# createFaunaIndex('contributions_date_link', 'contributions', values)
+### indexes for /dates ###
+values = createFaunaFieldsArray(['date', 'link'])
+createFaunaIndex('all_dates_links', 'dates', values)
 
 ### indexes for /votes/context ###
 values = createFaunaFieldsArray(['date', 'assembly', 'number'])
