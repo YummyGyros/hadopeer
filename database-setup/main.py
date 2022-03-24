@@ -25,7 +25,7 @@ if __name__ == "__main__":
     client = getFaunaDbInstance()
     # createCollections(client)
     # createIndexes(client)
-    visus = extractVisualizationsNLP()
+    # visus = extractVisualizationsNLP()
     # for elem in visus:
     #     client.query(q.create(
     #         q.collection('visualizations'), {'data': elem})

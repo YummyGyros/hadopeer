@@ -15,43 +15,49 @@ def createFaunaIndex(client, name, collection, values=[], terms=[]):
   }))
 
 def createIndexes(client):
-    terms = []
-    values = []
+  print("createIndexes: code commented for safety reasons")
+  terms = []
+  values = []
 
-    # /political_groups #
-    values = createFaunaFieldsArray(['group'])
-    createFaunaIndex(client, 'elected_members_group', 'elected_members', values)
+  # # /political_groups #
+  # values = createFaunaFieldsArray(['group'])
+  # createFaunaIndex(client, 'elected_members_group', 'elected_members', values)
 
-    # /elected_members #
-    values = createFaunaFieldsArray(['name', 'job', 'group', 'department'])
-    createFaunaIndex(client, 'all_elected_members_name_job_group_department', 'elected_members', values)
+  # # /elected_members #
+  # values = createFaunaFieldsArray(['name', 'job', 'group', 'department'])
+  # createFaunaIndex(client, 'all_elected_members_name_job_group_department', 'elected_members', values)
 
-    # /elected_member #
-    values = [{'field': ['ref']}]
-    terms = createFaunaFieldsArray(['name'])
-    createFaunaIndex(client, 'elected_member_ref_by_name', 'elected_members', values, terms)
+  # # /elected_member #
+  # values = [{'field': ['ref']}]
+  # terms = createFaunaFieldsArray(['name'])
+  # createFaunaIndex(client, 'elected_member_ref_by_name', 'elected_members', values, terms)
 
-    # /dates #
-    values = createFaunaFieldsArray(['date', 'link'])
-    createFaunaIndex(client, 'all_dates_links', 'dates', values)
+  # # /dates #
+  # values = createFaunaFieldsArray(['date', 'link'])
+  # createFaunaIndex(client, 'all_dates_links', 'dates', values)
 
-    # /votes/context #
-    values = createFaunaFieldsArray(['date', 'assembly', 'number'])
-    createFaunaIndex(client, 'votes_date_assembly_number', 'votes', values)
+  # # /votes/context #
+  # values = createFaunaFieldsArray(['date', 'assembly', 'number'])
+  # createFaunaIndex(client, 'votes_date_assembly_number', 'votes', values)
 
-    # /votes #
-    values = createFaunaFieldsArray(['vote_1'])
-    terms = createFaunaFieldsArray(['job'])
-    createFaunaIndex(client, 'elected_members_vote_1_by_job', 'elected_members', values, terms)
+  # # /votes #
+  # values = createFaunaFieldsArray(['vote_1'])
+  # terms = createFaunaFieldsArray(['job'])
+  # createFaunaIndex(client, 'elected_members_vote_1_by_job', 'elected_members', values, terms)
 
-    values = createFaunaFieldsArray(['vote_2'])
-    terms = createFaunaFieldsArray(['job'])
-    createFaunaIndex(client, 'elected_members_vote_2_by_job', 'elected_members', values, terms)
+  # values = createFaunaFieldsArray(['vote_2'])
+  # terms = createFaunaFieldsArray(['job'])
+  # createFaunaIndex(client, 'elected_members_vote_2_by_job', 'elected_members', values, terms)
 
-    values = createFaunaFieldsArray(['vote_1'])
-    terms = createFaunaFieldsArray(['job', 'group'])
-    createFaunaIndex(client, 'elected_members_vote_1_by_job_group', 'elected_members', values, terms)
+  # values = createFaunaFieldsArray(['vote_1'])
+  # terms = createFaunaFieldsArray(['job', 'group'])
+  # createFaunaIndex(client, 'elected_members_vote_1_by_job_group', 'elected_members', values, terms)
 
-    values = createFaunaFieldsArray(['vote_2'])
-    terms = createFaunaFieldsArray(['job', 'group'])
-    createFaunaIndex(client, 'elected_members_vote_2_by_job_group', 'elected_members', values, terms)
+  # values = createFaunaFieldsArray(['vote_2'])
+  # terms = createFaunaFieldsArray(['job', 'group'])
+  # createFaunaIndex(client, 'elected_members_vote_2_by_job_group', 'elected_members', values, terms)
+
+  # # /visualizations #
+  # values = createFaunaFieldsArray(['data'])
+  # terms = createFaunaFieldsArray(['name'])
+  # createFaunaIndex(client, 'visualization_data_by_name', 'visualizations', values, terms)
