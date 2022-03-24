@@ -1,11 +1,12 @@
 *.json
+*.png
+*serv.md
+*__pycache__
+*.vercel
+*.venv
 .fauna
 archived
-*__pycache__
-*serv.md
-save_valid_json
 node_modules
-*.png
 save_dl_nlp
-*.vercel
+save_valid_json
 save_test_db_json
