@@ -109,12 +109,12 @@ createFaunaIndex('all_elected_members_name_job_group_department', 'elected_membe
 values = [{'field': ['ref']}]
 terms = createFaunaFieldsArray(['name'])
 createFaunaIndex('elected_member_ref_by_name', 'elected_members', values, terms)
-terms = createFaunaFieldsArray(['elected_member'])
-createFaunaIndex('contributions_ref_by_elected_member', 'contributions', values, terms)
+# terms = createFaunaFieldsArray(['elected_member'])
+# createFaunaIndex('contributions_ref_by_elected_member', 'contributions', values, terms)
 
-### indexes for /dates ###
-values = createFaunaFieldsArray(['date', 'link'])
-createFaunaIndex('contributions_date_link', 'contributions', values)
+# ### indexes for /dates ###
+# values = createFaunaFieldsArray(['date', 'link'])
+# createFaunaIndex('contributions_date_link', 'contributions', values)
 
 ### indexes for /votes/context ###
 values = createFaunaFieldsArray(['date', 'assembly', 'number'])
@@ -138,21 +138,21 @@ terms = createFaunaFieldsArray(['job', 'group'])
 createFaunaIndex('elected_members_vote_2_by_job_group', 'elected_members', values, terms)
 
 ### indexes for /visualization ####
-values = createFaunaFieldsArray(['text'])
-createFaunaIndex('all_contributions_text', 'contributions', values)
+# values = createFaunaFieldsArray(['text'])
+# createFaunaIndex('all_contributions_text', 'contributions', values)
 
-values = createFaunaFieldsArray(['name'])
-terms = createFaunaFieldsArray(['group'])
-createFaunaIndex('elected_members_name_by_group', 'elected_members', values, terms)
+# values = createFaunaFieldsArray(['name'])
+# terms = createFaunaFieldsArray(['group'])
+# createFaunaIndex('elected_members_name_by_group', 'elected_members', values, terms)
 
-values = createFaunaFieldsArray(['text'])
-terms = createFaunaFieldsArray(['assembly'])
-createFaunaIndex('contributions_text_by_assembly', 'contributions', values, terms)
+# values = createFaunaFieldsArray(['text'])
+# terms = createFaunaFieldsArray(['assembly'])
+# createFaunaIndex('contributions_text_by_assembly', 'contributions', values, terms)
 
-values = createFaunaFieldsArray(['text'])
-terms = createFaunaFieldsArray(['elected_member'])
-createFaunaIndex('contributions_text_by_elected_member', 'contributions', values, terms)
+# values = createFaunaFieldsArray(['text'])
+# terms = createFaunaFieldsArray(['elected_member'])
+# createFaunaIndex('contributions_text_by_elected_member', 'contributions', values, terms)
 
-values = createFaunaFieldsArray(['text'])
-terms = createFaunaFieldsArray(['elected_member', 'assembly'])
-createFaunaIndex('contributions_text_by_elected_member_and_assembly', 'contributions', values, terms)
+# values = createFaunaFieldsArray(['text'])
+# terms = createFaunaFieldsArray(['elected_member', 'assembly'])
+# createFaunaIndex('contributions_text_by_elected_member_and_assembly', 'contributions', values, terms)
