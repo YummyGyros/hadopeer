@@ -6,6 +6,11 @@ from faunaDbIndexes         import createIndexes
 from extractScrappedJsons   import getContributionsGroups, getDateContributionsGroups
 from nlp                    import processTopicModelling
 from visualizations         import createVisuTopicModelling
+import warnings
+warnings.filterwarnings(
+    "ignore",
+    message="The localize method is no longer necessary, as this time zone supports the fold attribute",
+)
 
 def extractVisualizationsNLP():
     visualizations = []

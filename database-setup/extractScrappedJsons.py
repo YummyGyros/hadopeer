@@ -7,7 +7,7 @@ membersPaths = ['../senators.json', '../deputies.json']
 
 def getAllContributions(filepaths):
     for path in filepaths:
-        objects = jsonTools.getObjectFromJsonArrayFile(path)
+        objects = jsonTools.getObjectFromJsonFile(path)
         contribs = []
         for object in objects:
             for contrib in object['contributions']:
@@ -16,7 +16,7 @@ def getAllContributions(filepaths):
 
 def getAllDateContributions(filepaths):
     for path in filepaths:
-        objects = jsonTools.getObjectFromJsonArrayFile(path)
+        objects = jsonTools.getObjectFromJsonFile(path)
         tuples = []
         for object in objects:
             tuple = (object['date'], [])
@@ -32,13 +32,13 @@ def getContribsFromMatchingMembers(contribsPaths, membersPaths, field, value):
     names = []
     contribs = []
     for path in membersPaths:
-        members = jsonTools.getObjectFromJsonArrayFile(path)
+        members = jsonTools.getObjectFromJsonFile(path)
         for member in members:
             if member[field] == value:
                 names.append(member['name'])
     # get contribs from names
     for path in contribsPaths:
-        objects = jsonTools.getObjectFromJsonArrayFile(path)
+        objects = jsonTools.getObjectFromJsonFile(path)
         for obj in objects:
             for contrib in obj['contributions']:
                 if (name == obj['elected_member'] for name in names):
@@ -47,7 +47,7 @@ def getContribsFromMatchingMembers(contribsPaths, membersPaths, field, value):
 def getDatesLinksFromSessions(filepaths):
     datesLinks = []
     for path in filepaths:
-        objects = jsonTools.getObjectFromJsonArrayFile(path)
+        objects = jsonTools.getObjectFromJsonFile(path)
         for obj in objects:
             if (obj['date'] != dateLink[0] or obj['link'] != dateLink[1] for dateLink in datesLinks):
                 date = dateparser.parse(obj['date']).date().strftime("%Y-%m-%d")
