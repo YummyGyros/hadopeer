@@ -6,12 +6,15 @@ from faunadb.client import FaunaClient
 from flask import (
   Flask, jsonify, request
 )
+from flask_cors import CORS
 
 secret = os.getenv("FAUNADB_SECRET")
 endpoint = os.getenv("FAUNADB_ENDPOINT")
+
 if not secret:
   print("The FAUNADB_SECRET environment variable is not set, exiting.")
   sys.exit(1)
+
 endpoint = endpoint or "https://db.fauna.com/"
 o = urlparse(endpoint)
 client = FaunaClient(
@@ -22,6 +25,7 @@ client = FaunaClient(
 )
 
 app = Flask(__name__)
+CORS(app)
 
 def getDataFaunaIndex(indexName, arg):
   match = q.match(q.index(indexName), arg)
