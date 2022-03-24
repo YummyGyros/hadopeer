@@ -61,19 +61,6 @@ def tokenise_lemmentise(sentence):
     print(type(tokeni[0]))
     return tokeni
 
-result = tokenise_lemmentise(sentence)
-LDA_prep(result)
-
-#vectorizer = TfidfVectorizer(
-#  max_features=5000, 
-#  stop_words="english", 
-#  max_df=0.95, 
-#  min_df=2)
-#text = ["The sky is blue with clouds. but the water is blue too."]
-#vectorizer.fit(text)
-#vocab_itos = vectorizer.get_feature_names_out()
-#vocab_stoi = vectorizer.vocabulary_
-#vectors = vectorizer.transform(text)
-#print(vectors.shape)
-#print(type(vectors))
-#print(vectors.toarray())
+def get_visu_TopicModelling(lst):
+    result = tokenise_lemmentise(sentence)
+    LDA_prep(result)
