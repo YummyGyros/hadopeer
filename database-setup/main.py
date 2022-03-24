@@ -6,6 +6,11 @@ from faunaDbIndexes         import createIndexes
 from extractScrappedJsons   import getContributionsGroups, getDateContributionsGroups
 from nlp                    import processTopicModelling
 from visualizations         import createVisuTopicModelling
+import warnings
+warnings.filterwarnings(
+    "ignore",
+    message="The localize method is no longer necessary, as this time zone supports the fold attribute",
+)
 
 def extractVisualizationsNLP():
     visualizations = []
@@ -25,7 +30,7 @@ if __name__ == "__main__":
     client = getFaunaDbInstance()
     # createCollections(client)
     # createIndexes(client)
-    visus = extractVisualizationsNLP()
+    # visus = extractVisualizationsNLP()
     # for elem in visus:
     #     client.query(q.create(
     #         q.collection('visualizations'), {'data': elem})

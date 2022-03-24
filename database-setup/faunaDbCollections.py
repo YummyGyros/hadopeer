@@ -14,10 +14,14 @@ def createDatesCollection(client):
         client.query(q.create(q.collection('dates'), {'data': elem}))
 
 def createCollections(client):
-    createDatesCollection(client)
-    client.query(q.create_collection({'name': 'votes'}))
-    loadJsonArrayFileToFaunaCollection(client, '../votes.json', 'votes')
-    client.query(q.create_collection({'name':'elected_members'}))
-    loadJsonArrayFileToFaunaCollection(client, '../senators.json', 'elected_members')
-    loadJsonArrayFileToFaunaCollection(client, '../deputies.json', 'elected_members')
-    client.query(q.create_collection({'name': 'visualizations'}))
+    print("createCollections: code commented for safety reasons")
+    # createDatesCollection(client)
+
+    # client.query(q.create_collection({'name': 'votes'}))
+    # loadJsonArrayFileToFaunaCollection(client, '../votes.json', 'votes')
+
+    # client.query(q.create_collection({'name':'elected_members'}))
+    # loadJsonArrayFileToFaunaCollection(client, '../senators.json', 'elected_members')
+    # loadJsonArrayFileToFaunaCollection(client, '../deputies.json', 'elected_members')
+
+    # client.query(q.create_collection({'name': 'visualizations'}))

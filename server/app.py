@@ -73,20 +73,6 @@ def elected_member():
   # return object
 
 ### Dates ###
-def isContainedInArray(object, array):
-  for elem in array:
-    save = True
-    if len(object) != len(elem):
-      continue
-    for i in range(len(object)):
-      if object[i] != elem[i]:
-        save = False
-      if not save:
-        continue
-    if save:
-      return True
-  return False
-
 @app.route("/dates")
 def dates():
   dates_links = paginateFaunaIndex("all_dates_links")
@@ -108,9 +94,9 @@ def votes():
   job = "none"
 
   if not (assembly and voteNumber):
-    return "bad request: assembly and vote_number are required", 400
+    return "400 Bad Request: assembly and vote_number are required", 400
   if not (voteNumber == "1" or voteNumber == "2"):
-    return "bad request: vote_number is invalid: must be an int between 1 and maximum amount of votes"
+    return "400 Bad Request: vote_number is invalid: must be an int between 1 and maximum amount of votes", 400
   if assembly == "sénat":
     job = "sénateur"
   elif assembly == "assemblée nationale":
@@ -126,34 +112,21 @@ def votes():
             "none": votes.count("none") + votes.count("absent")}
 
 ### Visualization ###
-def extractDataFromNamesToArray(objects, names, index, *args):
-  for name in names:
-    if len(args) == 1:
-      tmpObjects = paginateFaunaIndex(index, name, args[0])
-    else:
-      tmpObjects = paginateFaunaIndex(index, name)
-    for tmpObject in tmpObjects:
-      objects.append(tmpObject)
-
 @app.route("/visualization")
 def visualization():
   assembly = request.args.get('assembly')
   group = request.args.get('group')
-  type = request.args.get('type')
+  visuType = request.args.get('type')
 
-  if group:
-    contribs = []
-    names = paginateFaunaIndex("elected_members_name_by_group", group)
-    if assembly:
-      extractDataFromNamesToArray(contribs, names, "contributions_text_by_elected_member_and_assembly", assembly)
-    else:
-      extractDataFromNamesToArray(contribs, names, "contributions_text_by_elected_member")
-  elif assembly:
-    contribs = paginateFaunaIndex("contributions_text_by_assembly", assembly)
-  else:
-    contribs = paginateFaunaIndex("all_contributions_text")
-  # NLP: use contribs and type
-  return jsonify(contribs)
+  if not visuType:
+    return "400 Bad Request: type required", 400
+  visuName = 'visu_' + visuType
+  if assembly:
+    visuName = visuName + '_' + assembly
+  elif group:
+    visuName = visuName + '_' + group
+  print(visuName)
+  return jsonify(paginateFaunaIndex('visualization_data_by_name', visuName))
 
 ### Others ###
 @app.route("/political_groups")

@@ -1,6 +1,6 @@
 import json
 
-def getObjectFromJsonArrayFile(path):
+def getObjectFromJsonFile(path):
   dataString = open(path, 'r')
   objects = json.load(dataString)
   return objects
