@@ -2,6 +2,9 @@ import jsonTools
 import dateparser
 from faunadb import query as q
 
+sessionsPaths = ['../national_assembly_sessions.json', '../senate_sessions.json']
+membersPaths = ['../senators.json', '../deputies.json']
+
 def getAllContributions(filepaths):
     for path in filepaths:
         objects = jsonTools.getObjectFromJsonArrayFile(path)
@@ -51,6 +54,18 @@ def getDatesLinksFromSessions(filepaths):
                 datesLinks.append({ 'date': q.date(date), 'link': obj['link']})
     return datesLinks
 
+def getContributionsGroups():
+    groups = []
+    groups.append(getAllContributions(sessionsPaths))
+    # groups.append(getContribsFromMatchingMembers(sessionsPaths, membersPaths, 'job', 'sénateur'))
+    # groups.append(getContribsFromMatchingMembers(sessionsPaths, membersPaths, 'job', 'député'))
+    # groups = client.query(q.paginate(q.match(q.index('elected_members_group'))))['data']
+    return groups
+
+def getDateContributionsGroups():
+    groups = []
+    groups.append(getAllDateContributions(sessionsPaths))
+    return groups
 
 # ISSUES:
 #   - fonction très proche des autres: meilleure archi?
