@@ -9,16 +9,30 @@ def getAllContributions(filepaths):
                 contribs.append(contrib['text'])
     return contribs
 
-# def getAllContributionsByDate():
-#     print("x")
+def getAllDateContributions(filepaths):
+    for path in filepaths:
+        objects = jsonTools.getObjectFromJsonArrayFile(path)
+        tuples = []
+        for object in objects:
+            tuple = (object['date'], [])
+            for contrib in object['contributions']:
+                tuple[1].append(contrib['text'])
+                break
+            tuples.append(tuple)
+    return tuples
 
 if __name__ == "__main__":
     files = ['national_assembly_sessions.json']
     for i in range(len(files)):
         files[i] = '../save_valid_json/' + files[i]
-    allContribs = getAllContributions(files)
-    print(allContribs)
 
+    allContribs = getAllContributions(files)
+    allDateContribs = getAllDateContributions(files)
+
+# main preprocess
+# 1) getDataFromJsonScrapped
+# 2) createVisualizationsFromNLP
+# 3) fill_database
 
 # main 
 # visualizations = []
