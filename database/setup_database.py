@@ -101,6 +101,10 @@ loadJsonArrayFileToFaunaCollection("../deputies.json", "elected_members")
 terms = []
 values = []
 
+### index for /political_groups ###
+values = createFaunaFieldsArray(['group'])
+createFaunaIndex('elected_members_group', 'elected_members', values)
+
 ### index for /elected_members ###
 values = createFaunaFieldsArray(['name', 'job', 'group', 'department'])
 createFaunaIndex('all_elected_members_name_job_group_department', 'elected_members', values)

@@ -154,3 +154,8 @@ def visualization():
     contribs = paginateFaunaIndex("all_contributions_text")
   # NLP: use contribs and type
   return jsonify(contribs)
+
+### Others ###
+@app.route("/political_groups")
+def political_groups():
+  return jsonify(paginateFaunaIndex("elected_members_group"))
