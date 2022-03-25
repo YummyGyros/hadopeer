@@ -10,30 +10,40 @@ membersPaths = ['../senators.json', '../deputies.json']
 senatorsPaths = ['../senators.json']
 deputiesPaths = ['../deputies.json']
 
-def getAllContributions(filepaths):
+# get contributions
+def appendTextFromContrib(contribs, object):
+    for contrib in object['contributions']:
+        contribs.append(contrib['text'])
+
+def appendDateTextFromContrib(tuples, object):
+    tuple = (object['date'], [])
+    for contrib in object['contributions']:
+        tuple[1].append(contrib['text'])
+    tuples.append(tuple)
+
+def getContributions(filepaths, appender):
+    contribs = []
     for path in filepaths:
         objects = jsonTools.getObjectFromJsonFile(path)
-        contribs = []
         for object in objects:
-            for contrib in object['contributions']:
-                contribs.append(contrib['text'])
+            appender(contribs, object)
     return contribs
 
-def getAllDateContributions(filepaths):
-    for path in filepaths:
-        objects = jsonTools.getObjectFromJsonFile(path)
-        tuples = []
-        for object in objects:
-            tuple = (object['date'], [])
-            for contrib in object['contributions']:
+# get matching contributions
+def appendMatchingText(contribs, names, object):
+    for contrib in object['contributions']:
+        if (name == object['elected_member'] for name in names):
+            contribs.append(contrib['text'])
+
+def appendMatchingDateText(tuples, names, object):
+    tuple = (object['date'], [])
+    for contrib in object['contributions']:
+        if (name == object['elected_member'] for name in names):
                 tuple[1].append(contrib['text'])
-                break
-            tuples.append(tuple)
-    return tuples
+    tuples.append(tuple)
 
 
-def getContribsFromMatchingMembers(contribsPaths, membersPaths, field, value):
-    # select names
+def getMatchingContributions(contribsPaths, membersPaths, field, value, appenderMatch):
     names = []
     contribs = []
     for path in membersPaths:
@@ -41,14 +51,45 @@ def getContribsFromMatchingMembers(contribsPaths, membersPaths, field, value):
         for member in members:
             if member[field] == value:
                 names.append(member['name'])
-    # get contribs from names
     for path in contribsPaths:
         objects = jsonTools.getObjectFromJsonFile(path)
-        for obj in objects:
-            for contrib in obj['contributions']:
-                if (name == obj['elected_member'] for name in names):
-                    contribs.append(contrib['text'])
+        for object in objects:
+            appenderMatch(contribs, names, object)
 
+# get samples
+def getContributionsSamples(client):
+    samples = []
+    tuple = ('all', getContributions(sessionsPaths, appendTextFromContrib))
+    samples.append(tuple)
+    # tuple = ('national_assembly', getContributions(natAssemblyPaths, appendTextFromContrib))
+    # samples.append(tuple)
+    # tuple = ('senate', getContributions(senatePaths, appendTextFromContrib))
+    # samples.append(tuple)
+    # groups = client.query(q.paginate(q.match(q.index('elected_members_group'))))['data']
+    # print("GROUPS: ", groups)
+    # for group in groups:
+    #     contribs = getMatchingContributions(sessionsPaths, membersPaths, 'group', group, appendMatchingText)
+    #     # print("contribs: ",contribs)
+    #     tuple = (group, contribs)
+    #     samples.append(tuple)
+    return samples
+
+def getDateContributionsSamples(client):
+    samples = []
+    tuple = ('all', getContributions(sessionsPaths, appendDateTextFromContrib))
+    samples.append(tuple)
+    # tuple = ('national_assembly', getContributions(natAssemblyPaths, appendDateTextFromContrib))
+    # samples.append(tuple)
+    # tuple = ('senate', getContributions(senatePaths, appendDateTextFromContrib))
+    # samples.append(tuple)
+    # groups = client.query(q.paginate(q.match(q.index('elected_members_group'))))['data']
+    # for group in groups:
+    #     contribs = getMatchingContributions(sessionsPaths, membersPaths, 'group', group, appendMatchingDateText)
+    #     tuple = (group, contribs)
+    #     samples.append(tuple)
+    return samples
+
+# get dates links
 def getDatesLinksFromSessions(filepaths):
     datesLinks = []
     for path in filepaths:
@@ -58,33 +99,3 @@ def getDatesLinksFromSessions(filepaths):
                 date = dateparser.parse(obj['date']).date().strftime("%Y-%m-%d")
                 datesLinks.append({ 'date': q.date(date), 'link': obj['link']})
     return datesLinks
-
-def getContributionsSamples(client):
-    samples = []
-    tuple = ('all', getAllContributions(sessionsPaths))
-    samples.append(tuple)
-    tuple = ('national_assembly', getAllContributions(natAssemblyPaths))
-    samples.append(tuple)
-    tuple = ('senate', getAllContributions(senatePaths))
-    samples.append(tuple)
-    groups = client.query(q.paginate(q.match(q.index('elected_members_group'))))['data']
-    for group in groups:
-        contribs = getContribsFromMatchingMembers(sessionsPaths, membersPaths, 'group', group)
-        tuple = (group, contribs)
-        samples.append(tuple)
-    return samples
-
-def getDateContributionsSamples(client):
-    samples = []
-    tuple = ('all', getAllDateContributions(sessionsPaths))
-    samples.append(tuple)
-    tuple = ('national_assembly', getAllDateContributions(natAssemblyPaths))
-    samples.append(tuple)
-    tuple = ('senate', getAllDateContributions(senatePaths))
-    samples.append(tuple)
-    # groups = client.query(q.paginate(q.match(q.index('elected_members_group'))))['data']
-    # for group in groups:
-    #     contribs = getContribsFromMatchingMembers(sessionsPaths, membersPaths, 'group', group)
-    #     tuple = (group, contribs)
-    #     samples.append(tuple)
-    return samples

@@ -34,40 +34,44 @@ def getDataFaunaIndex(indexName, *args):
     match = q.match(q.index(indexName), args[0], args[1])
   return client.query(q.get(match))['data']
 
-def paginateFaunaIndex(indexName, *args):
+def paginateFaunaIndex(indexName, distinct = False, *args):
   if len(args) == 0:
     match = q.match(q.index(indexName))
   if len(args) == 1:
     match = q.match(q.index(indexName), args[0])
   if len(args) == 2:
     match = q.match(q.index(indexName), args[0], args[1])
+  if distinct:
+    match = q.distinct(match)
   return client.query(q.paginate(match))['data']
 
+def countFaunaIndex(indexName, *args):
+  if len(args) == 0:
+    match = q.match(q.index(indexName))
+  if len(args) == 1:
+    match = q.match(q.index(indexName), args[0])
+  if len(args) == 2:
+    match = q.match(q.index(indexName), args[0], args[1])
+  if len(args) == 3:
+    match = q.match(q.index(indexName), args[0], args[1], args[2])
+  return client.query(q.count(match))
 
 @app.route("/")
 def hello():
+  # indexName = "a_group"
+  # result = client.query(q.paginate(q.distinct(q.match(q.index(indexName)))))
+  # print(result)
   return "hello"
 
 ### Elected Members ###
 @app.route("/elected_members")
 def elected_members():
-  job = request.args.get('job')
-  group = request.args.get('group')
-  department = request.args.get('department')
-
   result = paginateFaunaIndex("all_elected_members_name_job_group_department")
-  if job:
-    result = [values for values in result if values[1] == job]
-  if group:
-    result = [values for values in result if values[2] == group]
-  if department:
-    result = [values for values in result if values[3] == department]
   return jsonify(result)
 
 ### Elected Member ###
 @app.route("/elected_member")
 def elected_member():
-  # return "Error 500: Internal error. Endpoint to be implemented soon.", 500
   name = request.args.get('name')
   if not name:
     return "name not found", 400
@@ -104,26 +108,38 @@ def votes():
   elif assembly == "assemblée nationale":
     job = "député"
 
-  indexName = "elected_members_vote_" + voteNumber
+  indexName = "elected_members_vote_" + voteNumber + "_by_vote_job"
   if group:
-    votes = paginateFaunaIndex(indexName + "_by_job_group", job, group)
+    indexName += "_group"
+    inFavor = countFaunaIndex(indexName, "pour", job, group)
+    against = countFaunaIndex(indexName, "contre", job, group)
+    none = countFaunaIndex(indexName, "none", job, group)
+    none += countFaunaIndex(indexName, "absent", job, group)
   else:
-    votes = paginateFaunaIndex(indexName + "_by_job", job)
-  return { "pour": votes.count("pour"),
-            "contre": votes.count("contre"),
-            "none": votes.count("none") + votes.count("absent")}
+    inFavor = countFaunaIndex(indexName, "pour", job)
+    against = countFaunaIndex(indexName, "contre", job)
+    none = countFaunaIndex(indexName, "none", job)
+    none += countFaunaIndex(indexName, "absent", job)
+  return { "pour": inFavor, "contre": against, "none": none }
 
 ### Visualization ###
 @app.route("/visualization")
 def visualization():
   sample = request.args.get('sample')
   type = request.args.get('type')
-
   if not (type and sample):
     return "400 Bad Request: type required", 400
   return jsonify(getDataFaunaIndex('visualization_ref_by_type_sample', type, sample))
 
+@app.route("/visualization/types")
+def visualizations_types():
+  return jsonify(paginateFaunaIndex("visualizations_type", True))
+
+@app.route("/visualization/samples")
+def visualizations_samples():
+  return jsonify(paginateFaunaIndex("visualizations_sample", True))
+
 ### Others ###
 @app.route("/political_groups")
 def political_groups():
-  return jsonify(paginateFaunaIndex("elected_members_group"))
+  return jsonify(paginateFaunaIndex("elected_members_group", True))

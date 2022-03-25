@@ -11,6 +11,7 @@ def createVisuTopicModelling(nlpData):
     O = []
     for word, occurence in nlpData:
         W.append(word)
+        print(occurence * 1000)
         O.append(occurence * 900)
     print(O)
 
@@ -24,12 +25,13 @@ def createVisuTopicModelling(nlpData):
     layout = go.Layout({'xaxis': {'showgrid': False, 'showticklabels': False, 'zeroline': False},
                         'yaxis': {'showgrid': False, 'showticklabels': False, 'zeroline': False}})
     fig = go.Figure(data=[data], layout=layout)
-    fig.write_image("fig1.png")
+#    fig.write_image("fig1.png")
     return fig.to_json()
 
 def createVisuWordFrequency(nlpData, contribGroup):
     occ = []
-    date = [d[0] for d in contribGroup ]
+    date = contribGroup
+    print(date)
     df = pd.DataFrame(columns=["date", "occurence", "mots"])
 
     print(nlpData)
@@ -46,4 +48,5 @@ def createVisuWordFrequency(nlpData, contribGroup):
     fig = px.line(df, x="date", y="occurence", color='mots')
 #    print("JSON HERE: ", fig.to_json())
     fig.write_image("fig1.png")
+    return fig.to_json()[0]
 #    fig.write_json("nlp_j.json", pretty=True)

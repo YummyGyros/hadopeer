@@ -42,22 +42,30 @@ def createIndexes(client):
 
   # # /votes #
   # values = createFaunaFieldsArray(['vote_1'])
-  # terms = createFaunaFieldsArray(['job'])
-  # createFaunaIndex(client, 'elected_members_vote_1_by_job', 'elected_members', values, terms)
+  # terms = createFaunaFieldsArray(['vote_1', 'job'])
+  # createFaunaIndex(client, 'elected_members_vote_1_by_vote_job', 'elected_members', values, terms)
 
   # values = createFaunaFieldsArray(['vote_2'])
-  # terms = createFaunaFieldsArray(['job'])
-  # createFaunaIndex(client, 'elected_members_vote_2_by_job', 'elected_members', values, terms)
+  # terms = createFaunaFieldsArray(['vote_2', 'job'])
+  # createFaunaIndex(client, 'elected_members_vote_2_by_vote_job', 'elected_members', values, terms)
 
   # values = createFaunaFieldsArray(['vote_1'])
-  # terms = createFaunaFieldsArray(['job', 'group'])
-  # createFaunaIndex(client, 'elected_members_vote_1_by_job_group', 'elected_members', values, terms)
+  # terms = createFaunaFieldsArray(['vote_1', 'job', 'group'])
+  # createFaunaIndex(client, 'elected_members_vote_1_by_vote_job_group', 'elected_members', values, terms)
 
   # values = createFaunaFieldsArray(['vote_2'])
-  # terms = createFaunaFieldsArray(['job', 'group'])
-  # createFaunaIndex(client, 'elected_members_vote_2_by_job_group', 'elected_members', values, terms)
+  # terms = createFaunaFieldsArray(['vote_2', 'job', 'group'])
+  # createFaunaIndex(client, 'elected_members_vote_2_by_vote_job_group', 'elected_members', values, terms)
 
   # # /visualizations #
-  values = [{'field': ['ref']}]
-  terms = createFaunaFieldsArray(['type', 'sample'])
-  createFaunaIndex(client, 'visualization_ref_by_type_sample', 'visualizations', values, terms)
+  # values = [{'field': ['ref']}]
+  # terms = createFaunaFieldsArray(['type', 'sample'])
+  # createFaunaIndex(client, 'visualization_ref_by_type_sample', 'visualizations', values, terms)
+
+  # # /visualizations/types #
+  # values = createFaunaFieldsArray(['type'])
+  # createFaunaIndex(client, 'visualizations_type', 'visualizations', values)
+
+  # # /visualizations/types #
+  # values = createFaunaFieldsArray(['sample'])
+  # createFaunaIndex(client, 'visualizations_sample', 'visualizations', values)
