@@ -1,6 +1,6 @@
 *.json
 *.png
-*.txt
+*.venv
 *serv.md
 *__pycache__
 *.vercel
