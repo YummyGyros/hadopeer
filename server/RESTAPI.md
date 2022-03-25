@@ -22,6 +22,10 @@ result: { "pour": x, "contre": y, "none": z}
 
 ## Elected Members
 
+**/elected_members**\
+queryParams: none\
+result: [[name, job, group, deparment]]
+
 **/elected_member**\
 queryParams:
 - [required] name: name of the elected member
@@ -36,15 +40,6 @@ result: {\
     "vote_2": "none"\
 }
 
-**/elected_members**\
-queryParams:
-- none will list all elected members
-- [optionnal] job: "sénateur" or "député"
-- [optionnal] group: political group
-- [optionnal] department: french department
-
-result: [[name, job, group, deparment]]
-
 ## Visualization
 
 **/visualization**\
@@ -56,7 +51,15 @@ result: {\
     "graph": {},\
     "sample": "x",\
     "type": "x",\
-}
+}\
+
+**/visualization/types**\
+queryParams: none\
+result: ["visualization_type"]\
+
+**/visualization/samples**\
+queryParams: none\
+result: ["visualization_sample"]
 
 ## Others
 
