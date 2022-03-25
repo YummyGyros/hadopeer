@@ -25,7 +25,7 @@ def get_top_n_words(corpus, n=10):
   bag_of_words = vec.transform(corpus)
   sum_words = bag_of_words.sum(axis=0) 
   words_freq = [(word, sum_words[0, idx]) for word, idx in   vec.vocabulary_.items()]
-#  words_freq =sorted(words_freq, key = lambda x: x[1], reverse=True)
+#  words_freq =sorted(words_freq, key = lambda x: x[1], reverse=False)
 
   return words_freq
 
@@ -37,7 +37,25 @@ def parse_requirement(searched_word, lst_sentence, lst_date):
 
     for i in range(len(lst_sentence)):
         sentence = tokenise_lemmentise(lst_sentence[i])
-        lst_frequency.append(get_top_n_words(sentence, 15))
+        print("sentences")
+        print(sentence)
+#        print(sentence)
+        lst_frequency.append(get_top_n_words(sentence, 20))
+    print("lst_frequence:")
+    print(lst_frequency)
+#        print(lst_frequency)
+#        print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")
+#    ds = []
+#    for l in range(len(lst_frequency)):
+#        ds.extend(lst_frequency[l])
+#    ds.sort(key=lambda y: y[0])
+#    print(ds)
+#    ncontribGroup = dict()
+#    for da, con in ds:
+#        if not da in ncontribGroup:
+#            ncontribGroup[da] = 0
+#        ncontribGroup[da] += con
+#    print(dict(sorted(ncontribGroup.items(), key=lambda item: item[1])))
     for frequency in lst_frequency:
         date = lst_date[it]
         for ws in searched_word:
@@ -59,6 +77,7 @@ def tokenise_lemmentise(sentence):
     nlp = spacy.load('fr_core_news_md')
     sentence = sentence.lower()
     tokeni = []
+    nlp.max_length = len(sentence) + 100
     token = nlp(sentence)
     stopw = nltk.corpus.stopwords.words('french')
     stopw.extend(noise.frenchNoiseWords)
@@ -67,16 +86,34 @@ def tokenise_lemmentise(sentence):
 
     for tkn in token:
         tokeni.append(tkn.lemma_)
-    tokeni = [text for text in tokeni if text not in stopw]
     tokeni = [word for word in tokeni if len(word) > 2 ]
+    tokeni = [text for text in tokeni if text not in stopw]
 
     return tokeni
 
 def processWordFrequency(contribGroup, searched_word):
-    date = [d[0] for d in contribGroup ]
-    lst_sentence = [s[1] for s in contribGroup ]
+    tmp_i = -1
+    ncontribGroup = dict()
+    for da, con in contribGroup:
+        print(da)
+        if not da in ncontribGroup:
+            ncontribGroup[da] = ""
+        ncontribGroup[da] += "".join(con)
+    print(dict(sorted(ncontribGroup.items(), key=lambda item: item[0])))
+    date = [n for n in ncontribGroup]
+#    for da, con in contribGroup:
+#        if contribGroup[tmp_i][0] in da and tmp_i > -1:
+#            ncontribGroup.append((da, contribGroup[tmp_i][1] + con))
+#        tmp_i += 1
+
+#    date = [d[0] for d in ncontribGroup ]
+#    print(date)
+    lst_sentence = [ncontribGroup[s] for s in ncontribGroup ]
+#    print(lst_sentence)
+#    print(lst_sentence) s[1]
     result = parse_requirement(searched_word, lst_sentence, date)
-    return result
+#    print(result)
+    return result, date
 
 def LDA_prep(lst):
     bag_word =  [lst]#[lst[i:i + 5] for i in range(0, len(lst), 5)]

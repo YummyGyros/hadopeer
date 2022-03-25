@@ -10,13 +10,13 @@ frenchNoiseWords = [
     "n", "ne",
     "ce", "ces", "ca", "c", "cet", "cette", "celui", "via", 
     "mon", "mes", "ton", "tes", "son", "sa", "ses", "leur", "leurs", "lui",
-    "très", "peu", "beaucoup", "à", "oû",
-    "et", "en", "au", "aux", "ou", "or", "ni", "car", "sur", "pas", "y",
-    "avec", "sans", "dont", "par", "mais", "soit", "tant", "dans", "donc", "lors", "aussi", "pendant",
-    "comme", "comment",
-    "parce", "puisqu", "qui", "que", "quoi", "quand", "qu", "qu'", "qu’", "lorsqu", "lorsque", "quel", "quelle", "quels", "quelles", "jusqu", "auxquels", "auxquelles",
+    "très", "peu", "beaucoup", "à", "oû", "paul", "vouloir", "gosselin", "alinéa", 
+    "et", "en", "au", "aux", "ou", "or", "ni", "car", "sur", "pas", "y", "dire", "patrick", "pierre"
+    "avec", "sans", "dont", "par", "mais", "soit", "tant", "dans", "donc", "lors", "aussi", "pendant", "ainsi",
+    "comme", "comment", "mme", "Monsieur", "monsieur", "331", "martine", "luc", "lefebvre", "jean", "christian", "brard", "bloch", "riester", "warsmann", "philippe", "luc"
+    "parce", "puisqu", "qui", "que", "quoi", "quand", "qu", "qu'", "qu’", "lorsqu", "lorsque", "quel", "quelle", "quels", "quelles", "jusqu", "auxquels", "warsmann", "auxquelles",
     "se", "j", "je", "tu", "t", "il", "elle", "iel", "on", "nous", "vous", "ils", "elles", "iels", "plus", 
-    "outre", "autre", "notamment", "après", "non", "mieux", "mme", "autant", "tel", "lequel", "lequelle"
+    "outre", "autre", "notamment", "après", "non", "mieux", "mme", "autant", "tel", "lequel", "lequelle", "faire", "entre", "aujourd", "tout", "bien", "hui", "numéro"
 ]
 
 frenchVerbEtre =[
