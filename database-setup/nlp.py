@@ -25,9 +25,9 @@ def get_top_n_words(corpus, n=10):
   bag_of_words = vec.transform(corpus)
   sum_words = bag_of_words.sum(axis=0) 
   words_freq = [(word, sum_words[0, idx]) for word, idx in   vec.vocabulary_.items()]
-#  words_freq =sorted(words_freq, key = lambda x: x[1], reverse=True)
+  words_freq =sorted(words_freq, key = lambda x: x[1], reverse=True)
 
-  return words_freq
+  return words_freq[:n]
 
 def parse_requirement(searched_word, lst_sentence, lst_date):
     lst_frequency = []
@@ -35,9 +35,15 @@ def parse_requirement(searched_word, lst_sentence, lst_date):
     it = 0
     dt = 0
 
-    for i in range(len(lst_sentence)):
-        sentence = tokenise_lemmentise(lst_sentence[i])
-        lst_frequency.append(get_top_n_words(sentence, 15))
+#    for i in range(len(lst_sentence)):
+#        sentence = tokenise_lemmentise(lst_sentence[i])
+#        lst_frequency.append(get_top_n_words(sentence, 20))
+#        print(lst_frequency)
+#        print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"
+    p = "".join(lst_sentence)
+    sentence = tokenise_lemmentise(p)
+    print(get_top_n_words(sentence, 20))
+    return []
     for frequency in lst_frequency:
         date = lst_date[it]
         for ws in searched_word:
@@ -73,11 +79,12 @@ def tokenise_lemmentise(sentence):
     return tokeni
 
 def processWordFrequency(contribGroup, searched_word):
-    print(contribGroup)
+#    print(contribGroup)
     date = [d[0] for d in contribGroup ]
     print(date)
+    return []
     lst_sentence = ["".join(s[1]) for s in contribGroup ]
-    print(lst_sentence)
+#    print(lst_sentence)
     result = parse_requirement(searched_word, lst_sentence, date)
     return result
 

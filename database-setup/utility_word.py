@@ -13,10 +13,10 @@ frenchNoiseWords = [
     "très", "peu", "beaucoup", "à", "oû",
     "et", "en", "au", "aux", "ou", "or", "ni", "car", "sur", "pas", "y",
     "avec", "sans", "dont", "par", "mais", "soit", "tant", "dans", "donc", "lors", "aussi", "pendant",
-    "comme", "comment",
+    "comme", "comment", "mme"
     "parce", "puisqu", "qui", "que", "quoi", "quand", "qu", "qu'", "qu’", "lorsqu", "lorsque", "quel", "quelle", "quels", "quelles", "jusqu", "auxquels", "auxquelles",
     "se", "j", "je", "tu", "t", "il", "elle", "iel", "on", "nous", "vous", "ils", "elles", "iels", "plus", 
-    "outre", "autre", "notamment", "après", "non", "mieux", "mme", "autant", "tel", "lequel", "lequelle"
+    "outre", "autre", "notamment", "après", "non", "mieux", "mme", "autant", "tel", "lequel", "lequelle", "faire", "entre", "aujourd", "tout", "bien", "hui", "numéro"
 ]
 
 frenchVerbEtre =[

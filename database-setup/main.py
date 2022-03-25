@@ -28,8 +28,7 @@ def extractVisualizationsNLP(client):
         # })
     for sample in getDateContributionsSamples("tot"):
     #    print("date contrib: ", sample[1])
-        
-        nlpData = processWordFrequency(sample[1], searchedWord)
+        nlpData = processWordFrequency(sample[1], [])
         visu = createVisuWordFrequency(nlpData, sample[1])
         # visualizations.append({
         #   'type': 'frequency',
