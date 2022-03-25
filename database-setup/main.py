@@ -17,8 +17,7 @@ warnings.filterwarnings(
 def extractVisualizationsNLP(client):
     visualizations = []
     searchedWord = ["ministre", "artiste", "numerique", "danger"]
-    for sample in getContributionsSamples("tto"):#client):
-#        print("contrib: ", sample)
+    for sample in getContributionsSamples(client):
         nlpData = processTopicModelling(sample[1])
         visu = createVisuTopicModelling(nlpData)
         # visualizations.append({
@@ -27,7 +26,6 @@ def extractVisualizationsNLP(client):
         #   'graph': visu
         # })
     for sample in getDateContributionsSamples("tot"):
-    #    print("date contrib: ", sample[1])
         nlpData, date = processWordFrequency(sample[1], searchedWord)
         visu = createVisuWordFrequency(nlpData, date)
         # visualizations.append({
@@ -39,10 +37,10 @@ def extractVisualizationsNLP(client):
 
 if __name__ == "__main__":
     print("WARNING: this script assumes you have the 5 files from scrapping at \"../\"")
-    #client = getFaunaDbInstance()
+    client = getFaunaDbInstance()
     # createCollections(client)
     # createIndexes(client)
-    visus = extractVisualizationsNLP("tot")
+    visus = extractVisualizationsNLP(client)
     # for elem in visus:
     #     client.query(q.create(
     #         q.collection('visualizations'), {'data': elem})
