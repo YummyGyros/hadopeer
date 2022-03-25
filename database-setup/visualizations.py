@@ -31,6 +31,7 @@ def createVisuTopicModelling(nlpData):
 def createVisuWordFrequency(nlpData, contribGroup):
     occ = []
     date = [d[0] for d in contribGroup ]
+    print(date)
     df = pd.DataFrame(columns=["date", "occurence", "mots"])
 
     print(nlpData)
@@ -46,6 +47,6 @@ def createVisuWordFrequency(nlpData, contribGroup):
 
     fig = px.line(df, x="date", y="occurence", color='mots')
 #    print("JSON HERE: ", fig.to_json())
-#    fig.write_image("fig1.png")
+    fig.write_image("fig1.png")
     return fig.to_json()
 #    fig.write_json("nlp_j.json", pretty=True)

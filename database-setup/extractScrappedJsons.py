@@ -27,7 +27,6 @@ def getAllDateContributions(filepaths):
             tuple = (object['date'], [])
             for contrib in object['contributions']:
                 tuple[1].append(contrib['text'])
-                break
             tuples.append(tuple)
     return tuples
 

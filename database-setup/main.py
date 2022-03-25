@@ -30,7 +30,7 @@ def extractVisualizationsNLP(client):
     #    print("date contrib: ", sample[1])
         
         nlpData = processWordFrequency(sample[1], searchedWord)
-        visu = createVisuWordFrequency(nlpData)
+        visu = createVisuWordFrequency(nlpData, sample[1])
         # visualizations.append({
         #   'type': 'frequency',
         #   'sample': sample[0],
@@ -40,10 +40,10 @@ def extractVisualizationsNLP(client):
 
 if __name__ == "__main__":
     print("WARNING: this script assumes you have the 5 files from scrapping at \"../\"")
-    client = getFaunaDbInstance()
+    #client = getFaunaDbInstance()
     # createCollections(client)
     # createIndexes(client)
-    # visus = extractVisualizationsNLP(client)
+    visus = extractVisualizationsNLP("tot")
     # for elem in visus:
     #     client.query(q.create(
     #         q.collection('visualizations'), {'data': elem})
