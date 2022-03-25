@@ -67,13 +67,12 @@ def elected_members():
 ### Elected Member ###
 @app.route("/elected_member")
 def elected_member():
-  return "Error 500: Internal error. Endpoint to be implemented soon.", 500
-  # name = request.args.get('name')
-  # if not name:
-  #   return "name not found", 400
-  # object = getDataFaunaIndex("elected_member_ref_by_name", name)
-  # object['contributions'] = getDataFaunaIndex("contributions_ref_by_elected_member", name)
-  # return object
+  # return "Error 500: Internal error. Endpoint to be implemented soon.", 500
+  name = request.args.get('name')
+  if not name:
+    return "name not found", 400
+  object = getDataFaunaIndex("elected_member_ref_by_name", name)
+  return object
 
 ### Dates ###
 @app.route("/dates")

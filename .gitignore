@@ -4,7 +4,6 @@
 *serv.md
 *__pycache__
 *.vercel
-*.venv
 .fauna
 archived
 node_modules
