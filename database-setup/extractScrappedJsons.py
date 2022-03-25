@@ -20,9 +20,9 @@ def getAllContributions(filepaths):
     return contribs
 
 def getAllDateContributions(filepaths):
+    tuples = []
     for path in filepaths:
         objects = jsonTools.getObjectFromJsonFile(path)
-        tuples = []
         for object in objects:
             tuple = (object['date'], [])
             for contrib in object['contributions']:
