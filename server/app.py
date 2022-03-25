@@ -45,6 +45,16 @@ def paginateFaunaIndex(indexName, distinct = False, *args):
     match = q.distinct(match)
   return client.query(q.paginate(match))['data']
 
+def countFaunaIndex(indexName, *args):
+  if len(args) == 0:
+    match = q.match(q.index(indexName))
+  if len(args) == 1:
+    match = q.match(q.index(indexName), args[0])
+  if len(args) == 2:
+    match = q.match(q.index(indexName), args[0], args[1])
+  if len(args) == 3:
+    match = q.match(q.index(indexName), args[0], args[1], args[2])
+  return client.query(q.count(match))
 
 @app.route("/")
 def hello():
@@ -98,21 +108,25 @@ def votes():
   elif assembly == "assemblée nationale":
     job = "député"
 
-  indexName = "elected_members_vote_" + voteNumber
+  indexName = "elected_members_vote_" + voteNumber + "_by_vote_job"
   if group:
-    votes = paginateFaunaIndex(indexName + "_by_job_group", job, group)
+    indexName += "_group"
+    inFavor = countFaunaIndex(indexName, "pour", job, group)
+    against = countFaunaIndex(indexName, "contre", job, group)
+    none = countFaunaIndex(indexName, "none", job, group)
+    none += countFaunaIndex(indexName, "absent", job, group)
   else:
-    votes = paginateFaunaIndex(indexName + "_by_job", job)
-  return { "pour": votes.count("pour"),
-            "contre": votes.count("contre"),
-            "none": votes.count("none") + votes.count("absent")}
+    inFavor = countFaunaIndex(indexName, "pour", job)
+    against = countFaunaIndex(indexName, "contre", job)
+    none = countFaunaIndex(indexName, "none", job)
+    none += countFaunaIndex(indexName, "absent", job)
+  return { "pour": inFavor, "contre": against, "none": none }
 
 ### Visualization ###
 @app.route("/visualization")
 def visualization():
   sample = request.args.get('sample')
   type = request.args.get('type')
-
   if not (type and sample):
     return "400 Bad Request: type required", 400
   return jsonify(getDataFaunaIndex('visualization_ref_by_type_sample', type, sample))
