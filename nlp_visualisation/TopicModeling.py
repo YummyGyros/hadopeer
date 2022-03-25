@@ -10,6 +10,11 @@ nltk.download('punkt')
 nltk.download('omw-1.4')
 nltk.download('stopwords')
 nlp = spacy.load('fr_core_news_md')
+import plotly
+import plotly.graph_objs as go
+from plotly.offline import plot
+import random
+
 
 
 #from nltk.corpus import stopwords
@@ -33,6 +38,7 @@ def LDA_prep(lst):
     topics = ldamodel.print_topics(num_words = 20)
     for topic in topics:
         print(topic)
+    return ldamodel
 
 
 
@@ -61,6 +67,38 @@ def tokenise_lemmentise(sentence):
     print(type(tokeni[0]))
     return tokeni
 
-def get_visu_TopicModelling(lst):
-    result = tokenise_lemmentise(sentence)
-    LDA_prep(result)
+def createVisuTopicModelling(nlpData):
+    colors = [plotly.colors.DEFAULT_PLOTLY_COLORS[random.randrange(1, 10)] for i in range(30)]
+    W = []
+    O = []
+    for word, occurence in nlpData:
+        W.append(word)
+        O.append(occurence * 900)
+    print(O)
+
+    data = go.Scatter(x=[random.random() for i in range(30)],
+                     y=[random.random() for i in range(30)],
+                     mode='text',
+                     text=W,
+                     marker={'opacity': 0.3},
+                     textfont={'size': O,
+                               'color': colors})
+    layout = go.Layout({'xaxis': {'showgrid': False, 'showticklabels': False, 'zeroline': False},
+                        'yaxis': {'showgrid': False, 'showticklabels': False, 'zeroline': False}})
+    fig = go.Figure(data=[data], layout=layout)
+    fig.write_image("fig1.png")
+    return fig.to_json()
+
+def processTopicModelling(contribGroup):
+
+    result = tokenise_lemmentise(contribGroup)
+    lda = LDA_prep(result)
+    return lda.show_topic(0, 20)
+
+    
+
+   
+
+
+
+createVisuTopicModelling(processTopicModelling(sentence))
