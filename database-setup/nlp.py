@@ -73,8 +73,10 @@ def tokenise_lemmentise(sentence):
     return tokeni
 
 def processWordFrequency(contribGroup, searched_word):
+    print(contribGroup)
     date = [d[0] for d in contribGroup ]
-    lst_sentence = [s[1] for s in contribGroup ]
+    print(contribGroup)
+    lst_sentence = ["".join(s[1]) for s in contribGroup ]
     result = parse_requirement(searched_word, lst_sentence, date)
     return result
 

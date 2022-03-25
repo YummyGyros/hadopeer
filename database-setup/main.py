@@ -17,10 +17,10 @@ warnings.filterwarnings(
 def extractVisualizationsNLP(client):
     visualizations = []
     searchedWord = ["ministre", "artiste", "numerique", "danger"]
-    for sample in getContributionsSamples("tto"):#client):
+#    for sample in getContributionsSamples("tto"):#client):
 #        print("contrib: ", sample)
-        nlpData = processTopicModelling(sample[1])
-        visu = createVisuTopicModelling(nlpData)
+#        nlpData = processTopicModelling(sample[1])
+#        visu = createVisuTopicModelling(nlpData)
         # visualizations.append({
         #   'type': 'topic_modelling',
         #   'sample': sample[0],
