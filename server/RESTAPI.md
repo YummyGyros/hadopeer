@@ -56,7 +56,6 @@ result: {\
     "graph": {},\
     "sample": "x",\
     "type": "x",\
-    "values": [],\
 }
 
 ## Others

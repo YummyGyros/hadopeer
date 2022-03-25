@@ -24,8 +24,7 @@ def extractVisualizationsNLP(client):
         # visualizations.append({
         #   'type': 'topic_modelling',
         #   'sample': sample[0],
-        #   'graph': vis,
-        #   'values': []
+        #   'graph': visu
         # })
     for sample in getDateContributionsSamples("tot"):
     #    print("date contrib: ", sample[1])
@@ -35,16 +34,16 @@ def extractVisualizationsNLP(client):
         # visualizations.append({
         #   'type': 'frequency',
         #   'sample': sample[0],
-        #   'graph': vis,
-        #   'values': add_array_from_file???
+        #   'graph': visu
         # })
     return visualizations
 
 if __name__ == "__main__":
-    #client = getFaunaDbInstance()
+    print("WARNING: this script assumes you have the 5 files from scrapping at \"../\"")
+    client = getFaunaDbInstance()
     # createCollections(client)
     # createIndexes(client)
-    visus = extractVisualizationsNLP("tt")#client)
+    # visus = extractVisualizationsNLP(client)
     # for elem in visus:
     #     client.query(q.create(
     #         q.collection('visualizations'), {'data': elem})

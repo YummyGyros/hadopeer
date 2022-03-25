@@ -27,5 +27,4 @@ scikit-learn==1.0.2
 pickle-mixin>=1.0.0
 scipy>=1.7.3
 wordcloud==1.8.1
-fr-core-news-md==3.2.0
 pandas==1.4.1

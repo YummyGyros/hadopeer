@@ -5,9 +5,7 @@ from extractScrappedJsons import getDatesLinksFromSessions
 from faunaTools import loadJsonArrayFileToFaunaCollection
 
 def createDatesCollection(client):
-    contribsPaths = ['national_assembly_sessions.json', 'senate_sessions.json']
-    for i in range(len(contribsPaths)):
-        contribsPaths[i] = '../save_test_db_json/' + contribsPaths[i]
+    contribsPaths = ['../national_assembly_sessions.json', '../senate_sessions.json']
     dates = getDatesLinksFromSessions(contribsPaths)
     client.query(q.create_collection({'name': 'dates'}))
     for elem in dates:
