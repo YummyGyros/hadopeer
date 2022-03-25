@@ -94,7 +94,8 @@ def LDA_prep(lst):
     return ldamodel
 
 def processTopicModelling(contribGroup):
+    contrib = "".join(contribGroup)
 
-    result = tokenise_lemmentise(contribGroup)
+    result = tokenise_lemmentise(contrib)
     lda = LDA_prep(result)
     return lda.show_topic(0, 20)

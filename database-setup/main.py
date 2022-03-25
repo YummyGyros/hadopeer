@@ -5,35 +5,32 @@ from faunaTools             import getFaunaDbInstance
 from faunaDbCollections     import createCollections
 from faunaDbIndexes         import createIndexes
 from extractScrappedJsons   import getContributionsSamples, getDateContributionsSamples
-from nlp                    import processTopicModelling
-from visualizations         import createVisuTopicModelling
+from nlp                    import processTopicModelling, processWordFrequency
+from visualizations         import createVisuTopicModelling, createVisuWordFrequency
 import warnings
 warnings.filterwarnings(
     "ignore",
     message="The localize method is no longer necessary, as this time zone supports the fold attribute",
 )
 
-name = 'visu_' + 'type' + '_' + 'assembly' + '_' + 'sample'
-# visu_x_sénat
-# visu_x_RDSE
-# visu_x_sénat_RDSE
-
 # considers there s no array
 def extractVisualizationsNLP(client):
     visualizations = []
-    for sample in getContributionsSamples(client):
-        print("contrib: ", sample)
-        # nlpData = processTopicModelling(sample[1])
-        # visu = createVisuTopicModelling(nlpData)
+    searchedWord = ["ministre", "artiste", "numerique", "danger"]
+    for sample in getContributionsSamples("tto"):#client):
+#        print("contrib: ", sample)
+        nlpData = processTopicModelling(sample[1])
+        visu = createVisuTopicModelling(nlpData)
         # visualizations.append({
         #   'type': 'topic_modelling',
         #   'sample': sample[0],
         #   'graph': visu
         # })
-    # for sample in getDateContributionsSamples():
-    #     print("date contrib: ", sample[1])
-        # nlpData = processTopicModelling(contribSample)
-        # visu = createVisuTopicModelling(nlpData)
+    for sample in getDateContributionsSamples("tot"):
+    #    print("date contrib: ", sample[1])
+        
+        nlpData = processWordFrequency(sample[1], searchedWord)
+        visu = createVisuWordFrequency(nlpData)
         # visualizations.append({
         #   'type': 'frequency',
         #   'sample': sample[0],
@@ -42,10 +39,10 @@ def extractVisualizationsNLP(client):
     return visualizations
 
 if __name__ == "__main__":
-    print("info: this script assumes you have the 5 files from scrapping at ../")
+    print("WARNING: this script assumes you have the 5 files from scrapping at \"../\"")
     client = getFaunaDbInstance()
-    createCollections(client)
-    createIndexes(client)
+    # createCollections(client)
+    # createIndexes(client)
     # visus = extractVisualizationsNLP(client)
     # for elem in visus:
     #     client.query(q.create(

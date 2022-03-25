@@ -63,25 +63,25 @@ def getContributionsSamples(client):
     samples = []
     tuple = ('all', getAllContributions(sessionsPaths))
     samples.append(tuple)
-    tuple = ('national_assembly', getAllContributions(natAssemblyPaths))
-    samples.append(tuple)
-    tuple = ('senate', getAllContributions(senatePaths))
-    samples.append(tuple)
-    groups = client.query(q.paginate(q.match(q.index('elected_members_group'))))['data']
-    for group in groups:
-        contribs = getContribsFromMatchingMembers(sessionsPaths, membersPaths, 'group', group)
-        tuple = (group, contribs)
-        samples.append(tuple)
+#    tuple = ('national_assembly', getAllContributions(natAssemblyPaths))
+#    samples.append(tuple)
+#    tuple = ('senate', getAllContributions(senatePaths))
+#    samples.append(tuple)
+#    groups = client.query(q.paginate(q.match(q.index('elected_members_group'))))['data']
+#    for group in groups:
+#        contribs = getContribsFromMatchingMembers(sessionsPaths, membersPaths, 'group', group)
+#        tuple = (group, contribs)
+#        samples.append(tuple)
     return samples
 
 def getDateContributionsSamples(client):
     samples = []
     tuple = ('all', getAllDateContributions(sessionsPaths))
     samples.append(tuple)
-    tuple = ('national_assembly', getAllDateContributions(natAssemblyPaths))
-    samples.append(tuple)
-    tuple = ('senate', getAllDateContributions(senatePaths))
-    samples.append(tuple)
+#    tuple = ('national_assembly', getAllDateContributions(natAssemblyPaths))
+#    samples.append(tuple)
+#    tuple = ('senate', getAllDateContributions(senatePaths))
+#    samples.append(tuple)
     # groups = client.query(q.paginate(q.match(q.index('elected_members_group'))))['data']
     # for group in groups:
     #     contribs = getContribsFromMatchingMembers(sessionsPaths, membersPaths, 'group', group)
