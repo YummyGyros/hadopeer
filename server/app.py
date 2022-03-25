@@ -51,23 +51,12 @@ def hello():
 ### Elected Members ###
 @app.route("/elected_members")
 def elected_members():
-  job = request.args.get('job')
-  group = request.args.get('group')
-  department = request.args.get('department')
-
   result = paginateFaunaIndex("all_elected_members_name_job_group_department")
-  if job:
-    result = [values for values in result if values[1] == job]
-  if group:
-    result = [values for values in result if values[2] == group]
-  if department:
-    result = [values for values in result if values[3] == department]
   return jsonify(result)
 
 ### Elected Member ###
 @app.route("/elected_member")
 def elected_member():
-  # return "Error 500: Internal error. Endpoint to be implemented soon.", 500
   name = request.args.get('name')
   if not name:
     return "name not found", 400
