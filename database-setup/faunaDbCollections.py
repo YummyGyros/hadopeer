@@ -13,7 +13,7 @@ def createDatesCollection(client):
 
 def createCollections(client):
     print("createCollections: code commented for safety reasons")
-    createDatesCollection(client)
+    # createDatesCollection(client)
 
     # client.query(q.create_collection({'name': 'votes'}))
     # loadJsonArrayFileToFaunaCollection(client, '../votes.json', 'votes')
