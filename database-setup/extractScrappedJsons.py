@@ -3,7 +3,12 @@ import dateparser
 from faunadb import query as q
 
 sessionsPaths = ['../national_assembly_sessions.json', '../senate_sessions.json']
+senatePaths = ['../senate_sessions.json']
+natAssemblyPaths = ['../national_assembly_sessions.json']
+
 membersPaths = ['../senators.json', '../deputies.json']
+senatorsPaths = ['../senators.json']
+deputiesPaths = ['../deputies.json']
 
 def getAllContributions(filepaths):
     for path in filepaths:
@@ -54,21 +59,32 @@ def getDatesLinksFromSessions(filepaths):
                 datesLinks.append({ 'date': q.date(date), 'link': obj['link']})
     return datesLinks
 
-def getContributionsGroups():
-    groups = []
-    groups.append(getAllContributions(sessionsPaths))
-    # groups.append(getContribsFromMatchingMembers(sessionsPaths, membersPaths, 'job', 'sénateur'))
-    # groups.append(getContribsFromMatchingMembers(sessionsPaths, membersPaths, 'job', 'député'))
+def getContributionsSamples(client):
+    samples = []
+    tuple = ('all', getAllContributions(sessionsPaths))
+    samples.append(tuple)
+    tuple = ('national_assembly', getAllContributions(natAssemblyPaths))
+    samples.append(tuple)
+    tuple = ('senate', getAllContributions(senatePaths))
+    samples.append(tuple)
+    groups = client.query(q.paginate(q.match(q.index('elected_members_group'))))['data']
+    for group in groups:
+        contribs = getContribsFromMatchingMembers(sessionsPaths, membersPaths, 'group', group)
+        tuple = (group, contribs)
+        samples.append(tuple)
+    return samples
+
+def getDateContributionsSamples(client):
+    samples = []
+    tuple = ('all', getAllDateContributions(sessionsPaths))
+    samples.append(tuple)
+    tuple = ('national_assembly', getAllDateContributions(natAssemblyPaths))
+    samples.append(tuple)
+    tuple = ('senate', getAllDateContributions(senatePaths))
+    samples.append(tuple)
     # groups = client.query(q.paginate(q.match(q.index('elected_members_group'))))['data']
-    return groups
-
-def getDateContributionsGroups():
-    groups = []
-    groups.append(getAllDateContributions(sessionsPaths))
-    return groups
-
-# ISSUES:
-#   - fonction très proche des autres: meilleure archi?
-#   - peu opti: pour les sessions du sénat, compare avec sénateurs et députés actuellement
-#   - recup DateContribs?
-#   - filtre soit Sénat soit UMP mais comment filtrer Sénat ET UMP (car groupe existe a l'AN aussi)
+    # for group in groups:
+    #     contribs = getContribsFromMatchingMembers(sessionsPaths, membersPaths, 'group', group)
+    #     tuple = (group, contribs)
+    #     samples.append(tuple)
+    return samples

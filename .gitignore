@@ -1,5 +1,6 @@
 *.json
 *.png
+*.txt
 *serv.md
 *__pycache__
 *.vercel
@@ -10,4 +11,3 @@ node_modules
 save_dl_nlp
 save_valid_json
 save_test_db_json
-message.txt

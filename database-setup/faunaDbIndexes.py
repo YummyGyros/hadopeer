@@ -58,6 +58,6 @@ def createIndexes(client):
   # createFaunaIndex(client, 'elected_members_vote_2_by_job_group', 'elected_members', values, terms)
 
   # # /visualizations #
-  # values = createFaunaFieldsArray(['data'])
-  # terms = createFaunaFieldsArray(['name'])
-  # createFaunaIndex(client, 'visualization_data_by_name', 'visualizations', values, terms)
+  values = [{'field': ['ref']}]
+  terms = createFaunaFieldsArray(['type', 'sample'])
+  createFaunaIndex(client, 'visualization_ref_by_type_sample', 'visualizations', values, terms)

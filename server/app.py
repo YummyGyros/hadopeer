@@ -27,8 +27,11 @@ client = FaunaClient(
 app = Flask(__name__)
 CORS(app)
 
-def getDataFaunaIndex(indexName, arg):
-  match = q.match(q.index(indexName), arg)
+def getDataFaunaIndex(indexName, *args):
+  if len(args) == 1:
+    match = q.match(q.index(indexName), args[0])
+  if len(args) == 2:
+    match = q.match(q.index(indexName), args[0], args[1])
   return client.query(q.get(match))['data']
 
 def paginateFaunaIndex(indexName, *args):
@@ -114,19 +117,12 @@ def votes():
 ### Visualization ###
 @app.route("/visualization")
 def visualization():
-  assembly = request.args.get('assembly')
-  group = request.args.get('group')
-  visuType = request.args.get('type')
+  sample = request.args.get('sample')
+  type = request.args.get('type')
 
-  if not visuType:
+  if not (type and sample):
     return "400 Bad Request: type required", 400
-  visuName = 'visu_' + visuType
-  if assembly:
-    visuName = visuName + '_' + assembly
-  elif group:
-    visuName = visuName + '_' + group
-  print(visuName)
-  return jsonify(paginateFaunaIndex('visualization_data_by_name', visuName))
+  return jsonify(getDataFaunaIndex('visualization_ref_by_type_sample', type, sample))
 
 ### Others ###
 @app.route("/political_groups")
