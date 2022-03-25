@@ -17,10 +17,10 @@ warnings.filterwarnings(
 def extractVisualizationsNLP(client):
     visualizations = []
     searchedWord = ["ministre", "artiste", "numerique", "danger"]
-#    for sample in getContributionsSamples("tto"):#client):
+    for sample in getContributionsSamples("tto"):#client):
 #        print("contrib: ", sample)
-#        nlpData = processTopicModelling(sample[1])
-#        visu = createVisuTopicModelling(nlpData)
+        nlpData = processTopicModelling(sample[1])
+        visu = createVisuTopicModelling(nlpData)
         # visualizations.append({
         #   'type': 'topic_modelling',
         #   'sample': sample[0],
@@ -28,8 +28,8 @@ def extractVisualizationsNLP(client):
         # })
     for sample in getDateContributionsSamples("tot"):
     #    print("date contrib: ", sample[1])
-        nlpData = processWordFrequency(sample[1], [])
-        visu = createVisuWordFrequency(nlpData, sample[1])
+        nlpData, date = processWordFrequency(sample[1], searchedWord)
+        visu = createVisuWordFrequency(nlpData, date)
         # visualizations.append({
         #   'type': 'frequency',
         #   'sample': sample[0],
