@@ -33,8 +33,8 @@ def createIndexes(client):
   # createFaunaIndex(client, 'elected_member_ref_by_name', 'elected_members', values, terms)
 
   # # /dates #
-  # values = createFaunaFieldsArray(['date', 'link'])
-  # createFaunaIndex(client, 'all_dates_links', 'dates', values)
+  values = createFaunaFieldsArray(['date', 'link'])
+  createFaunaIndex(client, 'all_dates_links', 'dates', values)
 
   # # /votes/context #
   # values = createFaunaFieldsArray(['date', 'assembly', 'number'])
