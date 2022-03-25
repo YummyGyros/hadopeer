@@ -5,8 +5,8 @@ from faunaTools             import getFaunaDbInstance
 from faunaDbCollections     import createCollections
 from faunaDbIndexes         import createIndexes
 from extractScrappedJsons   import getContributionsSamples, getDateContributionsSamples
-from nlp                    import processTopicModelling
-from visualizations         import createVisuTopicModelling
+from nlp                    import processTopicModelling, processWordFrequency
+from visualizations         import createVisuTopicModelling, createVisuWordFrequency
 import warnings
 warnings.filterwarnings(
     "ignore",
@@ -16,8 +16,9 @@ warnings.filterwarnings(
 # considers there s no array
 def extractVisualizationsNLP(client):
     visualizations = []
-    for sample in getContributionsSamples(client):
-        print("contrib: ", sample)
+    searchedWord = ["ministre", "artiste", "numerique", "danger"]
+    for sample in getContributionsSamples("tto"):#client):
+#        print("contrib: ", sample)
         nlpData = processTopicModelling(sample[1])
         visu = createVisuTopicModelling(nlpData)
         # visualizations.append({
@@ -26,11 +27,11 @@ def extractVisualizationsNLP(client):
         #   'graph': vis,
         #   'values': []
         # })
-    for sample in getDateContributionsSamples():
+    for sample in getDateContributionsSamples("tot"):
     #    print("date contrib: ", sample[1])
         
-        nlpData = processTopicModelling(sample[1])
-        visu = createVisuTopicModelling(nlpData)
+        nlpData = processWordFrequency(sample[1], searchedWord)
+        visu = createVisuWordFrequency(nlpData)
         # visualizations.append({
         #   'type': 'frequency',
         #   'sample': sample[0],
@@ -43,7 +44,7 @@ if __name__ == "__main__":
     #client = getFaunaDbInstance()
     # createCollections(client)
     # createIndexes(client)
-    visus = extractVisualizationsNLP(client)
+    visus = extractVisualizationsNLP("tt")#client)
     # for elem in visus:
     #     client.query(q.create(
     #         q.collection('visualizations'), {'data': elem})

@@ -11,6 +11,7 @@ def createVisuTopicModelling(nlpData):
     O = []
     for word, occurence in nlpData:
         W.append(word)
+        print(occurence * 1000)
         O.append(occurence * 900)
     print(O)
 
