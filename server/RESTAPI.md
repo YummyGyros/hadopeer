@@ -51,7 +51,15 @@ result: {\
     "graph": {},\
     "sample": "x",\
     "type": "x",\
-}
+}\
+
+**/visualization/types**\
+queryParams: none\
+result: ["visualization_type"]\
+
+**/visualization/samples**\
+queryParams: none\
+result: ["visualization_sample"]
 
 ## Others
 

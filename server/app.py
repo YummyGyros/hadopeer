@@ -34,18 +34,23 @@ def getDataFaunaIndex(indexName, *args):
     match = q.match(q.index(indexName), args[0], args[1])
   return client.query(q.get(match))['data']
 
-def paginateFaunaIndex(indexName, *args):
+def paginateFaunaIndex(indexName, distinct = False, *args):
   if len(args) == 0:
     match = q.match(q.index(indexName))
   if len(args) == 1:
     match = q.match(q.index(indexName), args[0])
   if len(args) == 2:
     match = q.match(q.index(indexName), args[0], args[1])
+  if distinct:
+    match = q.distinct(match)
   return client.query(q.paginate(match))['data']
 
 
 @app.route("/")
 def hello():
+  # indexName = "a_group"
+  # result = client.query(q.paginate(q.distinct(q.match(q.index(indexName)))))
+  # print(result)
   return "hello"
 
 ### Elected Members ###
@@ -112,7 +117,15 @@ def visualization():
     return "400 Bad Request: type required", 400
   return jsonify(getDataFaunaIndex('visualization_ref_by_type_sample', type, sample))
 
+@app.route("/visualization/types")
+def visualizations_types():
+  return jsonify(paginateFaunaIndex("visualizations_type", True))
+
+@app.route("/visualization/samples")
+def visualizations_samples():
+  return jsonify(paginateFaunaIndex("visualizations_sample", True))
+
 ### Others ###
 @app.route("/political_groups")
 def political_groups():
-  return jsonify(paginateFaunaIndex("elected_members_group"))
+  return jsonify(paginateFaunaIndex("elected_members_group", True))
