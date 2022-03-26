@@ -1,0 +1,19 @@
+
+.homeText {
+    text-align: left;
+}
+
+.homeTitle {
+    text-align: center;
+    font-weight: 800;
+    font:  italic small-caps bold 32px sans-serif;
+    margin-top: 150px;
+    font-size: 200px;
+}
+
+.homeSubTitle {
+    text-align: center;
+    font-size: 50px;
+    font-weight: 700;
+    margin-bottom: 50px;
+}
