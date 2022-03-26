@@ -229,9 +229,9 @@ def create_vote_json_Senat(lecture):
 
 def get_name_senator(soup):
     lst_senator = soup.find_all("table", attrs={'border': '0'})
-    lst_name_pour = lst_senator[4].find_all("tr")
-    lst_name_contre = lst_senator[5].find_all("tr")
-    lst_name_abstention = lst_senator[6].find_all("tr")
+    lst_name_pour = lst_senator[3].find_all("tr")
+    lst_name_contre = lst_senator[4].find_all("tr")
+    lst_name_abstention = lst_senator[5].find_all("tr")
     name_page = []
 
     for name in lst_name_pour:
@@ -265,8 +265,12 @@ def vote_Senator(lecture):
     page = requests.get(scrutin)
 
     soup = BeautifulSoup(page.content, 'html.parser')
-    if vote_Senator.first < lecture:
-        vote_Senator.lst_senator += list(set(get_name_senator(soup)) - set(vote_Senator.lst_senator))
+    print(vote_Senator.first)
+    if vote_Senator.first < 1:
+        vote_Senator.lst_senator.extend(get_name_senator(soup))
+    else:
+        tmp_list = get_name_senator(soup)
+        vote_Senator.lst_senator.extend([s.lower() for s in tmp_list if not s.lower() in vote_Senator.lst_senator])
     lst_senator = soup.find_all("table", attrs={'border': '0'})
     lst_name_pour = lst_senator[3].find_all("tr")
     lst_name_contre = lst_senator[4].find_all("tr")
@@ -356,7 +360,6 @@ def other_scrap(SenatorNom, pb, scrutin):
     for i in tqdm(range(len(SenatorNom)), desc="Scrapping Senator info", disable=pb):
         ScrapSenator(SenatorNom[i].lower(), scrutin, lst_senator_2008)
     lst_senator = vote_Senator.lst_senator
-
     for name in SenatorNom:
         if name.lower() in lst_senator:
             lst_senator.remove(name.lower())
@@ -371,9 +374,7 @@ def ScrapSenator(name, scrutin, senator_2008):
         name_scrutin = scrutin[name]
     start_json = []
     for senator in senator_2008:
-
         if name in senator:
-
             if (ScrapSenator.first == True):
                 json_senator = {"name": name.title(), "job": "sénateur", "mandate": "2008-2011", "department": senator_2008[name][0], "group": senator_2008[name][1], "vote_1": name_scrutin[0], "vote_2" : name_scrutin[1]} 
                 start_json.append(json_senator)
