@@ -1,3 +1,7 @@
+# Entrypoint
+
+localhost or [vercel url to insert]
+
 # Endpoints
 
 ## Dates

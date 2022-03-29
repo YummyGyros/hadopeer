@@ -2,7 +2,7 @@ import jsonTools
 import dateparser
 from faunadb import query as q
 
-sessionsPaths = ['../national_assembly_sessions.json', '../senate_sessions.json']
+sessionsPaths = ['../senate_sessions.json', '../national_assembly_sessions.json']
 senatePaths = ['../senate_sessions.json']
 natAssemblyPaths = ['../national_assembly_sessions.json']
 
@@ -42,9 +42,10 @@ def appendMatchingDateText(tuples, names, object):
         for name in names:
             if name == contrib['elected_member']:
                 tuple[1].append(contrib['text'])
-    tuples.append(tuple)
+    if not list == []:
+        tuples.append(tuple)
 
-def getMembersContribs(contribsPaths, membersPaths, field, value, appenderMatch):
+def getMembersContribs(contribsPaths, membersPaths, field, value, matchingAppender):
     names = []
     contribs = []
     for path in membersPaths:
@@ -55,41 +56,35 @@ def getMembersContribs(contribsPaths, membersPaths, field, value, appenderMatch)
     for path in contribsPaths:
         objects = jsonTools.getObjectFromJsonFile(path)
         for object in objects:
-            appenderMatch(contribs, names, object)
+            matchingAppender(contribs, names, object)
     return contribs
 
 # get samples
-def getContributionsSamples(client):
+def getLambdaContribSamples(client, appender, matchingAppender):
     samples = []
-    tuple = ('all', getContributions(sessionsPaths, appendTextFromContrib))
+    tuple = ('all', getContributions(sessionsPaths, appender))
     samples.append(tuple)
-    # tuple = ('assemblée nationale', getContributions(natAssemblyPaths, appendTextFromContrib))
-    # samples.append(tuple)
-    # tuple = ('sénat', getContributions(senatePaths, appendTextFromContrib))
-    # samples.append(tuple)
-    # match = q.match(q.index('elected_members_group'))
-    # groups = client.query(q.paginate(q.distinct(match)))['data']
-    # for group in groups:
-    #     contribs = getMembersContribs(sessionsPaths, membersPaths,
-    #         'group', group, appendMatchingText)
-    #     samples.append((group, contribs))
+    tuple = ('assemblée nationale', getContributions(natAssemblyPaths, appender))
+    samples.append(tuple)
+    tuple = ('sénat', getContributions(senatePaths, appender))
+    samples.append(tuple)
+    match = q.match(q.index('elected_members_group'))
+    groups = client.query(q.paginate(q.distinct(match)))['data']
+    for group in groups:
+        contribs = getMembersContribs(sessionsPaths, membersPaths,
+            'group', group, matchingAppender)
+        samples.append((group, contribs))
     return samples
 
-def getDateContributionsSamples(client):
-    samples = []
-    tuple = ('all', getContributions(sessionsPaths, appendDateTextFromContrib))
-    samples.append(tuple)
-    # tuple = ('assemblée nationale', getContributions(natAssemblyPaths, appendDateTextFromContrib))
-    # samples.append(tuple)
-    # tuple = ('sénat', getContributions(senatePaths, appendDateTextFromContrib))
-    # samples.append(tuple)
-    # match = q.match(q.index('elected_members_group'))
-    # groups = client.query(q.paginate(q.distinct(match)))['data']
-    # for group in groups:
-    #     contribs = getMembersContribs(sessionsPaths, membersPaths,
-    #         'group', group, appendMatchingDateText)
-    #     samples.append((group, contribs))
-    return samples
+def getContribSamples(client):
+    return getLambdaContribSamples(
+        client, appendTextFromContrib, appendMatchingText
+    )
+
+def getDateContribSamples(client):
+    return getLambdaContribSamples(
+        client, appendDateTextFromContrib, appendMatchingDateText
+    )
 
 # get dates links
 def getDatesLinksFromSessions(filepaths):
