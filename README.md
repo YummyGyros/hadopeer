@@ -29,16 +29,31 @@ The server and website were sent to production through Vercel.
 
 ## Virtual Environments
 
-This project uses python virtual environments in order to manage dependencies neatly.\
-To launch python scripts, you will need to activate the venv so it can use its dependencies.\
-When you're done you need to deactivate it.
+In the python folders, you will find a "requirements.txt" file.\
+This file lists all required packages with their version to make the code work.\
+It is perfect for virtual environments use and prevents from dependecies issues!
 
-Here are the commands:
+Create the venv:
+```
+python3 -m venv .venv
+```
+
+Activate it:
 ```
 source .venv/bin/activate
-[execute commands here]
+```
+
+Install the packages:
+```
+pip install -r requirements.txt
+```
+
+Execute your commands here and then:
+```
 deactivate
 ```
+
+The database-setup has a special step which is why there's a script for it.
 
 ## Scrapping
 
