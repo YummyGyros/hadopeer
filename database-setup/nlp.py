@@ -27,7 +27,7 @@ def get_top_n_words(corpus, n=10):
   words_freq = [(word, sum_words[0, idx]) for word, idx in   vec.vocabulary_.items()]
 #  words_freq =sorted(words_freq, key = lambda x: x[1], reverse=False)
 
-  return words_freq
+  return words_freq # return a list of tuple
 
 def parse_requirement(searched_word, lst_sentence, lst_date):
     lst_frequency = []
@@ -67,7 +67,7 @@ def parse_requirement(searched_word, lst_sentence, lst_date):
                 word_searched[word][it] = (date, occ)
         it += 1
 
-    return word_searched
+    return word_searched # return a dict with in key the date and with in the value a list of tuple 
 
 def tokenise_lemmentise(sentence):
     char_spec = ["!", '"', "#", "%", "&", "'", "(", ")", "*", "+",
@@ -77,7 +77,8 @@ def tokenise_lemmentise(sentence):
     nlp = spacy.load('fr_core_news_md')
     sentence = sentence.lower()
     tokeni = []
-    nlp.max_length = len(sentence) + 100
+    clean_txt = []
+#    nlp.max_length = len(sentence) + 100
     token = nlp(sentence)
     stopw = nltk.corpus.stopwords.words('french')
     stopw.extend(noise.frenchNoiseWords)
@@ -87,9 +88,32 @@ def tokenise_lemmentise(sentence):
     for tkn in token:
         tokeni.append(tkn.lemma_)
     tokeni = [word for word in tokeni if len(word) > 2 ]
-    tokeni = [text for text in tokeni if text not in stopw]
+    clean_txt = [wd for wd in tokeni if not wd in stopw]
 
-    return tokeni
+    return clean_txt # return a lst of token
+
+def tokenise_lemmentise_topic(sentence):
+    char_spec = ["!", '"', "#", "%", "&", "'", "(", ")", "*", "+",
+                 ",", "-", ".", "/", ":", ";", "<", ">", "=", "?",
+                 "@", "[", "\\", "]", "^", "_", "`", "{", "|", "}",
+                 "~", "-"]
+    nlp = spacy.load('fr_core_news_md')
+    sentence = sentence.lower()
+    tokeni = []
+    clean_txt = []
+#    nlp.max_length = len(sentence) + 100
+    token = nlp(sentence)
+    stopw = nltk.corpus.stopwords.words('french')
+    stopw.extend(noise.frenchNoiseWords)
+    stopw.extend(noise.frenchVerbEtre)
+    stopw.extend(noise.frenchVerbAvoir)
+
+    for tkn in token:
+        tokeni.append(tkn.lemma_)
+    tokeni = [word for word in tokeni if len(word) > 2 ]
+    clean_txt = [wd for wd in tokeni if not wd in stopw]
+
+    return clean_txt # return a lst of token
 
 def processWordFrequency(contribGroup, searched_word):
     tmp_i = -1
@@ -113,7 +137,7 @@ def processWordFrequency(contribGroup, searched_word):
 #    print(lst_sentence) s[1]
     result = parse_requirement(searched_word, lst_sentence, date)
 #    print(result)
-    return result, date
+    return result, date # return a lst and a lst of date
 
 def LDA_prep(lst):
     bag_word =  [lst]#[lst[i:i + 5] for i in range(0, len(lst), 5)]
@@ -128,11 +152,25 @@ def LDA_prep(lst):
     topics = ldamodel.print_topics(num_words = 20)
     for topic in topics:
         print(topic)
-    return ldamodel
+    return ldamodel #return a type of gensim
 
 def processTopicModelling(contribGroup):
-    contrib = "".join(contribGroup)
-
-    result = tokenise_lemmentise(contrib)
+#    contrib = "".join(contribGroup)
+#    print(contrib)
+    chunked_list = list()
+    list_txt = []
+    chunk_size = 200 # the size of element i want in each list
+    for i in range(0, len(contribGroup), chunk_size):
+        chunked_list.append(contribGroup[i:i+chunk_size])
+    # separate the contib in a number of sub_list
+#    print(len(chunked_list))
+    for chunked in chunked_list:
+        list_txt.append("".join(chunked))
+    print(len(list_txt))
+#    print(len(contribGroup))
+    result = []
+    for sentence in list_txt:
+        result.extend(tokenise_lemmentise(sentence))
+        print("all vote lemmentazied and tokenise")
     lda = LDA_prep(result)
-    return lda.show_topic(0, 20)
+    return lda.show_topic(0, 20) #return a lst of word in topic
