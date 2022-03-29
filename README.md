@@ -43,8 +43,10 @@ deactivate
 ## Scrapping
 
 Data is scrapped into 5 json files from the following websites:
+- https://www.assemblee-nationale.fr/13/dossiers/internet.asp
+- http://www.senat.fr/dossier-legislatif/pjl07-405.html
+
 ```
-cd scrapping
 python3 ./scrapping/hadopeer.py
 ```
 
@@ -64,8 +66,7 @@ However, you will need to **complete** it with your fauna secret key.\
 
 Once done:
 ```
-cd database-setup
-./init_db.sh
+./database-setup/init_db.sh
 ```
 
 ## Server
