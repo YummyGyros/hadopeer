@@ -14,21 +14,23 @@ Python Version: 3.8.10
 
 ## Introduction
 
-This project is from Epitech LabResearch.<br>
-Its goal is to present analyzed debates data from France's senate and national assembly around Hadopi.<br>
+This project is from Epitech's LabResearch.\
+Its goal is to present analyzed debates data from France's senate and national assembly around Hadopi.\
+It is the Proof Of Concept for a large scale project that could analyze all debates on any french law project.\
 
-First, data's scrapped from the official public websites. <br>
-Then, we create a Fauna database that the Flask server will make requests to.<br>
-Before that a React frontend makes request to this REST API, NLP is done in the server to analyze the data.<br>
+Here's the process of the project:
+- Data scrapping from the official websites of the senate and the national assembly
+- Natural Language Processing (NLP) with the data to produce visualizations
+- Useful data stored into a Fauna Database (cloud)
+- The Python Flask REST API requests data to serve it on particular endpoints (see /server/RESTAPI.md)
+- A frontend in React presenting the data
 
-And there we have a functionnal website, ready for production, allowing us to share the results of our analysis.<br>
-
-It is the Proof Of Concept of a project of a larger scale, that could analyze all debates on any law project.<br>
+The server and website were sent to production through Vercel.
 
 ## Virtual Environments
 
-This project uses python virtual environments in order to manage dependencies neatly.<br>
-To launch python scripts, you will need to activate the venv so it can use its dependencies.<br>
+This project uses python virtual environments in order to manage dependencies neatly.\
+To launch python scripts, you will need to activate the venv so it can use its dependencies.\
 When you're done you need to deactivate it.
 
 Here are the commands:
@@ -39,10 +41,13 @@ deactivate
 ```
 
 ## Scrapping
-run:
-```shell
+
+Data is scrapped into 5 json files from the following websites:
+```
+cd scrapping
 python3 ./scrapping/hadopeer.py
 ```
+
 setting:\
 &emsp;`-pb` :&emsp; progress bar\
 &emsp;`-noL` :&emsp; not scrapping sessions\
@@ -50,23 +55,27 @@ setting:\
 
 ## Database
 
-FaunaDB is the database we've chosen. It is a multi-model database, which makes it very flexible and very efficient at the same time.<br>
-If you want to start the database, you have to get an account, create a database and retrieve its secret key.
-https://docs.fauna.com/fauna/current/<br>
+FaunaDB is the database we've chosen. It is a multi-model database, which makes it very flexible and very efficient at the same time.\
+If you want to start the database, you have to get an account, create a database and retrieve its **secret key**.\
+https://docs.fauna.com/fauna/current/\
 
+To make things simpler, we created a script so you can set up everything easily.\
+However, you will need to **complete** it with your fauna secret key.\
 
-In the database folder, you will find the files that take care of creating the database from the scrapping json files.<br>
-Launch the command to set it up:
+Once done:
 ```
-FAUNADB_SECRET=your_secret python3 setup_database.py
+cd database-setup
+./init_db.sh
 ```
 
 ## Server
 
-In order to start the server, access to our database with its secret key is required.<br>
-You will need to have launched our database setup script successfully beforehand too.
+In order to start the server and access a database, a secret key is required.\
+To do so, see previous section.
 
+If you're ready:
 ```
+cd server
 FAUNADB_SECRET=your_secret flask run
 ```
 
@@ -76,7 +85,7 @@ insert text on app here
 
 ## About us
 
-This initiative of this project is from Epitech LabResearch's historian Marie Puren.<br>
+This project has been initiated by Epitech LabResearch's historian Marie Puren.\
 It has been developped by three students from Epitech Paris:
 - [Adrien Mallet](https://github.com/jack-a-dit)
 - [Mattéo Theboul](https://github.com/MTheboul)
