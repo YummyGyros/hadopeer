@@ -58,9 +58,6 @@ def countFaunaIndex(indexName, *args):
 
 @app.route("/")
 def hello():
-  # indexName = "a_group"
-  # result = client.query(q.paginate(q.distinct(q.match(q.index(indexName)))))
-  # print(result)
   return "hello"
 
 ### Elected Members ###
