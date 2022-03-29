@@ -22,7 +22,7 @@ queryParams:
 - [required] assembly: "assemblée nationale" or "sénat"
 - [optionnal] group: political group
 
-result: { "pour": x, "contre": y, "none": z}
+result: { "pour": uint, "contre": uint, "none": z, "absent": uint}
 
 ## Elected Members
 

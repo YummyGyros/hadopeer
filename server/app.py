@@ -113,14 +113,14 @@ def votes():
     indexName += "_group"
     inFavor = countFaunaIndex(indexName, "pour", job, group)
     against = countFaunaIndex(indexName, "contre", job, group)
+    absent = countFaunaIndex(indexName, "absent", job, group)
     none = countFaunaIndex(indexName, "none", job, group)
-    none += countFaunaIndex(indexName, "absent", job, group)
   else:
     inFavor = countFaunaIndex(indexName, "pour", job)
     against = countFaunaIndex(indexName, "contre", job)
+    absent = countFaunaIndex(indexName, "absent", job)
     none = countFaunaIndex(indexName, "none", job)
-    none += countFaunaIndex(indexName, "absent", job)
-  return { "pour": inFavor, "contre": against, "none": none }
+  return { "pour": inFavor, "contre": against, "none": none, "absent": absent }
 
 ### Visualization ###
 @app.route("/visualization")
