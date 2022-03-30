@@ -265,7 +265,7 @@ def vote_Senator(lecture):
     page = requests.get(scrutin)
 
     soup = BeautifulSoup(page.content, 'html.parser')
-    print(vote_Senator.first)
+    # print(vote_Senator.first)
     if vote_Senator.first < 1:
         vote_Senator.lst_senator.extend(get_name_senator(soup))
     else:
