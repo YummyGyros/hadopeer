@@ -166,11 +166,11 @@ def processTopicModelling(contribGroup):
 #    print(len(chunked_list))
     for chunked in chunked_list:
         list_txt.append("".join(chunked))
-    print(len(list_txt))
+    # print(len(list_txt))
 #    print(len(contribGroup))
     result = []
     for sentence in list_txt:
         result.extend(tokenise_lemmentise(sentence))
-        print("all vote lemmentazied and tokenise")
+        # print("all vote lemmentazied and tokenise")
     lda = LDA_prep(result)
     return lda.show_topic(0, 20) #return a lst of word in topic
