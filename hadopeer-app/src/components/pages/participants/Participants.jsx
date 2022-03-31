@@ -1,5 +1,5 @@
 import * as React from "react";
-import Container from "@mui/material/Container";
+import Stack from "@mui/material/Stack";
 import { Box } from "@mui/material";
 import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
@@ -32,10 +32,16 @@ export default function Participants() {
                         };
                     }
                     setElected_members(tmp);
-                    localStorage.setItem("elected_members", JSON.stringify(tmp));
+                    localStorage.setItem(
+                        "elected_members",
+                        JSON.stringify(tmp)
+                    );
                 })
                 .catch((err) => console.log(err));
-        else setElected_members(JSON.parse(localStorage.getItem("elected_members")));
+        else
+            setElected_members(
+                JSON.parse(localStorage.getItem("elected_members"))
+            );
     };
 
     window.onload = function () {
@@ -43,10 +49,20 @@ export default function Participants() {
     };
 
     return (
-        <Container>
-            <Box margin={10} alignItems="center" justifyContent="center">
+        <Stack alignItems="center">
+            <Box marginTop={15} justifyContent="center">
                 <DataGrid
-                    style={{ height: 650, width: 1002 }}
+                    style={{
+                        height: 650,
+                        width: 1004,
+                    }}
+                    sx={{
+                        boxShadow: 2,
+                        border: 2,
+                        borderColor: 'primary.light',
+                        '& .MuiDataGrid-cell:hover': {
+                          color: 'primary.main',
+                        },}}
                     rows={elected_members}
                     columns={columns}
                     onRowClick={(newSelection) => {
@@ -56,6 +72,6 @@ export default function Participants() {
                     rowsPerPageOptions={[10]}
                 />
             </Box>
-        </Container>
+        </Stack>
     );
 }
