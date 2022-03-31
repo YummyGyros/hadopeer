@@ -44,7 +44,7 @@ export default function Home() {
                     <IconeButton target="_blank" rel="noreferrer noopener" href="https://github.com/YummyGyros">
                     Robin Levavasseur
                     </IconeButton>
-                    - Lead dev, DevOps, Back-end - rlevavasseur.pro@gmail.com
+                    - Lead dev, Back-end - rlevavasseur.pro@gmail.com
                 </Typography>
                 <Typography marginTop={5} variant="h4" align="left">
                     Liens 
