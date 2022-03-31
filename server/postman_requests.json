@@ -1,0 +1,455 @@
+{
+	"info": {
+		"_postman_id": "8a41b2b9-8c3d-43dd-bb41-cf316c16d6d1",
+		"name": "Hadopeer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/elected_members",
+			"item": [
+				{
+					"name": "/elected_members",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/elected_members",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"elected_members"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/elected_member",
+			"item": [
+				{
+					"name": "/elected_member?name=Catherine Tasca",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/elected_member?name=Catherine Tasca",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"elected_member"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "Catherine Tasca"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/dates",
+			"item": [
+				{
+					"name": "/dates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/dates",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"dates"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "others",
+			"item": [
+				{
+					"name": "/political_groups",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/political_groups",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"political_groups"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/votes",
+			"item": [
+				{
+					"name": "/votes?assembly=sénat&vote_number=1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/votes?assembly=sénat&vote_number=1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"votes"
+							],
+							"query": [
+								{
+									"key": "assembly",
+									"value": "sénat"
+								},
+								{
+									"key": "vote_number",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/votes?assembly=assemblée nationale&number=1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/votes?assembly=assemblée nationale&vote_number=1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"votes"
+							],
+							"query": [
+								{
+									"key": "assembly",
+									"value": "assemblée nationale"
+								},
+								{
+									"key": "vote_number",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[error] /votes?assembly=assemblée nationale&number=abc",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/votes?assembly=assemblée nationale&vote_number=abc",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"votes"
+							],
+							"query": [
+								{
+									"key": "assembly",
+									"value": "assemblée nationale"
+								},
+								{
+									"key": "vote_number",
+									"value": "abc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[error] /votes?assembly=x",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/votes?assembly=x",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"votes"
+							],
+							"query": [
+								{
+									"key": "assembly",
+									"value": "x"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[error] /votes?number=1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/votes?vote_number=1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"votes"
+							],
+							"query": [
+								{
+									"key": "vote_number",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[error] /votes?assembly=Sénat&vote_number=0",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/votes?assembly=sénat&vote_number=0",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"votes"
+							],
+							"query": [
+								{
+									"key": "assembly",
+									"value": "sénat"
+								},
+								{
+									"key": "vote_number",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/votes/context",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/votes/context",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"votes",
+								"context"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/visualization",
+			"item": [
+				{
+					"name": "/visualization?type=x",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/visualization?type=frequency&sample=all",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"visualization"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "frequency"
+								},
+								{
+									"key": "sample",
+									"value": "all"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[error] /visualization",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/visualization?type=x",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"visualization"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "x"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/visualization?type=x&assembly=assemblée nationale",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/visualization?type=frequency&sample=sénat",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"visualization"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "frequency"
+								},
+								{
+									"key": "sample",
+									"value": "sénat"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/visualization?type=x&assembly=assemblée nationale Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/visualization?type=frequency&sample=RDSE",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"visualization"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "frequency"
+								},
+								{
+									"key": "sample",
+									"value": "RDSE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/visualization/types",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/visualization/types",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"visualization",
+								"types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/visualization/samples",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/visualization/samples",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"visualization",
+								"samples"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "api_url",
+			"value": "http://127.0.0.1:5000"
+		},
+		{
+			"value": "",
+			"disabled": true
+		}
+	]
+}

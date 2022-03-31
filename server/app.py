@@ -34,7 +34,7 @@ def getDataFaunaIndex(indexName, *args):
     match = q.match(q.index(indexName), args[0], args[1])
   return client.query(q.get(match))['data']
 
-def paginateFaunaIndex(indexName, distinct = False, *args):
+def paginateFaunaIndex(indexName, distinct = False, size = 64, *args):
   if len(args) == 0:
     match = q.match(q.index(indexName))
   if len(args) == 1:
@@ -43,7 +43,7 @@ def paginateFaunaIndex(indexName, distinct = False, *args):
     match = q.match(q.index(indexName), args[0], args[1])
   if distinct:
     match = q.distinct(match)
-  return client.query(q.paginate(match))['data']
+  return client.query(q.paginate(match, size=size))['data']
 
 def countFaunaIndex(indexName, *args):
   if len(args) == 0:
@@ -58,15 +58,12 @@ def countFaunaIndex(indexName, *args):
 
 @app.route("/")
 def hello():
-  # indexName = "a_group"
-  # result = client.query(q.paginate(q.distinct(q.match(q.index(indexName)))))
-  # print(result)
   return "hello"
 
 ### Elected Members ###
 @app.route("/elected_members")
 def elected_members():
-  result = paginateFaunaIndex("all_elected_members_name_job_group_department")
+  result = paginateFaunaIndex("all_elected_members_name_job_group_department", False, 720)
   return jsonify(result)
 
 ### Elected Member ###
@@ -113,14 +110,14 @@ def votes():
     indexName += "_group"
     inFavor = countFaunaIndex(indexName, "pour", job, group)
     against = countFaunaIndex(indexName, "contre", job, group)
+    absent = countFaunaIndex(indexName, "absent", job, group)
     none = countFaunaIndex(indexName, "none", job, group)
-    none += countFaunaIndex(indexName, "absent", job, group)
   else:
     inFavor = countFaunaIndex(indexName, "pour", job)
     against = countFaunaIndex(indexName, "contre", job)
+    absent = countFaunaIndex(indexName, "absent", job)
     none = countFaunaIndex(indexName, "none", job)
-    none += countFaunaIndex(indexName, "absent", job)
-  return { "pour": inFavor, "contre": against, "none": none }
+  return { "pour": inFavor, "contre": against, "none": none, "absent": absent }
 
 ### Visualization ###
 @app.route("/visualization")
