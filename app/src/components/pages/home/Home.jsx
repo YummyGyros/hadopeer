@@ -23,13 +23,13 @@ export default function Home() {
                 </Typography>
                 
                 <Typography marginTop={5} variant="h4" align="left">
-                    Equipe
+                    Équipe
                 </Typography>
                 <Typography marginTop={2} variant="h6" align="left">
-                    A l'initiative de: Marie Puren, historienne du LabResearch d’Epitech Paris - recherche@epitech.eu
+                    Projet à l'initiative de Marie Puren, historienne du LabResearch d’Epitech Paris: recherche@epitech.eu
                     <br/>
                     <br/>
-                    Développeurs Epitech Paris promo 2024:
+                    Développeurs d'Epitech Paris:
                     <br/>
                     <IconeButton target="_blank" rel="noreferrer noopener" href="https://github.com/jack-a-dit">
                     Adrien Mallet
