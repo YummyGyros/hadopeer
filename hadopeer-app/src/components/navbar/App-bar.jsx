@@ -28,6 +28,17 @@ const ResponsiveAppBar = (props) => {
                         display: { xs: "none", md: "flex" },
                     }}
                 >
+                    <Button
+                            href={'/'}
+                            variant={"raised"}
+                            sx={{
+                                my: 2,
+                                color: "white",
+                                display: "block",
+                            }}
+                        >
+                            Accueil
+                        </Button>
                     {pages.map((page) => (
                         <Button
                             key={page}

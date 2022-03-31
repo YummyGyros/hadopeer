@@ -50,7 +50,7 @@ export default function Participants() {
 
     return (
         <Stack alignItems="center">
-            <Box marginTop={15} justifyContent="center">
+            <Box marginTop={15} marginBottom={11} justifyContent="center">
                 <DataGrid
                     style={{
                         height: 650,
