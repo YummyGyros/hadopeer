@@ -84,6 +84,8 @@ Once done:
 ./database-setup/init_db.sh
 ```
 
+N.B.: Creating all visualizations for one NLP analysis takes around 10mn. If you take the senate only it should be around 1mn.
+
 ## Server
 
 In order to start the server and access a database, a secret key is required.\
@@ -97,7 +99,10 @@ FAUNADB_SECRET=your_secret flask run
 
 ## App
 
-insert text on app here
+We developped a basic React front end, to start it locally:
+```
+npm start
+``
 
 ## About us
 
