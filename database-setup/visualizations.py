@@ -34,11 +34,11 @@ def createVisuWordFrequency(nlpData, contribGroup):
     for res in nlpData:
         occ = [x[1] for x in nlpData[res]]
 
-        df = df.append(pd.DataFrame({
+        df = pd.concat([df, pd.DataFrame({
             "date": date,
             "occurence": occ,
             "mots": res
-        }))
+        })])
 
     fig = px.line(df, x="date", y="occurence", color='mots')
     return json.loads(str(fig.to_json()))
