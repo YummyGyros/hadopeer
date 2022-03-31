@@ -84,12 +84,11 @@ export default function Analyse() {
 
     return (
         <Container>
-            <Box marginTop={10} alignItems="center" justifyContent="center">
+            <Box marginTop={15} marginBottom={35} alignItems="center" justifyContent="center">
                 <Stack
                     direction="row"
                     spacing={5}
-                    alignItems="center"
-                    justifyContent="center"
+                    alignItems="left"
                 >
                     <FormControl variant="standard">
                         <InputLabel id="graph_dropdown_label">
@@ -139,7 +138,7 @@ export default function Analyse() {
                         </Select>
                     </FormControl>
                 </Stack>
-                <Plot
+                <Plot 
                     data={visualization.graph ? visualization.graph.data : []}
                     layout={
                         visualization.graph ? visualization.graph.layout : {}

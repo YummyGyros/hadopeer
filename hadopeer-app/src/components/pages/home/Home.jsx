@@ -21,51 +21,56 @@ export default function Home() {
                     de la loi et de ses développements (texte rédigé par Marie
                     Puren). 
                 </Typography>
-                <Typography marginTop={5} variant="h4" align="left">
-                    Données
-                </Typography>
-                <Typography marginTop={2} variant="h6" align="left">
-                    Résumé Adoption Loi:
-                    <br/>
-                    <IconeButton href="http://www.senat.fr/dossier-legislatif/pjl07-405.html">
-                        Sénat
-                    </IconeButton>
-                    <br/>
-                    <IconeButton href="https://www.assemblee-nationale.fr/13/dossiers/internet.asp">
-                        Assemblée Nationale
-                    </IconeButton>
-                </Typography>
+                
                 <Typography marginTop={5} variant="h4" align="left">
                     Equipe
                 </Typography>
                 <Typography marginTop={2} variant="h6" align="left">
-                    Organisatrice: Marie Puren, historienne du LabResearch d’Epitech Paris
+                    A l'initiative de: Marie Puren, historienne du LabResearch d’Epitech Paris - recherche@epitech.eu
+                    <br/>
                     <br/>
                     Développeurs Epitech Paris promo 2024:
                     <br/>
-                    <IconeButton href="https://github.com/jack-a-dit">
+                    <IconeButton target="_blank" rel="noreferrer noopener" href="https://github.com/jack-a-dit">
                     Adrien Mallet
                     </IconeButton>
+                    - Scrapping, NLP - adrien.mallet.adh@gmail.com
                     <br/>
-                    <IconeButton href="https://github.com/MTheboul">
+                    <IconeButton target="_blank" rel="noreferrer noopener" href="https://github.com/MTheboul">
                     Matteo Theboul
                     </IconeButton>
+                    - Scrapping, Front-end - m.theboul.pro@gmail.com
                     <br/>
-                    <IconeButton href="https://github.com/YummyGyros">
+                    <IconeButton target="_blank" rel="noreferrer noopener" href="https://github.com/YummyGyros">
                     Robin Levavasseur
                     </IconeButton>
+                    - Lead dev, DevOps, Back-end - rlevavasseur.pro@gmail.com
                 </Typography>
                 <Typography marginTop={5} variant="h4" align="left">
                     Liens 
                 </Typography>
                 <Typography marginTop={2} variant="h6" align="left">
-                <IconeButton href='https://github.com/YummyGyros/hadopeer-scrapped-data'>
-                     Données scrapping pour NLP
+                <IconeButton target="_blank" rel="noreferrer noopener" href='https://github.com/YummyGyros/hadopeer-scrapped-data'>
+                    Jeux de données
                 </IconeButton>
                     <br/>
-                    <IconeButton href='https://github.com/YummyGyros/hadopeer'>GitHub<GitHubIcon/></IconeButton>
+                    <IconeButton target="_blank" rel="noreferrer noopener" href='https://github.com/YummyGyros/hadopeer'>GitHub<GitHubIcon/></IconeButton>
+                </Typography>
+                <Typography marginTop={5} variant="h4" align="left">
+                    Sources
+                </Typography>
+                <Typography marginTop={2} marginBottom={15} variant="h6" align="left">
+                    <IconeButton target="_blank" rel="noreferrer noopener" href="http://www.senat.fr/dossier-legislatif/pjl07-405.html">
+                        Sénat
+                    </IconeButton>
+                    <br/>
+                    <IconeButton target="_blank" rel="noreferrer noopener" href="https://www.assemblee-nationale.fr/13/dossiers/internet.asp">
+                        Assemblée Nationale
+                    </IconeButton>
                 </Typography>
             </Box>
+            <a target="_blank" rel="noreferrer noopener" href="https://www.flaticon.com/free-icons/senate" title="senate icons">Senate icons created by Freepik - Flaticon</a>
         </Container>
+        
     );
 }
