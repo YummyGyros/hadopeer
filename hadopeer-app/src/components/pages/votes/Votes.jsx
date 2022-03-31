@@ -1,6 +1,6 @@
 import * as React from "react";
 import Container from "@mui/material/Container";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
@@ -77,17 +77,17 @@ export default function Votes() {
     return (
         <Container>
             <Stack
-                    direction="row"
-                    spacing={5}
-                    alignItems="center"
-                    justifyContent="center"
-                >
-                <Box margin={10} alignItems="center" justifyContent="center">
+                direction="row"
+                spacing={10}
+                alignItems="left"
+                justifyContent="left"
+            >
+                <Box marginTop={15} alignItems="left" justifyContent="left">
                     <Stack
                         direction="row"
                         spacing={5}
-                        alignItems="center"
-                        justifyContent="center"
+                        alignItems="left"
+                        justifyContent="left"
                     >
                         <FormControl variant="standard">
                             <InputLabel id="Scrutin_dropdown_label">
@@ -180,11 +180,29 @@ export default function Votes() {
                                     y: 0.5,
                                 },
                             ],
-                            height: 600,
-                            width: 600,
+                            height: 800,
+                            width: 800,
                         }}
                     />
                 </Box>
+                    <Stack  style={{ marginTop: 300}} spacing={2}>
+                        <Typography variant="h3" color="text.secondary" gutterBottom>
+                            TOTAL:{" "}
+                            {votes.pour + votes.contre + votes.none + votes.absent}
+                        </Typography>
+                        <Typography variant="h4" color="text.secondary" gutterBottom>
+                            Pour:{" "}
+                            {votes.pour}
+                        </Typography>
+                        <Typography variant="h4" color="text.secondary" gutterBottom>
+                            Contre:{" "}
+                            {votes.contre}
+                        </Typography>
+                        <Typography variant="h4" color="text.secondary" gutterBottom>
+                            S.O:{" "}
+                            {votes.none + votes.absent}
+                        </Typography>
+                    </Stack>
             </Stack>
         </Container>
     );

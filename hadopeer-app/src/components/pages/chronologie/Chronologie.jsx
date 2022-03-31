@@ -4,10 +4,8 @@ import Button from "@mui/material/Button";
 import axios from "axios";
 import Container from "@mui/material/Container";
 
-
-
 function getAsembly(href) {
-    return (href.search('senat') !== -1 ? "du senat" : "de l'Assemblée nationale");
+    return (href.search('senat') !== -1 ? "senat" : "Assemblée nationale");
 }
 
 export default function Chronologie() {
@@ -18,6 +16,20 @@ export default function Chronologie() {
             await axios
                     .get(global.config.apiUrl + "/dates")
                     .then((res) => {
+                        for (let i = 0; i < res.data.length; i++)
+                            if (res.data[i + 1]) {
+                                let j = 1;
+                                while (true) {
+                                    if (res.data[i + 1][0] === res.data[i][0]) {
+                                        res.data[i][j + 1] = res.data[i + 1][1]
+                                        res.data.splice(i + 1, 1)
+                                        j++
+                                    }
+                                    else
+                                        break
+                                }
+                            }
+
                         setDate(res.data)
                         localStorage.setItem("dates", JSON.stringify(res.data));
                     })
@@ -38,16 +50,20 @@ export default function Chronologie() {
                             <div key={date} className="timeline__card card">
                                 <header className="card__header">
                                     <time className="time" dateTime="2008-08-18">
-                                        <span className="time__day">{date[0]}</span>
+                                        <span className="time__day">{getAsembly(date[1])} - {date[0]}</span>
                                     </time>
                                 </header>
                                 <div className="card__content">
-                                <Button
-                                    color={getAsembly(date[1]) === "du senat" ? "error" : "primary" }
-                                    variant="contained"
-                                    href={date[1]}>
-                                    lien vers la séance {getAsembly(date[1])}
-                                </Button>
+                                    {date.map((dat) => (
+                                        dat.search('http') !== -1 ?
+                                        <Button
+                                            color={getAsembly(dat) === "senat" ? "error" : "primary" }
+                                            variant="contained"
+                                            href={dat}>
+                                            séance {date.indexOf(dat)}
+                                        </Button>
+                                        : null
+                                    ))}
                                 </div>
                             </div>
                         ))}

@@ -50,6 +50,8 @@ export default function Analyse() {
                         gro
                 )
                 .then((res) => {
+                    res.data.graph.layout.height = 700;
+                    res.data.graph.layout.width = 1200;
                     setVisualization(res.data);
                     localStorage.setItem(
                         "visualization" + gra + gro,
@@ -82,7 +84,7 @@ export default function Analyse() {
 
     return (
         <Container>
-            <Box margin={10} alignItems="center" justifyContent="center">
+            <Box marginTop={10} alignItems="center" justifyContent="center">
                 <Stack
                     direction="row"
                     spacing={5}

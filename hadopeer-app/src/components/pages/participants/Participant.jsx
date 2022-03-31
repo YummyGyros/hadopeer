@@ -27,12 +27,13 @@ export default function Participant() {
 
     window.onclick = function () {
         getElected_members();
+        console.log(elected_member)
     };
 
     
 
     return (
-        <Box margin={10} alignItems="center" justifyContent="center">
+        <Box margin={10} alignItems="center"  marginBottom={30}>
             <Stack direction="row" >
             <Button
                 key="Participants"
@@ -47,36 +48,49 @@ export default function Participant() {
                 Retour
             </Button>
             </Stack>
+            <Stack alignItems={"center"} marginTop={15}>
             <Card
                 variant="elevation"
                 style={{
+                    width: '60vw',
                     backgroundColor:
                         elected_member.job === "sénateur"
                             ? "#d50000"
                             : "#0091ea",
                 }}
             >
-                <CardContent>
+                <CardContent alignItems="left">
                     <Typography variant="h5" component="div" color="white">
                         {elected_member.name}
                     </Typography>
                     <Typography
+                    
                         sx={{ fontSize: 14 }}
                         color="white"
                         gutterBottom
                     >
                         {elected_member.job}
                     </Typography>
-                    <Box style={{ backgroundColor: "white" }}>
-                        <Typography sx={{ mb: 1.5 }}>adjective</Typography>
+                    <Box style={{ backgroundColor: "white" }} margin={2}>
+                        <Typography sx={{ mb: 1.5 } }
+                        >Département: {elected_member.department}
+                        <br />
+                        Groupe: {elected_member.group}
+                        <br />
+                        Mandat: {elected_member.mandate}
+                        </Typography>
+                        
                         <Typography variant="body2">
-                            well meaning and kindly.
+                            1er vote: {elected_member.vote_1}
                             <br />
-                            {'"a benevolent smile"'}
+                            {elected_member.vote_2 ?
+                            "2ème vote: " + elected_member.vote_2
+                            : null}
                         </Typography>
                     </Box>
                 </CardContent>
             </Card>
+            </Stack>
         </Box>
     );
 }
