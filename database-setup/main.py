@@ -18,7 +18,7 @@ def getVisuObj(name, sampleName, data):
 
 def appendTopicModellingVisu(visus, contribs):
     for sample in contribs:
-        if sample[1] == None:
+        if sample[1] == None or sample[1] == []:
             continue
         nlpData = processTopicModelling(sample[1])
         visu = createVisuTopicModelling(nlpData)
@@ -27,7 +27,7 @@ def appendTopicModellingVisu(visus, contribs):
 def appendWordFrequencyVisu(visus, contribs):
     words = ['droit', 'internet', 'accès', 'internaute', 'hadopi', 'auteur', 'nouveau', 'culture', 'avis', 'culturel', 'artiste', 'savoir', 'œuvre', 'création', 'sanction', 'autorité', 'gouvernement', 'ump', 'européen', 'affaire', 'site', 'propriété', 'téléchargement', 'intellectuel', 'piratage', 'logiciel', 'src']
     for sample in contribs:
-        if sample[1] == None:
+        if sample[1] == None or sample[1] == []:
             continue
         nlpData, date = processWordFrequency(sample[1], words)
         visu = createVisuWordFrequency(nlpData, date)
