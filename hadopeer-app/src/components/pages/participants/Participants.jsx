@@ -17,22 +17,25 @@ export default function Participants() {
     const navigate = useNavigate();
 
     const getElected_members = async () => {
-        await axios
-            .get(global.config.apiUrl + "/elected_members")
-            .then((res) => {
-                var tmp = [];
-                for (var i in res.data) {
-                    tmp[i] = {
-                        id: i,
-                        fullName: res.data[i][0],
-                        statut: res.data[i][1],
-                        group: res.data[i][2],
-                        departement: res.data[i][3],
-                    };
-                }
-                setElected_members(tmp);
-            })
-            .catch((err) => console.log(err));
+        if (localStorage.getItem("elected_members") == null)
+            await axios
+                .get(global.config.apiUrl + "/elected_members")
+                .then((res) => {
+                    var tmp = [];
+                    for (var i in res.data) {
+                        tmp[i] = {
+                            id: i,
+                            fullName: res.data[i][0],
+                            statut: res.data[i][1],
+                            group: res.data[i][2],
+                            departement: res.data[i][3],
+                        };
+                    }
+                    setElected_members(tmp);
+                    localStorage.setItem("elected_members", JSON.stringify(tmp));
+                })
+                .catch((err) => console.log(err));
+        else setElected_members(JSON.parse(localStorage.getItem("elected_members")));
     };
 
     window.onload = function () {

@@ -26,7 +26,7 @@ def appendTopicModellingVisu(visus, contribs):
 
 def appendWordFrequencyVisu(visus, contribs):
     words = ['droit', 'internet', 'accès', 'internaute', 'hadopi', 'auteur', 'nouveau', 'culture', 'avis', 'culturel', 'artiste', 'savoir', 'œuvre', 'création', 'sanction', 'autorité', 'gouvernement', 'ump', 'européen', 'affaire', 'site', 'propriété', 'téléchargement', 'intellectuel', 'piratage', 'logiciel', 'src']
-    for sample in getDateContribSamples(contribs):
+    for sample in contribs:
         if sample[1] == None:
             continue
         nlpData, date = processWordFrequency(sample[1], words)
@@ -36,14 +36,14 @@ def appendWordFrequencyVisu(visus, contribs):
 if __name__ == "__main__":
     print("WARNING: this script requires the 5 files from scrapping at \"../\"")
     client = getFaunaDbInstance()
-    createCollections(client)
-    createIndexes(client)
+    # createCollections(client)
+    # createIndexes(client)
     visus = []
-    contribs = getContribSamples(client)#client)
-    appendTopicModellingVisu(visus, contribs)
-    contribs = getDateContribSamples(client)
-    appendWordFrequencyVisu(visus, contribs)
-    for elem in visus:
-        client.query(q.create(
-            q.collection('NOT_YETvisualizations'), {'data': elem})
-        )
+    # contribs = getContribSamples(client)
+    # appendTopicModellingVisu(visus, contribs)
+    # contribs = getDateContribSamples(client)
+    # appendWordFrequencyVisu(visus, contribs)
+    # for elem in visus:
+    #     client.query(q.create(
+    #         q.collection('visualizations'), {'data': elem})
+    #     )

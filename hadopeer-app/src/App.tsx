@@ -7,6 +7,7 @@ import Participants from "./components/pages/participants/Participants";
 import Participant from "./components/pages/participants/Participant";
 import Analyse from "./components/pages/analyse/Analyse";
 import Votes from "./components/pages/votes/Votes";
+import "./components/config";
 import './App.css';
 
 function App() {
