@@ -45,5 +45,5 @@ if __name__ == "__main__":
     # appendWordFrequencyVisu(visus, contribs)
     # for elem in visus:
     #     client.query(q.create(
-    #         q.collection('NOT_YETvisualizations'), {'data': elem})
+    #         q.collection('visualizations'), {'data': elem})
     #     )
