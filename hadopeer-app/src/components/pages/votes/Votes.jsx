@@ -1,111 +1,191 @@
 import * as React from "react";
 import Container from "@mui/material/Container";
 import { Box } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
+import axios from "axios";
 import Stack from "@mui/material/Stack";
 import Select from "@mui/material/Select";
-
-const columns = [
-    { field: "fullName", headerName: "Full name", width: 200 },
-    { field: "assembly", headerName: "Assembly", width: 200 },
-    { field: "group", headerName: "Group Politique", width: 200 },
-    { field: "departement", headerName: "Departement", width: 200 },
-];
-
-const statut_list = [
-    { statut: "sénateurs" },
-    { statut: "députés" },
-    { statut: "ministres" },
-];
-
-const rows = [
-    {
-        id: 1,
-        fullName: "Arnaud Robinet",
-        assembly: "député",
-        group: "SOC",
-        departement: "Yvelines",
-    },
-];
+import Plot from "react-plotly.js";
 
 export default function Votes() {
-    const [statut, setStatut] = React.useState("");
-    const [departement, setDepartement] = React.useState("");
-    const [group, setGroup] = React.useState("");
+    const [politicalGroup, setPoliticalGroup] = React.useState("");
+    const [scrutin, setScrutin] = React.useState("");
+    const [scrutins, setScrutins] = React.useState([]);
+    const [politicalGroups, setPoliticalGroups] = React.useState([]);
+    const [votes, setVotes] = React.useState([]);
 
-    const handleChange = (event) => {
-        setStatut(event.target.value);
+    const getScrutins = async () => {
+        await axios
+            .get(global.config.apiUrl + "/votes/context")
+            .then((res) => {
+                setScrutins(res.data);
+                setScrutin(res.data[0]);
+                getVotes(res.data[0]);
+            })
+            .catch((err) => console.log(err));
+    };
+
+    const getPoliticalGroups = async () => {
+        await axios
+            .get(global.config.apiUrl + "/political_groups")
+            .then((res) => {
+                setPoliticalGroups(res.data);
+            })
+            .catch((err) => console.log(err));
+    };
+
+    const getVotes = async (s = scrutin, p = politicalGroup) => {
+        if (localStorage.getItem("votes" + s + p) == null) {
+            await axios
+                .get(
+                    global.config.apiUrl +
+                        "/votes?assembly=" +
+                        s[1] +
+                        "&vote_number=" +
+                        s[2] +
+                        "&group=" +
+                        p
+                )
+                .then((res) => {
+                    setVotes(res.data);
+                    localStorage.setItem(
+                        "votes" + s + p,
+                        JSON.stringify(res.data)
+                    );
+                })
+                .catch((err) => console.log(err));
+        } else setVotes(JSON.parse(localStorage.getItem("votes" + s + p)));
+    };
+
+    const handlePoliticalGroupChange = (event) => {
+        setPoliticalGroup(event.target.value);
+        getVotes(scrutin, event.target.value);
+    };
+
+    const handleScrutinChange = (event) => {
+        setScrutin(event.target.value);
+        getVotes(event.target.value);
+    };
+
+    window.onload = function () {
+        getPoliticalGroups();
+        getScrutins();
     };
 
     return (
         <Container>
-            <Box margin={10} style={{ height: 650, width: 1100 }}>
-                <Stack direction="row" spacing={10}>
-                    <FormControl fullWidth variant="standard">
-                        <InputLabel id="status_dropdown_label">
-                            Statut
-                        </InputLabel>
-                        <Select
-                            labelId="status_dropdown_label"
-                            id="status_dropdown_select"
-                            value={statut}
-                            label="Statut"
-                            onChange={handleChange}
-                        >
-                            {statut_list.map((statut_list) => (
-                                <MenuItem value={statut_list.statut}>
-                                    {statut_list.statut}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <FormControl fullWidth variant="standard">
-                        <InputLabel id="status_dropdown_label">
-                            Statut
-                        </InputLabel>
-                        <Select
-                            labelId="status_dropdown_label"
-                            id="status_dropdown_select"
-                            value={statut}
-                            label="Statut"
-                            onChange={handleChange}
-                        >
-                            {statut_list.map((statut_list) => (
-                                <MenuItem value={statut_list.statut}>
-                                    {statut_list.statut}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <FormControl fullWidth variant="standard">
-                        <InputLabel id="group_dropdown_label">
-                            Group Politique
-                        </InputLabel>
-                        <Select
-                            labelId="group_dropdown_label"
-                            id="group_dropdown_select"
-                            value={group}
-                            label="Group Politique"
-                            onChange={handleChange}
-                        >
-                            {statut_list.map((statut_list) => (
-                                <MenuItem value={statut_list.statut}>
-                                    {statut_list.statut}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Stack>
-                <DataGrid
-                    rows={rows}
-                    columns={columns}
-                    pageSize={10}
-                    rowsPerPageOptions={[10]}
-                />
-            </Box>
+            <Stack
+                    direction="row"
+                    spacing={5}
+                    alignItems="center"
+                    justifyContent="center"
+                >
+                <Box margin={10} alignItems="center" justifyContent="center">
+                    <Stack
+                        direction="row"
+                        spacing={5}
+                        alignItems="center"
+                        justifyContent="center"
+                    >
+                        <FormControl variant="standard">
+                            <InputLabel id="Scrutin_dropdown_label">
+                                Scrutin
+                            </InputLabel>
+                            <Select
+                                sx={{
+                                    width: 275,
+                                }}
+                                labelId="Scrutin_dropdown_label"
+                                id="Scrutin_dropdown_select"
+                                defaultValue={scrutin}
+                                value={scrutin}
+                                label="Scrutin"
+                                onChange={handleScrutinChange}
+                            >
+                                {scrutins.map((scrutins) => (
+                                    <MenuItem key={scrutins} value={scrutins}>
+                                        {scrutins[1]} - {scrutins[0]}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <FormControl variant="standard">
+                            <InputLabel id="PoliticalGroup_dropdown_label">
+                                Groupe Politique
+                            </InputLabel>
+                            <Select
+                                sx={{
+                                    width: 150,
+                                }}
+                                labelId="PoliticalGroup_dropdown_label"
+                                id="PoliticalGroup_dropdown_select"
+                                defaultValue={politicalGroups[0]}
+                                value={politicalGroup}
+                                label="PoliticalGroup"
+                                onChange={handlePoliticalGroupChange}
+                            >
+                                <MenuItem value="">None</MenuItem>
+                                {politicalGroups.map((politicalGroups) => (
+                                    <MenuItem
+                                        key={politicalGroups}
+                                        value={politicalGroups}
+                                    >
+                                        {politicalGroups}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Stack>
+                    <Plot
+                        data={[
+                            {
+                                values: [
+                                    votes.contre,
+                                    votes.pour,
+                                    votes.none + votes.absent,
+                                ],
+                                labels: ["contre", "pour", "sans opignon"],
+                                textposition: "inside",
+                                domain: { column: 1 },
+                                hoverinfo: "label+percent",
+                                hole: 0.4,
+                                marker: {
+                                    colors: [
+                                        "rgb(175, 25, 25)",
+                                        "rgb(25,175,25)",
+                                        "rgb(200,200,200)",
+                                    ],
+                                },
+                                type: "pie",
+                            },
+                        ]}
+                        layout={{
+                            annotations: [
+                                {
+                                    font: {
+                                        size: 30,
+                                    },
+                                    showarrow: false,
+                                    text:
+                                        votes.pour +
+                                            votes.contre +
+                                            votes.none +
+                                            votes.absent !==
+                                        0
+                                            ? "Votes"
+                                            : "No votes",
+                                    x: 0.5,
+                                    y: 0.5,
+                                },
+                            ],
+                            height: 600,
+                            width: 600,
+                        }}
+                    />
+                </Box>
+            </Stack>
         </Container>
     );
 }
