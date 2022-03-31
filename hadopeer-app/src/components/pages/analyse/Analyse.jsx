@@ -16,12 +16,13 @@ export default function Analyse() {
     const [politicalGroups, setPoliticalGroups] = React.useState([]);
     const [visualization, setVisualization] = React.useState([]);
 
-    const getPoliticalGroups = async () => {
+    const getPoliticalGroups = async (gra) => {
         await axios
             .get(global.config.apiUrl + "/visualization/samples")
             .then((res) => {
                 setPoliticalGroups(res.data);
                 setGroup(res.data[0]);
+                getVisualization(gra, res.data[0])
             })
             .catch((err) => console.log(err));
     };
@@ -32,6 +33,7 @@ export default function Analyse() {
             .then((res) => {
                 setGraphType(res.data);
                 setGraph(res.data[0])
+                getPoliticalGroups(res.data[0]);
             })
             .catch((err) => console.log(err));
     };
@@ -75,7 +77,6 @@ export default function Analyse() {
     };
 
     window.onload = function () {
-        getPoliticalGroups();
         getGraphType();
     };
 
