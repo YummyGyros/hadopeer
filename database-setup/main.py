@@ -36,15 +36,14 @@ def appendWordFrequencyVisu(visus, contribs):
 if __name__ == "__main__":
     print("WARNING: this script requires the 5 files from scrapping at \"../\"")
     client = getFaunaDbInstance()
-    # createCollections(client)
-    # createIndexes(client)
+    createCollections(client)
+    createIndexes(client)
     visus = []
     contribs = getContribSamples(client)
     appendTopicModellingVisu(visus, contribs)
     contribs = getDateContribSamples(client)
     appendWordFrequencyVisu(visus, contribs)
-    print("visus: ", visus)
     # for elem in visus:
     #     client.query(q.create(
-    #         q.collection('visualizations'), {'data': elem})
+    #         q.collection('BE_CAREFULvisualizations'), {'data': elem})
     #     )

@@ -42,7 +42,7 @@ def appendMatchingDateText(tuples, names, object):
         for name in names:
             if name == contrib['elected_member']:
                 tuple[1].append(contrib['text'])
-    if not list == []:
+    if not tuple[1] == []:
         tuples.append(tuple)
 
 def getMembersContribs(contribsPaths, membersPaths, field, value, matchingAppender):
@@ -62,18 +62,18 @@ def getMembersContribs(contribsPaths, membersPaths, field, value, matchingAppend
 # get samples
 def getLambdaContribSamples(client, appender, matchingAppender):
     samples = []
-    # tuple = ('all', getContributions(sessionsPaths, appender))
-    # samples.append(tuple)
-    # tuple = ('assemblée nationale', getContributions(natAssemblyPaths, appender))
-    # samples.append(tuple)
+    tuple = ('all', getContributions(sessionsPaths, appender))
+    samples.append(tuple)
+    tuple = ('assemblée nationale', getContributions(natAssemblyPaths, appender))
+    samples.append(tuple)
     tuple = ('sénat', getContributions(senatePaths, appender))
     samples.append(tuple)
-    # match = q.match(q.index('elected_members_group'))
-    # groups = client.query(q.paginate(q.distinct(match)))['data']
-    # for group in groups:
-    #     contribs = getMembersContribs(sessionsPaths, membersPaths,
-    #         'group', group, matchingAppender)
-    #     samples.append((group, contribs))
+    match = q.match(q.index('elected_members_group'))
+    groups = client.query(q.paginate(q.distinct(match)))['data']
+    for group in groups:
+        contribs = getMembersContribs(sessionsPaths, membersPaths,
+            'group', group, matchingAppender)
+        samples.append((group, contribs))
     return samples
 
 def getContribSamples(client):
