@@ -12,8 +12,7 @@ def createVisuTopicModelling(nlpData):
     O = []
     for word, occurence in nlpData:
         W.append(word)
-        O.append(occurence * 12600)
-
+        O.append(occurence * 1000 + 20)
     data = go.Scatter(x=[random.random() for i in range(30)],
                      y=[random.random() for i in range(30)],
                      mode='text',
