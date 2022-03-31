@@ -74,10 +74,10 @@ setting:\
 
 FaunaDB is the database we've chosen. It is a multi-model database, which makes it very flexible and very efficient at the same time.\
 If you want to start the database, you have to get an account, create a database and retrieve its **secret key**.\
-https://docs.fauna.com/fauna/current/ \
+https://docs.fauna.com/fauna/current/
 
 To make things simpler, we created a script so you can set up everything easily.\
-However, you will need to **complete** it with your fauna secret key.\
+However, you will need to **complete** it with your fauna secret key.
 
 Once done:
 ```
@@ -102,7 +102,7 @@ FAUNADB_SECRET=your_secret flask run
 We developped a basic React front end, to start it locally:
 ```
 npm start
-``
+```
 
 ## About us
 
