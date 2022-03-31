@@ -62,12 +62,12 @@ def getMembersContribs(contribsPaths, membersPaths, field, value, matchingAppend
 # get samples
 def getLambdaContribSamples(client, appender, matchingAppender):
     samples = []
-    tuple = ('all', getContributions(sessionsPaths, appender))
-    samples.append(tuple)
+    # tuple = ('all', getContributions(sessionsPaths, appender))
+    # samples.append(tuple)
     # tuple = ('assemblée nationale', getContributions(natAssemblyPaths, appender))
     # samples.append(tuple)
-    # tuple = ('sénat', getContributions(senatePaths, appender))
-    # samples.append(tuple)
+    tuple = ('sénat', getContributions(senatePaths, appender))
+    samples.append(tuple)
     # match = q.match(q.index('elected_members_group'))
     # groups = client.query(q.paginate(q.distinct(match)))['data']
     # for group in groups:

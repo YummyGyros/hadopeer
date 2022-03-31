@@ -39,10 +39,11 @@ if __name__ == "__main__":
     # createCollections(client)
     # createIndexes(client)
     visus = []
-    # contribs = getContribSamples(client)
-    # appendTopicModellingVisu(visus, contribs)
-    # contribs = getDateContribSamples(client)
-    # appendWordFrequencyVisu(visus, contribs)
+    contribs = getContribSamples(client)
+    appendTopicModellingVisu(visus, contribs)
+    contribs = getDateContribSamples(client)
+    appendWordFrequencyVisu(visus, contribs)
+    print("visus: ", visus)
     # for elem in visus:
     #     client.query(q.create(
     #         q.collection('visualizations'), {'data': elem})

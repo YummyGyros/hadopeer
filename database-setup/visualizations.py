@@ -4,6 +4,7 @@ from plotly.offline import plot
 import random
 import plotly.express as px
 import pandas as pd
+import json
 
 def createVisuTopicModelling(nlpData):
     colors = [plotly.colors.DEFAULT_PLOTLY_COLORS[random.randrange(1, 10)] for i in range(30)]
@@ -11,7 +12,7 @@ def createVisuTopicModelling(nlpData):
     O = []
     for word, occurence in nlpData:
         W.append(word)
-        O.append(occurence * 10000)
+        O.append(occurence * 12600)
 
     data = go.Scatter(x=[random.random() for i in range(30)],
                      y=[random.random() for i in range(30)],
@@ -23,7 +24,7 @@ def createVisuTopicModelling(nlpData):
     layout = go.Layout({'xaxis': {'showgrid': False, 'showticklabels': False, 'zeroline': False},
                         'yaxis': {'showgrid': False, 'showticklabels': False, 'zeroline': False}})
     fig = go.Figure(data=[data], layout=layout)
-    return fig.to_json()
+    return json.loads(str(fig.to_json()))
 
 def createVisuWordFrequency(nlpData, contribGroup):
     occ = []
@@ -40,4 +41,4 @@ def createVisuWordFrequency(nlpData, contribGroup):
         }))
 
     fig = px.line(df, x="date", y="occurence", color='mots')
-    return fig.to_json()[0]
+    return json.loads(str(fig.to_json()))
