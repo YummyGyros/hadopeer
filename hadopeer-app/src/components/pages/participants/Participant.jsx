@@ -14,16 +14,18 @@ export default function Participant() {
     let { name } = useParams();
 
     const getElected_members = async () => {
-        await axios
-            .get(global.config.apiUrl + "/elected_member?name=" + name)
-            .then((res) => {
-                console.log(res.data);
-                setElected_member(res.data);
-            })
-            .catch((err) => console.log(err));
+        if (localStorage.getItem("elected_member" + name) == null)
+            await axios
+                .get(global.config.apiUrl + "/elected_member?name=" + name)
+                .then((res) => {
+                    setElected_member(res.data);
+                    localStorage.setItem("elected_member" + name, JSON.stringify(res.data));
+                })
+                .catch((err) => console.log(err));
+        else setElected_member(JSON.parse(localStorage.getItem("elected_member" + name)));
     };
 
-    window.onload = function () {
+    window.onclick = function () {
         getElected_members();
     };
 

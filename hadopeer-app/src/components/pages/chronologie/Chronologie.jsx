@@ -3,7 +3,7 @@ import "./chronologie.css";
 import Button from "@mui/material/Button";
 import axios from "axios";
 import Container from "@mui/material/Container";
-import "../../config";
+
 
 
 function getAsembly(href) {
@@ -14,12 +14,15 @@ export default function Chronologie() {
     const [date, setDate] = React.useState([])
 
     const getDate = async () => {
-        await axios
-                .get(global.config.apiUrl + "/dates")
-                .then((res) => {
-                    setDate(res.data)
-                })
-                .catch((err) => console.log(err));
+        if (localStorage.getItem("dates") == null)
+            await axios
+                    .get(global.config.apiUrl + "/dates")
+                    .then((res) => {
+                        setDate(res.data)
+                        localStorage.setItem("dates", JSON.stringify(res.data));
+                    })
+                    .catch((err) => console.log(err));
+        else setDate(JSON.parse(localStorage.getItem("dates")));
     };
 
     window.onload = function() {
