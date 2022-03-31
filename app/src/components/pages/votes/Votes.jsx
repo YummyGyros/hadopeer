@@ -146,7 +146,7 @@ export default function Votes() {
                                     votes.pour,
                                     votes.none + votes.absent,
                                 ],
-                                labels: ["contre", "pour", "sans opignon"],
+                                labels: ["contre", "pour", "sans opinion"],
                                 textposition: "inside",
                                 domain: { column: 1 },
                                 hoverinfo: "label+percent",
