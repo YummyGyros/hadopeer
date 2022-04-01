@@ -57,6 +57,8 @@ export default function Chronologie() {
                                     {date.map((dat) => (
                                         dat.search('http') !== -1 ?
                                         <Button
+                                            target="_blank"
+                                            rel="noreferrer noopener"
                                             color={getAsembly(dat) === "senat" ? "error" : "primary" }
                                             variant="contained"
                                             href={dat}>
