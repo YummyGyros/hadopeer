@@ -84,7 +84,10 @@ Once done:
 ./database-setup/init_db.sh
 ```
 
-N.B.: Creating all visualizations for one NLP analysis takes around 10mn. If you take the senate only it should be around 1mn.
+Creating all visualizations for one NLP analysis takes around 10mn. If you take the senate only it should be around 1mn.
+
+Here's a representation of our database so you can understand more easily:
+<!-- <img title="Database Graph" alt="alt" src="./.database-graph.png"> -->
 
 ## Server
 
